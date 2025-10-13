@@ -19,19 +19,20 @@
   <meta name="author" content="i4G5d">
   <meta name="keywords" content="">
   
-    <meta name="description" content="这是一篇测试文章  记录基于hexo的博客图片插入问题 下面三张是最后成功的案例       第一种：直接写图片名**(test.png）** 第二种在下载了hexo-asset-image插件后，用 1hexo new post test  生成markdown文件是会同时生成同名文件夹，然后把图片复制进去，md中引用名称**(test&#x2F;test.png)**即可 第三种坏处是所有图片">
+    <meta name="description" content="这是一篇测试文章  记录基于hexo的博客图片插入问题 下面三张是最后成功的案例       第一种：直接写图片名(test.png) 第二种（我目前倾向用）在下载了hexo-asset-image插件后，用 1hexo new post test  生成markdown文件是会同时生成同名文件夹，然后把图片复制进去，md中引用名称(test&#x2F;test.png)即可 ！ 我的typora">
 <meta property="og:type" content="article">
 <meta property="og:title" content="test">
 <meta property="og:url" content="https://i4g5d.github.io/2025/10/13/test/index.html">
 <meta property="og:site_name" content="i4G5d-Blog">
-<meta property="og:description" content="这是一篇测试文章  记录基于hexo的博客图片插入问题 下面三张是最后成功的案例       第一种：直接写图片名**(test.png）** 第二种在下载了hexo-asset-image插件后，用 1hexo new post test  生成markdown文件是会同时生成同名文件夹，然后把图片复制进去，md中引用名称**(test&#x2F;test.png)**即可 第三种坏处是所有图片">
+<meta property="og:description" content="这是一篇测试文章  记录基于hexo的博客图片插入问题 下面三张是最后成功的案例       第一种：直接写图片名(test.png) 第二种（我目前倾向用）在下载了hexo-asset-image插件后，用 1hexo new post test  生成markdown文件是会同时生成同名文件夹，然后把图片复制进去，md中引用名称(test&#x2F;test.png)即可 ！ 我的typora">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/13/test/test.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/13/test/test.png">
 <meta property="og:image" content="https://i4g5d.github.io/images/test.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/13/test/image-20251013214642522.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/13/test/image-20251013215837753.png">
 <meta property="article:published_time" content="2025-10-13T08:40:29.000Z">
-<meta property="article:modified_time" content="2025-10-13T13:48:27.695Z">
+<meta property="article:modified_time" content="2025-10-13T14:03:22.098Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/13/test/test.png">
@@ -227,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          260 字
+          831 字
         
       </span>
     
@@ -238,7 +239,7 @@
         
         
         
-          3 分钟
+          7 分钟
         
       </span>
     
@@ -285,15 +286,23 @@
 <p><img src="/2025/10/13/test/test.png" srcset="/img/loading.gif" lazyload alt="图片引用方法二"> </p>
 <p><img src="/2025/10/13/test/test.png" srcset="/img/loading.gif" lazyload alt="图片引用方法二"> </p>
 <p><img src="/images/test.png" srcset="/img/loading.gif" lazyload alt="图片引用方法三"></p>
-<h3 id="第一种："><a href="#第一种：" class="headerlink" title="第一种："></a>第一种：</h3><p>直接写图片名**(test.png）**</p>
-<h3 id="第二种"><a href="#第二种" class="headerlink" title="第二种"></a>第二种</h3><p>在下载了<strong>hexo-asset-image</strong>插件后，用</p>
+<h3 id="第一种："><a href="#第一种：" class="headerlink" title="第一种："></a>第一种：</h3><p>直接写图片名<mark>(test.png)</mark></p>
+<h3 id="第二种（我目前倾向用）"><a href="#第二种（我目前倾向用）" class="headerlink" title="第二种（我目前倾向用）"></a>第二种（我目前倾向用）</h3><p>在下载了<strong>hexo-asset-image</strong>插件后，用</p>
 <figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">hexo <span class="hljs-built_in">new</span> <span class="hljs-built_in">post</span> test<br></code></pre></td></tr></table></figure>
 
-<p>生成markdown文件是会同时生成同名文件夹，然后把图片复制进去，md中引用名称**(test&#x2F;test.png)**即可</p>
+<p>生成markdown文件是会同时生成同名文件夹，然后把图片复制进去，md中引用名称<mark><strong>(test&#x2F;test.png)</strong></mark>即可</p>
+<p>！ 我的typora是复制图片直接生成 .assert 目录的在每次最后我把assert后缀删掉就能自动合并</p>
 <h3 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h3><p>坏处是所有图片都在一个文件夹</p>
 <p>在_post同目录下直接新建images目录 用于存放图片</p>
-<p><img src="/2025/10/13/test/image-20251013214642522.png" srcset="/img/loading.gif" lazyload alt="image-20251013214642522"></p>
-<p>当图片在内时，直接调用**(&#x2F;images&#x2F;test.png)**</p>
+<p><img src="/2025/10/13/test/image-20251013214642522.png" srcset="/img/loading.gif" lazyload alt="目录"></p>
+<p>当图片在内时，直接调用<mark><strong>(&#x2F;images&#x2F;test.png)</strong></mark></p>
+<h3 id="trouble"><a href="#trouble" class="headerlink" title="trouble"></a>trouble</h3><p>最后讲一下耗费我机会一天才解决的问题，图片引用问题。当时只有第三种成功了；前两种一直配置不好 </p>
+<p><img src="/2025/10/13/test/image-20251013215837753.png" srcset="/img/loading.gif" lazyload alt="image-20251013215837753"></p>
+<p>很多教程都没讲 后面看到一篇文章指出 问题出在 <code>项目根目录/node_modules/hexo-asset-image/index.js</code>的23行左右</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(<span class="hljs-regexp">/.*\/index\.html$/</span>.<span class="hljs-title function_">test</span>(link)) &#123;<br>  <span class="hljs-comment">// when permalink is end with index.html, for example 2019/02/20/xxtitle/index.html</span><br>  <span class="hljs-comment">// image in xxtitle/ will go to xxtitle/index/</span><br>  appendLink = <span class="hljs-string">&#x27;index/&#x27;</span>;<br>  <span class="hljs-keyword">var</span> endPos = link.<span class="hljs-title function_">lastIndexOf</span>(<span class="hljs-string">&#x27;/&#x27;</span>);<br>&#125;<br><span class="hljs-keyword">else</span> &#123;<br>  <span class="hljs-keyword">var</span> endPos = link.<span class="hljs-title function_">lastIndexOf</span>(<span class="hljs-string">&#x27;.&#x27;</span>);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>发现 这个走了 else 分支导致的，我们把 <code>link.lastIndexOf(&#39;.&#39;)</code> 修改为 <code>link.lastIndexOf(&#39;/&#39;)</code> 即可 </p>
+<p>**参考文章：<a target="_blank" rel="noopener" href="https://blog.asroads.com/post/95d84581.html">Hexo生成博文插入图片</a></p>
 
                 
               </div>
