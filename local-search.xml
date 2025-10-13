@@ -21,7 +21,7 @@
     <link href="/2025/10/13/test/"/>
     <url>/2025/10/13/test/</url>
     
-    <content type="html"><![CDATA[<p>这是一篇测试文章 </p><img src="/.io//10/13/test/test.png" class title="图片引用方法一"><p><img src="/.io//test.png" alt="图片引用方法二"> </p><p><img src="/images/test.png" alt="图片引用方法三"></p>]]></content>
+    <content type="html"><![CDATA[<p>这是一篇测试文章 </p><img src="/https://localhost//10/13/test/test.png" class title="图片引用方法一"><p><img src="/https://localhost//test.png" alt="图片引用方法二"> </p><p><img src="/images/test.png" alt="图片引用方法三"></p>]]></content>
     
     
     
@@ -34,7 +34,7 @@
     <link href="/2025/10/12/hgame-2025-9/"/>
     <url>/2025/10/12/hgame-2025-9/</url>
     
-    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="b0cba706235d1f1e5fa590fdb61aab953486ceef8d975eae83cf7935addd281a">1bc6829418f46f8ad9868f26d60b5149e342ecb2171b69be7128b59aef2ce850e070451ea491cf0e17f7b27ec310fc8459f66f588ab8c4dd9579e9f8c8cb14bd88f20909266ae99d3628c3bc5a1293701e3168203e58f568e229f6e67c8bfb6cb511f36977441b6964a88d7bfc940f37bc58a724c1e723d60adad426784d6cb017b9fc187d2781b530a46e0b3a6ce2d4fa50ff35b10de2f20cb01a7fb58ddd47c9e61a88e3a0b17ddac0ff87d6dcc2c4635b4a809765fef3b1406efc3abb91bc7f504d646c970758263ddfa665b42994f80fc050e1ba0c068b164e509f0b2012</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">请输入密码。</span>      </label>    </div>  </div></div><script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="a6253ddedc574cf89a0998f613834966b0ccb52e3cb0e2430d4758e6b4cc6e82">1bc6829418f46f8ad9868f26d60b5149e342ecb2171b69be7128b59aef2ce850e070451ea491cf0e17f7b27ec310fc842ca36e535dba50787bdb0b28380e6406f383f69ba84dc28760a4a28a5a201d23e4ebb87258498871b2b4872fb59dcee75825359cf269e037c736fafb2f869ac301d0bfada22cc350749e5ee9c8e89ff10f5dc05e2188175aa314821b507626b00b266f6bcaa67e1b312554325bd6315c88e3001bb97a13f52b8f6b1030ec795882a70339a9f64b1d582e62262cfff4126f73b9fd609861c8d19d4c08d1a4f0bde42f038a29d3e1cde6547572c0659a4ab339c62b6fc1222c83f8a690e8b3937b</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">请输入密码。</span>      </label>    </div>  </div></div><script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
     
     
     
