@@ -5,10 +5,10 @@
   
   <entry>
     <title>test</title>
-    <link href="i4G5d.github.io/2025/10/13/test/"/>
-    <url>i4G5d.github.io/2025/10/13/test/</url>
+    <link href="/2025/10/13/test/"/>
+    <url>/2025/10/13/test/</url>
     
-    <content type="html"><![CDATA[<p>这是一篇测试文章 </p><img src="i4G5d.github.io/https://i4g5d//10/13/test/test.png" class title="图片引用方法一"><p><img src="i4G5d.github.io/https://i4g5d//test.png" alt="图片引用方法二"> </p><p><img src="/images/test.png" alt="图片引用方法三"></p>]]></content>
+    <content type="html"><![CDATA[<p>这是一篇测试文章 </p><img src="/http://i4g5d//10/13/test/test.png" class title="图片引用方法一"><p><img src="/http://i4g5d//test.png" alt="图片引用方法二"> </p><p><img src="/images/test.png" alt="图片引用方法三"></p>]]></content>
     
     
     
@@ -18,10 +18,10 @@
   
   <entry>
     <title>hgame 2025-9</title>
-    <link href="i4G5d.github.io/2025/10/12/hgame-2025-9/"/>
-    <url>i4G5d.github.io/2025/10/12/hgame-2025-9/</url>
+    <link href="/2025/10/12/hgame-2025-9/"/>
+    <url>/2025/10/12/hgame-2025-9/</url>
     
-    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="35ea622509a5210be02e47944cac086f9d2df9c24988017dfc2849b3997f99a5">1bc6829418f46f8ad9868f26d60b5149e342ecb2171b69be7128b59aef2ce850e070451ea491cf0e17f7b27ec310fc84c637c71103d480463e91ad9cced5f305023083eef71fcb042775720e7c568c2237bb321dbfeb31b1a9f4d2169397a24ac22046259fae80b4b52d29e5d5b5857ada82434f410900401fcec3046891867c1f0a7d2ad7658511850fccce08f95030f132509aa5d0676317f7e9e12d0fd01c3b7dbc5799d4db46c44bab80f467debf94fa801ab5ddb4322410607617781d5e40b6abad0b48b32fb224190cdc7744138347249820e18871c4d1b6fdc62b4e5c04ed45fa233a7c7177d30adbbfe2af01d43ed2809b57d4444cfcaebc86799378426628d9e27f1c1b27574d5672e5d5b9</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">请输入密码。</span>      </label>    </div>  </div></div><script data-pjax src="i4G5d.github.io/lib/hbe.js"></script><link href="i4G5d.github.io/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="8dc8186a630455853180770982278b66df76dea2239d16a802da42fb3fb25c24">1bc6829418f46f8ad9868f26d60b5149e342ecb2171b69be7128b59aef2ce850e070451ea491cf0e17f7b27ec310fc848319ba80825ca526e5b641ca8ceaf751248a9d6579c2b86b2a1c62a20f48547b2ddde8c85e9587a0faae7d512d50d1d07526783a0955244cb43878e333e2cc6407b808ec61e3d79e494ccdf0be30da3c4bed7da09d09c22fafadfa6ae3c0f7398c8afaec9b52782565c45bf2e2615636fce43422f9fc4bc6dcf2f4882cc5cd83141848bc201e72ee93b0688f829192a65dad01c9bda8d0913067040a6788441efd54bf78d5bd9833b7919349a7e86d344bb48e5c1eefaf0fa8937dbf512f65f8</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-default">      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-default">请输入密码。</span>      </label>    </div>  </div></div><script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
     
     
     
@@ -31,8 +31,8 @@
   
   <entry>
     <title>Hello World</title>
-    <link href="i4G5d.github.io/2025/10/12/hello-world/"/>
-    <url>i4G5d.github.io/2025/10/12/hello-world/</url>
+    <link href="/2025/10/12/hello-world/"/>
+    <url>/2025/10/12/hello-world/</url>
     
     <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><span id="more"></span><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
     
