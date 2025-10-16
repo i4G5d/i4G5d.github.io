@@ -1,0 +1,28 @@
+import re
+
+# 输入要处理的 Markdown 文件路径
+file_path = input("请输入要处理的 Markdown 文件路径（支持带引号）：\n").strip()
+
+# 去掉首尾的双引号（如果有）
+if file_path.startswith('"') and file_path.endswith('"'):
+    file_path = file_path[1:-1]
+
+# 正则匹配 Markdown 图片语法
+pattern = re.compile(r'!\[[^\]]*\]\(')
+
+try:
+    with open(file_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # 替换所有图片 alt 为空
+    new_content = pattern.sub("![](", content)
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(new_content)
+
+    print(f"✅ 已处理完成：{file_path}")
+
+except FileNotFoundError:
+    print("❌ 文件不存在，请检查路径是否正确")
+except Exception as e:
+    print(f"❌ 处理失败：{e}")
