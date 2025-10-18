@@ -68,7 +68,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/15/web-cache/image-20251018234646782.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/15/web-cache/image-20251018234916760.png">
 <meta property="article:published_time" content="2025-10-15T13:11:13.000Z">
-<meta property="article:modified_time" content="2025-10-18T16:20:34.974Z">
+<meta property="article:modified_time" content="2025-10-18T16:23:39.946Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/15/web-cache/image-20251015211539056.png">
@@ -377,9 +377,12 @@
 <p>这里简单解释一下</p>
 <details>
   <summary><b>📘 点击展开解释</b></summary>
-  - 1. 目标敏感页面：GET /dashboard（受登录用户可见，返回用户私人 HTML，没有 Cache-Control: no-store）
 
 <ul>
+<li><ol>
+<li>目标敏感页面：GET &#x2F;dashboard（受登录用户可见，返回用户私人 HTML，没有 Cache-Control: no-store）</li>
+</ol>
+</li>
 <li><ol start="2">
 <li>攻击者构造恶意 URL：&#x2F;dashboard.png（或 &#x2F;dashboard&#x2F;avatar.png）</li>
 </ol>
@@ -397,10 +400,6 @@
 </li>
 </ul>
 </details>
-
-
-
-
 
 
 
