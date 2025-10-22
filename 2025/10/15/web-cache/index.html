@@ -21,7 +21,7 @@
   
     <meta name="description" content="在这篇文章中，记录最近看到的web缓存相关的安全知识，并且附上相关渗透及漏洞利用实验 Web缓存欺骗  （Web cache deception）首先简单了解或复习一下web缓存相关的知识；  Web缓存是位于源服务器和用户之间的系统。当客户端（用户）请求静态资源时，首先会先去看看cache里面有没有，若没有（缓存cache未命中），再去找源服务器要，服务器响应在发送给用户之前也先发送到该高速">
 <meta property="og:type" content="article">
-<meta property="og:title" content="web缓存安全">
+<meta property="og:title" content="web缓存欺骗">
 <meta property="og:url" content="https://i4g5d.github.io/2025/10/15/web-cache/index.html">
 <meta property="og:site_name" content="i4G5d-Blog">
 <meta property="og:description" content="在这篇文章中，记录最近看到的web缓存相关的安全知识，并且附上相关渗透及漏洞利用实验 Web缓存欺骗  （Web cache deception）首先简单了解或复习一下web缓存相关的知识；  Web缓存是位于源服务器和用户之间的系统。当客户端（用户）请求静态资源时，首先会先去看看cache里面有没有，若没有（缓存cache未命中），再去找源服务器要，服务器响应在发送给用户之前也先发送到该高速">
@@ -68,14 +68,14 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/15/web-cache/image-20251018234646782.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/15/web-cache/image-20251018234916760.png">
 <meta property="article:published_time" content="2025-10-15T13:11:13.000Z">
-<meta property="article:modified_time" content="2025-10-18T16:23:39.946Z">
+<meta property="article:modified_time" content="2025-10-19T07:21:11.747Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/15/web-cache/image-20251015211539056.png">
   
   
   
-  <title>web缓存安全 - i4G5d-Blog</title>
+  <title>web缓存欺骗 - i4G5d-Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -241,7 +241,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="web缓存安全"></span>
+            <span id="subtitle" data-typed-text="web缓存欺骗"></span>
           
         </div>
 
@@ -312,7 +312,7 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">web缓存安全</h1>
+            <h1 id="seo-header">web缓存欺骗</h1>
             
             
               <div class="markdown-body">
@@ -555,6 +555,27 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web%E5%AE%89%E5%85%A8%E4%B8%93%E9%A2%98/" class="category-chain-item">web安全专题</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
   
 </div>
 
@@ -564,7 +585,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>web缓存安全</div>
+      <div>web缓存欺骗</div>
       <div>https://i4g5d.github.io/2025/10/15/web-cache/</div>
     </div>
     <div class="license-meta">
@@ -608,6 +629,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2025/10/19/web-cache2/" title="web缓存中毒">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">web缓存中毒</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
