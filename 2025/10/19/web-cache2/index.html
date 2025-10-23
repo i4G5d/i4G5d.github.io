@@ -19,12 +19,12 @@
   <meta name="author" content="i4G5d">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Web缓存中毒（Web Cache Deception） Web缓存欺骗 是通过构造并发送恶意URL链接，让受害者写入本不会写入缓存的敏感信息，然后攻击者读取包含敏感信息的缓存； Web缓存中毒则是利用服务器和缓存的行为向受害者提供有害的http响应 1. 成功的缓存中毒攻击可以结合其他攻击（利用XSS、JavaScript注入、开放重定向等漏洞） 2.  受害页面的流量越大，缓存中毒影响越大">
+    <meta name="description" content="1234**欺骗**主要是利用源服务器和Cache端之间的解析差异，让受害者写入包含敏感信息的缓存，动态信息误入缓存，攻击者读取Cache窃取信息。	通常是在后缀，目录名，文件名上找解析漏洞做文章；且一般都需要发送恶意链接让受害者写入缓存**投毒**主要是攻击者利用cache rules&#x2F;key上漏洞， 把受污染的静态文件写入缓存，受害者在正常上网时，就读取了污染文件，收到xss类似的攻击。	通常">
 <meta property="og:type" content="article">
 <meta property="og:title" content="web缓存中毒">
 <meta property="og:url" content="https://i4g5d.github.io/2025/10/19/web-cache2/index.html">
 <meta property="og:site_name" content="i4G5d-Blog">
-<meta property="og:description" content="Web缓存中毒（Web Cache Deception） Web缓存欺骗 是通过构造并发送恶意URL链接，让受害者写入本不会写入缓存的敏感信息，然后攻击者读取包含敏感信息的缓存； Web缓存中毒则是利用服务器和缓存的行为向受害者提供有害的http响应 1. 成功的缓存中毒攻击可以结合其他攻击（利用XSS、JavaScript注入、开放重定向等漏洞） 2.  受害页面的流量越大，缓存中毒影响越大">
+<meta property="og:description" content="1234**欺骗**主要是利用源服务器和Cache端之间的解析差异，让受害者写入包含敏感信息的缓存，动态信息误入缓存，攻击者读取Cache窃取信息。	通常是在后缀，目录名，文件名上找解析漏洞做文章；且一般都需要发送恶意链接让受害者写入缓存**投毒**主要是攻击者利用cache rules&#x2F;key上漏洞， 把受污染的静态文件写入缓存，受害者在正常上网时，就读取了污染文件，收到xss类似的攻击。	通常">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/19/web-cache2/image-20251019160244128.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/19/web-cache2/image-20251019163150920.png">
@@ -119,7 +119,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/19/web-cache2/image-20251022235635261.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/19/web-cache2/image-20251022235722362.png">
 <meta property="article:published_time" content="2025-10-19T07:24:08.000Z">
-<meta property="article:modified_time" content="2025-10-22T16:53:01.916Z">
+<meta property="article:modified_time" content="2025-10-23T07:52:05.933Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/19/web-cache2/image-20251019160244128.png">
@@ -315,7 +315,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          11k 字
+          12k 字
         
       </span>
     
@@ -326,7 +326,7 @@
         
         
         
-          96 分钟
+          98 分钟
         
       </span>
     
@@ -368,7 +368,9 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Web缓存中毒（Web-Cache-Deception）"><a href="#Web缓存中毒（Web-Cache-Deception）" class="headerlink" title="Web缓存中毒（Web Cache Deception）"></a><strong>Web缓存中毒</strong>（Web Cache Deception）</h1><p><img src="/2025/10/19/web-cache2/image-20251019160244128.png" srcset="/img/loading.gif" lazyload></p>
+                <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-strong">**欺骗**</span>主要是利用源服务器和Cache端之间的解析差异，让受害者写入包含敏感信息的缓存，动态信息误入缓存，攻击者读取Cache窃取信息。<br><span class="hljs-code">	通常是在后缀，目录名，文件名上找解析漏洞做文章；且一般都需要发送恶意链接让受害者写入缓存</span><br><span class="hljs-code">**投毒**主要是攻击者利用cache rules/key上漏洞， 把受污染的静态文件写入缓存，受害者在正常上网时，就读取了污染文件，收到xss类似的攻击。</span><br><span class="hljs-code">	通常逻辑是利用Cache rules不包含（及不会写入key）的注入点（各种header的忽略，参数上的解析差异），直接在缓存中写入DOM或者导入含毒的静态文件</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="Web缓存中毒（Web-Cache-Deception）"><a href="#Web缓存中毒（Web-Cache-Deception）" class="headerlink" title="Web缓存中毒（Web Cache Deception）"></a><strong>Web缓存中毒</strong>（Web Cache Deception）</h1><p><img src="/2025/10/19/web-cache2/image-20251019160244128.png" srcset="/img/loading.gif" lazyload></p>
 <p><a href="https://i4g5d.github.io/2025/10/15/web-cache/">Web缓存欺骗</a> 是通过构造并发送恶意URL链接，让受害者写入本不会写入缓存的敏感信息，然后攻击者读取包含敏感信息的缓存；</p>
 <p>Web缓存中毒则是利用服务器和缓存的行为向受害者提供有害的http响应</p>
 <pre><code class="hljs">1. 成功的缓存中毒攻击可以结合其他攻击（利用XSS、JavaScript注入、开放重定向等漏洞）
