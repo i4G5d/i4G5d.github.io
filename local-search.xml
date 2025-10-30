@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>CSRF</title>
+    <link href="/2025/10/30/CSRF/"/>
+    <url>/2025/10/30/CSRF/</url>
+    
+    <content type="html"><![CDATA[<p>这里记录一下一直混淆的几个点，CORS，SOP，CSP</p><h2 id="SOP（同源策略）"><a href="#SOP（同源策略）" class="headerlink" title="SOP（同源策略）"></a>SOP（同源策略）</h2><p>​<strong><code>同源策略</code>用于防止不同源的网页相互访问敏感数据</strong>（读取另一个网站的 <code>cookie</code>、<code>localStorage</code>、<code>DOM</code>或防止跨站点脚本直接操作另一个站点的页面。）</p><ul><li><p>同源：协议，域名，端口全部相同</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">https://a.example.com:443 与 https://a.example.com:443  ✅ 同源  <br>https://a.example.com 与 http://a.example.com ❌ 不同源（协议不同）  <br>https://a.example.com 与 https://b.example.com ❌ 不同源（域名不同）          <br></code></pre></td></tr></table></figure><p>只要协议、域名或端口不同，浏览器就会<strong>阻止</strong>页面中的脚本访问另一个源的内容。</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 当前页面: https://a.com</span><br><span class="hljs-title function_">fetch</span>(<span class="hljs-string">&quot;https://b.com/data&quot;</span>)<br></code></pre></td></tr></table></figure><p>SOP通常是单向的，会阻止脚本访问返回的数据（即fetch请求可能会发出去，但返回的数据在浏览器里是 <strong>被隔离的</strong>，JS 拿不到内容）</p></li></ul><h2 id="CORS（跨域资源共享）"><a href="#CORS（跨域资源共享）" class="headerlink" title="CORS（跨域资源共享）"></a>CORS（跨域资源共享）</h2><p>​<strong>CORS 是对同源策略的“安全放行机制”</strong>。</p><p>​它允许服务器声明哪些源可以访问自己的资源，从而在受控的情况下<strong>突破 SOP 限制</strong>。</p><p>​浏览器发起跨域请求，会根据请求类型分为</p><ul><li><strong>简单请求（simple request）</strong>：直接发送请求；</li><li><strong>复杂请求（non-simple request）</strong>：会先发送一个 <strong>预检请求（OPTIONS）</strong>。</li></ul><p>​服务器通过请求头告知服务器是否允许跨域请求</p><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Access-Control-Allow-Origin</span><span class="hljs-punctuation">: </span>https://example.com<br><span class="hljs-attribute">Access-Control-Allow-Methods</span><span class="hljs-punctuation">: </span>GET, POST<br><span class="hljs-attribute">Access-Control-Allow-Credentials</span><span class="hljs-punctuation">: </span>true<br></code></pre></td></tr></table></figure><p>​</p><details><summary>**展开查看具体过程**</summary><ol><li>JS 发起一个跨域请求（比如 a.com 请求 b.com）。</li><li>浏览器发现这是跨域的，根据 SOP 本该禁止读取响应。</li><li>但是浏览器会先看看 b.com 的响应头中有没有：</li></ol><p>Access-Control-Allow-Origin: <a href="https://a.com/">https://a.com</a></p><ol start="4"><li><p>如果有，说明服务器明确允许 a.com 访问自己的资源。</p></li><li><p>浏览器就放行，让 JS 能读到响应内容。</p></li></ol><h2 id="CSP（内容安全策略）"><a href="#CSP（内容安全策略）" class="headerlink" title="CSP（内容安全策略）"></a>CSP（内容安全策略）</h2><p>​**CSP 是浏览器提供的防御机制，用于防止 XSS和数据注入攻击。**它通过限制页面能加载哪些资源、执行哪些脚本，来减少攻击面。</p><p>​CSP通过响应头声明</p><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Content-Security-Policy</span><span class="hljs-punctuation">: </span>default-src &#x27;self&#x27;; script-src &#x27;self&#x27; https://cdn.example.com<br></code></pre></td></tr></table></figure><p>​这表示：</p><ul><li><p>所有资源默认只能从本源加载；</p></li><li><p>JS 脚本只能来自本站点或指定的 CDN；</p></li><li><p>禁止行内 <code>&lt;script&gt;</code> 执行（除非加 <code>&#39;unsafe-inline&#39;</code>）。</p></li></ul></details>]]></content>
+    
+    
+    <categories>
+      
+      <category>web安全专题</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>HTTP_Host_header_attacks</title>
     <link href="/2025/10/28/HTTP-HOST-header-attacks/"/>
     <url>/2025/10/28/HTTP-HOST-header-attacks/</url>
