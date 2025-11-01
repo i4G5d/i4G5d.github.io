@@ -1,0 +1,868 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/mad.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="i4G5d">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="HTTP Host标头攻击​	一些网站以不安全的方式处理Host标头的值（隐式信任 or 未转义等操作），攻击者就注入payload ​	Host 标头是客户端（浏览器）向服务器发送请求时，用来告知服务器 “自己想访问哪个域名” 的标识，现成的web应用通常从Host中检索域来知道当前域： 1&lt;a href&#x3D;&quot;https:&#x2F;&#x2F;_SERVER[&#x27;HOST&#x27;]&#x2F;su">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP请求头攻击">
+<meta property="og:url" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/index.html">
+<meta property="og:site_name" content="i4G5d-Blog">
+<meta property="og:description" content="HTTP Host标头攻击​	一些网站以不安全的方式处理Host标头的值（隐式信任 or 未转义等操作），攻击者就注入payload ​	Host 标头是客户端（浏览器）向服务器发送请求时，用来告知服务器 “自己想访问哪个域名” 的标识，现成的web应用通常从Host中检索域来知道当前域： 1&lt;a href&#x3D;&quot;https:&#x2F;&#x2F;_SERVER[&#x27;HOST&#x27;]&#x2F;su">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028153941036.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028160000126.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028180823878.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028181219300.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028181234652.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028181325538.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028181713663.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028182430199.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028182703896.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028182724187.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028184216598.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028184832995.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028185210133.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028190224972.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028190614281.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028190852377.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028190903820.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028191120456.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028191753239.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028192849439.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028193227319.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028193455657.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028210133033.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028210802329.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028211225088.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028212802880.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028212853795.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028212944078.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028215811423.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028220458548.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028221310097.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028221535879.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028221650170.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028223308709.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028223923717.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028224253595.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028225051610.png">
+<meta property="article:published_time" content="2025-10-28T06:01:39.000Z">
+<meta property="article:modified_time" content="2025-10-30T14:52:47.528Z">
+<meta property="article:author" content="i4G5d">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i4g5d.github.io/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028153941036.png">
+  
+  
+  
+  <title>HTTP请求头攻击 - i4G5d-Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"i4g5d.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":4},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>i4G5d</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HTTP请求头攻击"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-10-28 14:01" pubdate>
+          2025年10月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          39 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">HTTP请求头攻击</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="HTTP-Host标头攻击"><a href="#HTTP-Host标头攻击" class="headerlink" title="HTTP Host标头攻击"></a>HTTP Host标头攻击</h1><p>​	一些网站以不安全的方式处理Host标头的值（隐式信任 or 未转义等操作），攻击者就注入payload</p>
+<p>​	<strong>Host 标头是客户端（浏览器）向服务器发送请求时，用来告知服务器 “自己想访问哪个域名” 的标识</strong>，现成的web应用通常从Host中检索域来知道当前域：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://_SERVER[&#x27;HOST&#x27;]/support&quot;</span>&gt;</span>Contact support<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>​	能造成的典型攻击：</p>
+<ul>
+<li>Web 缓存中毒</li>
+<li>特定功能中的业务逻辑缺陷</li>
+<li>基于路由的 SSRF</li>
+<li>典型的服务器端漏洞，例如 SQL 注入</li>
+</ul>
+<p>产生漏洞的原因：</p>
+<pre><code class="hljs">1. 错误的信任Host标头
+2. 配置问题，Host被其他标头覆盖
+</code></pre>
+<h2 id="测试漏洞："><a href="#测试漏洞：" class="headerlink" title="测试漏洞："></a>测试漏洞：</h2><h3 id="1-提供任意Host头"><a href="#1-提供任意Host头" class="headerlink" title="1. 提供任意Host头"></a>1. 提供任意Host头</h3><p>​	先测试通过Host提供任意、无法识别的域名时会发生什么；</p>
+<ul>
+<li><p>能访问：</p>
+<p>有些服务器或代理会有 默认&#x2F;回退 配置，也就是当收到没有匹配到任何 <code>server_name</code> &#x2F; host 的请求时要处理哪个虚拟主机。换句话说：即便 Host 不匹配，服务器也把请求送给目标站点，我们要研究web如何处理host</p>
+</li>
+<li><p>失败（“Invalid Host header” &#x2F; 无法路由）</p>
+<p>可能是白名单限制，不匹配规则，TLS&#x2F;SNI不匹配</p>
+</li>
+</ul>
+<h3 id="2-检查验证是否存在缺陷"><a href="#2-检查验证是否存在缺陷" class="headerlink" title="2.检查验证是否存在缺陷"></a>2.检查验证是否存在缺陷</h3><ol>
+<li><p>端口处理漏洞</p>
+<p>有些验证逻辑只验证<strong>域名部分</strong>（<code>example.com</code>），忽略端口。那就把payload当做非数字端口注入</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/example</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com:bad-stuff-here<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>利用域名后缀匹配（子域&#x2F;尾缀匹配）</p>
+</li>
+</ol>
+<p>   有些应用在验证 Host 时<strong>允许任意子域</strong>，只要 Host 以白名单域名结尾。例如，应用白名单是 <code>vulnerable-website.com</code>，它允许匹配 <code>*.vulnerable-website.com</code>。在这种情况下，您可以通过注册一个以与白名单域名相同的字符序列结尾的任意域名来完全绕过验证：</p>
+   <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/example</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>notvulnerable-website.com<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>其他方式有关<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/ssrf#circumventing-common-ssrf-defenses">规避常见 SSRF 防御</a>和<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/cors#errors-parsing-origin-headers">Origin 标头解析错误</a>的内容</li>
+</ol>
+<h3 id="3-发送歧义请求"><a href="#3-发送歧义请求" class="headerlink" title="3.发送歧义请求"></a>3.发送歧义请求</h3><p>当验证 Host 的代码和实际<strong>使用</strong> Host 的代码不在同一个组件或服务器时，攻击者可以构造“歧义”请求，使得“前端看到一个 Host、后端看到另一个 Host”，进而绕过校验并把恶意值注入到后端逻辑中。</p>
+<ol>
+<li><p>重复 Host 头</p>
+<p>类似于http参数污染</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/example</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com   有的组件取第一个值<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>attacker.example         有的取最后一个，有的将多值合并成逗号分隔字符串<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>请求行使用绝对 URL</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">http://vulnerable-website.com/path</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>attacker.example<br></code></pre></td></tr></table></figure>
+
+<p>在某些链路上，路由&#x2F;代理可能优先使用请求行里的 URL 主机（来决定目的地），而后端或应用层读取 <code>Host</code> header。若两者不一致，就能制造歧义（类似前面重复头的效果）。</p>
+</li>
+<li><p>折行 &#x2F; 行包裹</p>
+</li>
+</ol>
+   <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/example</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br>    attacker.example<br>    或者<br>GET /example HTTP/1.1<br>    Host: attacker.example<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br></code></pre></td></tr></table></figure>
+
+<p>   总之就是利用前后端或者不同组件的处理差异 绕过限制，解析危险注入</p>
+<h3 id="4-注入host覆盖标头"><a href="#4-注入host覆盖标头" class="headerlink" title="4.注入host覆盖标头"></a>4.注入host覆盖标头</h3><ul>
+<li><code>X-Host</code></li>
+<li><code>X-Forwarded-Server</code></li>
+<li><code>X-HTTP-Host-Override</code></li>
+<li><code>Forwarded</code></li>
+<li>Param Miner扩展可以guess header</li>
+</ul>
+<h2 id="利用漏洞："><a href="#利用漏洞：" class="headerlink" title="利用漏洞："></a>利用漏洞：</h2><h3 id="1-密码重置中毒"><a href="#1-密码重置中毒" class="headerlink" title="1. 密码重置中毒"></a>1. 密码重置中毒</h3><p>​	（实验室1,2）</p>
+<p>​	密码重置投毒是一种攻击者利用漏洞网站生成指向其控制域名的密码重置链接的技术。攻击者可以利用此行为窃取重置任意用户密码所需的秘密令牌，最终盗取用户的账户。</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028153941036.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	首先我们要先知道常见的重置密码功能。</p>
+<ul>
+<li><p>用户输入要修改的账户的email </p>
+</li>
+<li><p>网站为这个账号生成一个token并在后端关联</p>
+</li>
+<li><p>网站给email发包含token的邮件，</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">https://normal-website.com/reset?token=0a1b2c3d4e5f6g7h8i9j<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>用户访问，网站验证token有效性并确定要重置的账号。最后改好后销毁token</p>
+</li>
+</ul>
+<p>​	所以攻击的关键就是窃取token，通常思路就是通过host指向我们的服务器网址，构造威胁链接，等受害者点击，来外带窃取token。或者通过各种waf的绕过，构造悬挂拼接</p>
+<h3 id="2-通过Host进行-Web-缓存中毒"><a href="#2-通过Host进行-Web-缓存中毒" class="headerlink" title="2.通过Host进行 Web 缓存中毒"></a>2.通过Host进行 Web 缓存中毒</h3><p>​	（实验室3）</p>
+<p>​	看标题就能想个大概了，web缓存中毒通常就是利用源服务器和Cache的解析歧义，写入有毒缓存。而Host也有可能因为歧义导致解析不同（双重覆盖等见测试的第3.）</p>
+<p>​	贴一下<a href="https://i4g5d.github.io/2025/10/19/web-cache2/">web缓存中毒</a></p>
+<h3 id="3-利用经典的服务器端漏洞"><a href="#3-利用经典的服务器端漏洞" class="headerlink" title="3.利用经典的服务器端漏洞"></a>3.利用经典的服务器端漏洞</h3><p>​	（实验室4）</p>
+<p>​	每个 HTTP 标头都是利用经典服务器端漏洞的潜在载体，比如host有可能进行sql注入，或者host伪装成内网本地用户</p>
+<h3 id="4-使用虚拟主机暴力破解访问内部网站"><a href="#4-使用虚拟主机暴力破解访问内部网站" class="headerlink" title="4.使用虚拟主机暴力破解访问内部网站"></a>4.使用虚拟主机暴力破解访问内部网站</h3><p>​	许多服务器同时承载多个虚拟主机（vhosts），如果公共站点与内网站点部署在同一台机器上，攻击者只要猜到内部主机名（或暴力枚举子域名），就能通过把请求发到该服务器并在请求里写入 <code>Host</code>&#x2F;SNI 来访问那些“隐藏”的站点 —— 即使内部站点没有公开 DNS 记录。</p>
+<h3 id="5-基于路由的-SSRF"><a href="#5-基于路由的-SSRF" class="headerlink" title="5.基于路由的 SSRF"></a>5.基于路由的 SSRF</h3><p>​	（实验室5,6）</p>
+<p>​	路由就是（负载均衡器、CDN、反向代理、API 网关）根据客户端的各种信息，请求不同后端服务</p>
+<p>​	通常SSRF要通过XXE或者业务逻辑漏洞，</p>
+<p>​	很多组件会根据Host决定路由并发起解析&#x2F;请求到那个主机名或IP</p>
+<p>​	<strong>先用 Collaborator 验证“能把请求路由到任意域”</strong>，确认后<strong>就可以尝试把请求指向内网地址做进一步探测或枚举</strong></p>
+<p>通查要结合前面测试漏洞中的各种方法绕过WAF或者运行逻辑，比如考虑覆盖，考虑绝对路劲，考虑各种歧义，非数字端口，编码等等</p>
+<h3 id="6-连接状态攻击"><a href="#6-连接状态攻击" class="headerlink" title="6.连接状态攻击"></a>6.连接状态攻击</h3><p>​	（实验室7）</p>
+<p>​	可以理解为web反向中毒（但原理完全不同），先留下安全的请求记忆，这个时候服务器可能会放松警惕，就能发送危险请求（连续建立）</p>
+<ul>
+<li>HTTP&#x2F;1.1 支持<strong>持久连接（keep-alive）</strong>：客户端和服务端在同一 TCP 连接上可以连续发送多个请求&#x2F;接收多个响应，以减少握手开销。</li>
+<li>有些服务器或中间件为了性能或实现简化，会在“连接级别”缓存&#x2F;记住第一次请求的某些字段（比如 Host、某些 header、或已经验证过的状态），而不会在每个后续请求都做严格验证。</li>
+<li>攻击者就可以利用这一点：先发一个“安全”的请求通过校验，然后在同一连接里紧接着发一个“恶意”请求（Host 不同、路径恶意、payload 注入等），后端可能会直接处理第二个请求而不重新做全部安全检查。</li>
+</ul>
+<h3 id="7-通过格式错误的请求行进行-SSRF"><a href="#7-通过格式错误的请求行进行-SSRF" class="headerlink" title="7.通过格式错误的请求行进行 SSRF"></a>7.通过格式错误的请求行进行 SSRF</h3><ul>
+<li><p>HTTP 的请求行通常长这样：<code>GET /path HTTP/1.1</code> —— path 以 <code>/</code> 开头。</p>
+</li>
+<li><p>有些自制的反向代理实现为了把客户端请求转发到上游，会直接把 request line 的 path 直接拼到上游 base URL 后面（字符串拼接），例如：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">upstream_base</span> = <span class="hljs-string">&quot;http://backend-server&quot;</span><br><span class="hljs-attr">upstream_url</span> = upstream_base + path_from_request_line<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>如果 <code>path_from_request_line</code> 是常规的 <code>/foo</code>，拼接结果是 <code>http://backend-server/foo</code>，正常。但如果 path 是 <code>@internal</code>，拼接后就是 <code>http://backend-server@internal</code>。大多数 URL 解析器把 <code>user:pass@host</code> 当作“userinfo@host”，因此 <code>backend-server@internal</code> 被解析为：</p>
+<ul>
+<li>username &#x3D; <code>backend-server</code></li>
+<li>host &#x3D; <code>internal</code></li>
+</ul>
+</li>
+<li><p>也就是说，本来想访问 <code>backend-server</code>，被代理误导成去访问 <code>internal</code> —— 攻击者就能让代理去访问 <code>internal</code>（很可能是内网地址或其他受限主机）。</p>
+</li>
+</ul>
+<h2 id="预防漏洞："><a href="#预防漏洞：" class="headerlink" title="预防漏洞："></a>预防漏洞：</h2><pre><code class="hljs">- 尽量不用HOST的内容拼接，可以用相对路径完成功能
+- Host白名单验证
+- 不信任XFH等代替头
+- 规范化后端和边缘层
+- 默认/回退 vhost 应安全处理，例如重定向或404
+</code></pre>
+<h2 id="Labs："><a href="#Labs：" class="headerlink" title="Labs："></a>Labs：</h2><h3 id="1-实验室：基本密码重置中毒"><a href="#1-实验室：基本密码重置中毒" class="headerlink" title="1.实验室：基本密码重置中毒"></a>1.实验室：基本密码重置中毒</h3><p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028160000126.png" srcset="/img/loading.gif" lazyload></p>
+<p>在修改密码界面，看到是可以通过提交邮箱或用户名的，我想要carlos的密码，那就用用户名</p>
+<p>但不知道修改密码的具体细节，先看看更改密码的host有什么用</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028180823878.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到，相应中没有直接回显host头，但在更改密码邮件地址中域名变成了host的test</p>
+<p>那是不是只要把host值改为能外带出token的就可以，</p>
+<p>于是采用加入bp的collaborator</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028181219300.png" srcset="/img/loading.gif" lazyload></p>
+<p>轮询后拿到token</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028181234652.png" srcset="/img/loading.gif" lazyload></p>
+<p>把窃取到的token换上去就等于拿到了carlos邮件上的更改密码链接，修改即可</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028181325538.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="2-实验室：通过悬垂标记进行密码重置中毒"><a href="#2-实验室：通过悬垂标记进行密码重置中毒" class="headerlink" title="2.实验室：通过悬垂标记进行密码重置中毒"></a>2.实验室：通过悬垂标记进行密码重置中毒</h3><p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028181713663.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里想随意的输入host或者输入攻击者网站，都被拒绝了，就像提示说的可能是因为防病毒软件</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028182430199.png" srcset="/img/loading.gif" lazyload></p>
+<p>而且这次不是窃取token，而是直接给新密码了</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028182703896.png" srcset="/img/loading.gif" lazyload></p>
+<p>点这个 View raw看看详细</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028182724187.png" srcset="/img/loading.gif" lazyload></p>
+<p>里面是一个html， 看到这里就想进行拼接来构造攻击了</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028184216598.png" srcset="/img/loading.gif" lazyload></p>
+<p>看看有没有特殊分隔符，能绕过检测，发现能用<code>:</code>那不就是非数字端口</p>
+<p>于是构造</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028184832995.png" srcset="/img/loading.gif" lazyload></p>
+<p>轮询也能成功带出数据（OOB）</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028185210133.png" srcset="/img/loading.gif" lazyload></p>
+<p>接下来把修改密码的用户换成carlos进行攻击即可</p>
+<h3 id="3-实验室：通过模糊请求进行-Web-缓存中毒"><a href="#3-实验室：通过模糊请求进行-Web-缓存中毒" class="headerlink" title="3.实验室：通过模糊请求进行 Web 缓存中毒"></a>3.实验室：通过模糊请求进行 Web 缓存中毒</h3><p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028190224972.png" srcset="/img/loading.gif" lazyload></p>
+<p>首先随意找到一个有Cache机制的静态页面</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028190614281.png" srcset="/img/loading.gif" lazyload></p>
+<p>更改Host，简单测试发现 Host表头能进行覆盖，并能直接出现在响应</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028190852377.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028190903820.png" srcset="/img/loading.gif" lazyload></p>
+<p>接下来思路就是把test换成我们的攻击者服务器，目的是存入自动解析我们危险链接的缓存</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028191120456.png" srcset="/img/loading.gif" lazyload></p>
+<p>忽然发现alert成功执行了但是解不开，又发现主界面也有缓存，用主界面再过一遍即可</p>
+<h3 id="4-实验室：绕过主机头身份验证"><a href="#4-实验室：绕过主机头身份验证" class="headerlink" title="4.实验室：绕过主机头身份验证"></a>4.实验室：绕过主机头身份验证</h3><p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028191753239.png" srcset="/img/loading.gif" lazyload></p>
+<p>没有任何线索，扫描器扫一下 扫出了robots.txt</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028192849439.png" srcset="/img/loading.gif" lazyload></p>
+<p>访问看看</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028193227319.png" srcset="/img/loading.gif" lazyload></p>
+<p>那是不是提示我们本地访问，那就把host改成本地 127.0.0.1失败就localhost</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028193455657.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="5-实验室：基于路由的-SSRF"><a href="#5-实验室：基于路由的-SSRF" class="headerlink" title="5.实验室：基于路由的 SSRF"></a>5.实验室：基于路由的 SSRF</h3><p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028210133033.png" srcset="/img/loading.gif" lazyload></p>
+<p>Host访问test时报错504</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028210802329.png" srcset="/img/loading.gif" lazyload></p>
+<p>说明要么是白名单过滤了，要么是host访问不到东西，</p>
+<p>插入collaborator试试</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028211225088.png" srcset="/img/loading.gif" lazyload></p>
+<p>好像直接对这个网址进行了访问，试试能不能访问内网</p>
+<p>按题目要求访问网段192.168.0.0&#x2F;24，爆破后出现了奇怪的现象，只能爆出404</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028212802880.png" srcset="/img/loading.gif" lazyload></p>
+<p>怀疑是路由没权限？翻到根目录，就成功访问了</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028212853795.png" srcset="/img/loading.gif" lazyload></p>
+<p>跟随跳转，得到新页面</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028212944078.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="6-实验室：通过有缺陷的请求解析实现-SSRF"><a href="#6-实验室：通过有缺陷的请求解析实现-SSRF" class="headerlink" title="6.实验室：通过有缺陷的请求解析实现 SSRF"></a>6.实验室：通过有缺陷的请求解析实现 SSRF</h3><p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028215811423.png" srcset="/img/loading.gif" lazyload></p>
+<p>这次无论尝试随便输入还是注入collaborator都是回显禁止</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028220458548.png" srcset="/img/loading.gif" lazyload></p>
+<p>那我怀疑可能就是要绕过某些WAF</p>
+<p>尝试两条HOST，报错了。尝试非数字端口也失败了</p>
+<p>尝试请求行URL，居然成功了</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028221310097.png" srcset="/img/loading.gif" lazyload></p>
+<p>其实还能想拆行，XFH头覆盖等</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028221535879.png" srcset="/img/loading.gif" lazyload></p>
+<p>重定向到admin，但403了，怀疑是路劲问题</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028221650170.png" srcset="/img/loading.gif" lazyload></p>
+<p>那把绝对路径也换成admin，解决问题</p>
+<h3 id="7-实验室：通过连接状态攻击绕过主机验证"><a href="#7-实验室：通过连接状态攻击绕过主机验证" class="headerlink" title="7.实验室：通过连接状态攻击绕过主机验证"></a>7.实验室：通过连接状态攻击绕过主机验证</h3><p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028223308709.png" srcset="/img/loading.gif" lazyload></p>
+<p>题目的提示很明白了，按照信息做就行，其实就是先发一个请求，趁它记着某些字段的时候做一个SSRF，所以成组，共同发包</p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028223923717.png" srcset="/img/loading.gif" lazyload></p>
+<p>通过这里构造删除的请求<img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028224253595.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/image-20251028225051610.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id><a href="#" class="headerlink" title></a></h2>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web%E5%AE%89%E5%85%A8%E4%B8%93%E9%A2%98/" class="category-chain-item">web安全专题</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HTTP请求头攻击</div>
+      <div>https://i4g5d.github.io/2025/10/28/HTTP主机头攻击/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>i4G5d</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年10月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/10/30/CSRF/" title="SOP,CORS,CSRF混淆区分">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SOP,CORS,CSRF混淆区分</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/10/23/SQLI/" title="SQLI">
+                        <span class="hidden-mobile">SQLI</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

