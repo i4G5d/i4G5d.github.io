@@ -1,0 +1,822 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/mad.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="i4G5d">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="上一篇基于HTTP&#x2F;1.1的请求走私能应付目前一些工作，但现在很多HTTP&#x2F;2，这一篇记录偏向实战的HTTP请求走私2.0实践。  HTTP请求走私2.0前置知识： 到2.0，就要先补一下1.0没细看的知识，在1.0中，我都是抓包后把协议换成HTTP&#x2F;1.1，这里看看为什么   HTTP&#x2F;1.1  引入了长TCP连接，在一次TCP连接后不断开连接，所有HT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP2请求走私">
+<meta property="og:url" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/index.html">
+<meta property="og:site_name" content="i4G5d-Blog">
+<meta property="og:description" content="上一篇基于HTTP&#x2F;1.1的请求走私能应付目前一些工作，但现在很多HTTP&#x2F;2，这一篇记录偏向实战的HTTP请求走私2.0实践。  HTTP请求走私2.0前置知识： 到2.0，就要先补一下1.0没细看的知识，在1.0中，我都是抓包后把协议换成HTTP&#x2F;1.1，这里看看为什么   HTTP&#x2F;1.1  引入了长TCP连接，在一次TCP连接后不断开连接，所有HT">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102163326067.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102163033887.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102191238919.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102193100208.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102211528368.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102211727384.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102213238913.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102214330911.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102235354366.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251103004853840.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251104135642593.png">
+<meta property="article:published_time" content="2025-11-02T07:13:46.000Z">
+<meta property="article:modified_time" content="2025-11-05T15:03:31.652Z">
+<meta property="article:author" content="i4G5d">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i4g5d.github.io/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102163326067.png">
+  
+  
+  
+  <title>HTTP2请求走私 - i4G5d-Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"i4g5d.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":4},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>i4G5d</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HTTP2请求走私"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-11-02 15:13" pubdate>
+          2025年11月2日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          51 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">HTTP2请求走私</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p><em>上一篇<a href="https://i4g5d.github.io/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/">基于HTTP&#x2F;1.1的请求走私</a>能应付目前一些工作，但现在很多HTTP&#x2F;2，这一篇记录偏向实战的HTTP请求走私2.0实践。</em></p>
+</blockquote>
+<h1 id="HTTP请求走私2-0"><a href="#HTTP请求走私2-0" class="headerlink" title="HTTP请求走私2.0"></a>HTTP请求走私2.0</h1><h2 id="前置知识："><a href="#前置知识：" class="headerlink" title="前置知识："></a>前置知识：</h2><blockquote>
+<p>到2.0，就要先补一下1.0没细看的知识，在1.0中，我都是抓包后把协议换成HTTP&#x2F;1.1，这里看看为什么</p>
+</blockquote>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102163326067.png" srcset="/img/loading.gif" lazyload alt="image-20251102163326067"></p>
+<p>HTTP&#x2F;1.1</p>
+<ul>
+<li>引入了长TCP连接，在一次TCP连接后不断开连接，所有HTTP报文都必须是持久的，除非特意加上<code>Connection: close</code>，但实际中很多服务器和浏览器还保留着<code>Connection: keep-alive</code>。</li>
+<li>可以在1个TCP连接中发送多个请求</li>
+<li>引入TE和CL</li>
+</ul>
+<p>HTTP&#x2F;2</p>
+<ul>
+<li><p>基于基于 <strong>二进制帧（binary frame）协议</strong>，不再靠请求头决定请求长度。每个 HTTP&#x2F;2 请求被编码为一组帧（Frame）：</p>
+<ul>
+<li><p>HEADERS frame（包含请求头）</p>
+</li>
+<li><p>DATA frame（包含请求体）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">+-----------------------------------------------+<br>|                 Length (24)                   |<br>+---------------+---------------+---------------+<br>|   Type (8)    |   Flags (8)   |<br>+---------------+---------------+---------------+<br>|R|           Stream Identifier (31)            |<br>+=+=============================================+<br>|                  Frame Payload                |<br>+-----------------------------------------------+<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p>每个帧有明确的长度字段，整个请求都是独立而精致单元，所以HTTP&#x2F;2不存在“歧义的请求结束位置问题”</p>
+</li>
+</ul>
+<h2 id="H2走私原理："><a href="#H2走私原理：" class="headerlink" title="H2走私原理："></a>H2走私原理：</h2><blockquote>
+<p>HTTP&#x2F;2引入强大的二进制frame机制解决传统的HTTP请求走私，理论上，只要网站全程使用 HTTP&#x2F;2，这种机制就意味着攻击者没有机会引入请求走私所需的歧义。但HTTP&#x2F;2 降级现象极其普遍，甚至成为许多流行反向代理服务的默认行为。在某些情况下，甚至没有禁用此功能的选项。H2的所有走私都基于降级（后端解析HTTP&#x2F;1.1）</p>
+</blockquote>
+<h3 id="HTTP-2降级："><a href="#HTTP-2降级：" class="headerlink" title="HTTP&#x2F;2降级："></a>HTTP&#x2F;2降级：</h3><p>由于 HTTP&#x2F;2 仍相对较新，支持它的 Web 服务器通常仍需与仅支持 HTTP&#x2F;1 的传统后端基础设施通信。因此前端会把HTTP&#x2F;2和重写为HTTP&#x2F;1语法，将降级后的请求发给相应后端</p>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102163033887.png" srcset="/img/loading.gif" lazyload alt="image-20251102163033887"></p>
+<p>而后端的响应也会重新翻译成HTTP&#x2F;2返回。而我们的BURP工具使我们能<a target="_blank" rel="noopener" href="https://portswigger.net/burp/documentation/desktop/http2/http2-normalization-in-the-message-editor">使用 HTTP&#x2F;1 语法在消息编辑器中显示 HTTP&#x2F;2 消息</a>。</p>
+<h3 id="H2-CL"><a href="#H2-CL" class="headerlink" title="H2.CL"></a>H2.CL</h3><p>（实验1）</p>
+<ul>
+<li>当某个前端&#x2F;代理把一个 H2 请求<strong>降级为 HTTP&#x2F;1.1</strong>转发给后端时，它必须 <strong>合成</strong>一个 <code>Content-Length</code>，这个合成值应当等于 H2 DATA 的实际字节长度。</li>
+<li>但漏洞就在于前端有时会直接沿用 HTTP&#x2F;2 中 <strong>由客户端在 HEADERS 里包含的 <code>content-length</code> 字段</strong>（即把客户端在 header-block 中写的 content-length 直接复制到转成的 HTTP&#x2F;1.1 请求），而未验证是否与实际DATA帧长度一致</li>
+<li>那攻击者就可以在 H2 header-block 放入<strong>误导性的 content-length</strong>，从而在后端造成解析差异（前端按实际 H2 长度解析并结束请求，后端按被注入的 CL 继续等待&#x2F;读取多字节），导致走私。</li>
+</ul>
+<p>总结一下就是 利用前端按H2解析而后端解析H1.1，然后在前端加上一个CL表头，在降级过程中盲目信任这个CL，后端就会直接以这个为准而不是直接去算长度。</p>
+<p><strong>Front-end (HTTP&#x2F;2)</strong></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs http">:method  POST<br>:path    /example<br>:authority vulnerable-website.com<br>content-type application/x-www-form-urlencoded<br>content-length 0      &lt;-- 攻击者注入CL<br><br><span class="hljs-keyword">GET</span> <span class="hljs-string">/admin</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>10<br><br><span class="language-abnf"><span class="hljs-attribute">x</span><span class="hljs-operator">=</span><span class="hljs-number">1</span></span><br></code></pre></td></tr></table></figure>
+
+<p>后端转化为(<strong>Back-end (HTTP&#x2F;1)</strong>)</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/example</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>0<br><br><span class="language-http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/admin</span> <span class="hljs-meta">HTTP/1.1</span></span><br><span class="language-http"><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com</span><br><span class="language-http"><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>10</span><br><span class="language-http"></span><br><span class="language-http"><span class="language-abnf"><span class="hljs-attribute">x</span><span class="hljs-operator">=</span><span class="hljs-number">1</span>GET / H........</span></span><br><span class="language-abnf"><span class="language-http"></span></span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="H2-TE"><a href="#H2-TE" class="headerlink" title="H2.TE"></a>H2.TE</h3><p>（见实验3）</p>
+<p> <code>transfer-encoding</code>的<code>chunked</code>和HTTP&#x2F;2不兼容，RFC规范会移除注入的TE或者直接拒绝请求。</p>
+<p>但规范只是规范，有些前端不一定做到了，如果把TE降级带到支持HTTP&#x2F;1.1的TE的后端，就会造成H2.TE</p>
+<p><strong>Front-end (HTTP&#x2F;2)</strong></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs http">:method  POST<br>:path    /example<br>:authority vulnerable-website.com<br>content-type application/x-www-form-urlencoded<br>transfer-encoding chunked               &lt;-- 攻击者注入TE<br><br>0<br><br><span class="hljs-keyword">GET</span> <span class="hljs-string">/admin</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Foo</span><span class="hljs-punctuation">: </span>bar<br></code></pre></td></tr></table></figure>
+
+<p><strong>Back-end (HTTP&#x2F;1)</strong></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/example</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br><br><span class="language-nix"><span class="hljs-number">0</span></span><br><span class="language-nix"></span><br><span class="language-nix">GET <span class="hljs-symbol">/admin</span> HTTP<span class="hljs-symbol">/1.1</span></span><br><span class="language-nix"><span class="hljs-params">Host:</span> vulnerable-website.com</span><br><span class="language-nix"><span class="hljs-params">Foo:</span> bar</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="HTTP-2专属向量"><a href="#HTTP-2专属向量" class="headerlink" title="HTTP&#x2F;2专属向量"></a>HTTP&#x2F;2专属向量</h3><blockquote>
+<p>即使网站采取措施防止基本的 H2.CL 或 H2.TE 攻击，例如验证<code>content-length</code>或剥离任何<code>transfer-encoding</code>标头，HTTP&#x2F;2 的二进制格式也使得绕过这些前端措施成为可能。</p>
+</blockquote>
+<ul>
+<li><p>注射CRLF进行走私</p>
+<ul>
+<li><p>Header值注入</p>
+<p>（实验2）</p>
+<p>H1：中可以利用<code>\n</code>的前后端解析差异偷偷发送Header，例如：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Foo</span><span class="hljs-punctuation">: </span>bar\nTransfer-Encoding: chunked<br></code></pre></td></tr></table></figure>
+
+<p>这里前端以为是<code>Foo</code>标头，而后端解析为<code>Foo</code>以及<code>TE</code>两个</p>
+<p>H2:  在二进制不靠<code>\r\n</code>而是靠偏移量</p>
+<table>
+<thead>
+<tr>
+<th>foo</th>
+<th>bar\r\nTransfer-Encoding: chunked</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>这样在重写降级中就会解析为</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Foo</span><span class="hljs-punctuation">: </span>bar<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102191238919.png" srcset="/img/loading.gif" lazyload alt="image-20251102191238919"></p>
+</li>
+<li><p>Header名称注入</p>
+<p>上面CRLF是通过在H2的标头的值里面注入回车，而这个是在键里面注入回车，</p>
+<table>
+<thead>
+<tr>
+<th>foo: bar\r\nTransfer-Encoding: chunked\r\nX:</th>
+<th>ignore</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>后端解析：<strong>后端（HTTP&#x2F;1）</strong></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Foo</span><span class="hljs-punctuation">: </span>bar\r\n<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked\r\n<br><span class="hljs-attribute">X</span><span class="hljs-punctuation">: </span>ignore\r\n<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>伪头部注入</p>
+<p>这里所谓的伪头部就是</p>
+<ul>
+<li><code>:method</code>- 请求方法。</li>
+<li><code>:path</code>- 请求路径。请注意，这包括查询字符串。</li>
+<li><code>:authority</code>- 与 HTTP&#x2F;1<code>Host</code>标头大致相同。</li>
+<li><code>:scheme</code>- 请求方案，通常<code>http</code>或<code>https</code>。</li>
+<li><code>:status</code>- 响应状态码（请求中未使用）。</li>
+</ul>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102193100208.png" srcset="/img/loading.gif" lazyload alt="image-20251102193100208"></p>
+<p>这个总结一下，就是针对每个伪标头，尝试 Host攻击，模糊path绕过访问控制，用method构造模糊路径，schema覆盖造成host攻击（令schema变成<code>https://evil-user.net/poison?</code>，最终拼接可能location：<code>https://evil-user.net/poison?://authority</code>），或者在伪头插入换行</p>
+</li>
+</ul>
+<h2 id="高级利用："><a href="#高级利用：" class="headerlink" title="高级利用："></a>高级利用：</h2><h3 id="1-响应队列投毒"><a href="#1-响应队列投毒" class="headerlink" title="1. 响应队列投毒"></a>1. 响应队列投毒</h3><p>（见实验3）</p>
+<p>​	<strong>原理</strong>简单来说，就是构造魔改包时，让走私部分是一个完整的请求</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs http">POST / HTTP/1.1\r\n<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com\r\n<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>x-www-form-urlencoded\r\n<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>61\r\n<br><span class="hljs-attribute">Transfer-Encoding</span><span class="hljs-punctuation">: </span>chunked\r\n<br>\r\n<br>0\r\n<br>\r\n<br>GET /anything HTTP/1.1\r\n<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com\r\n<br>\r\n<br></code></pre></td></tr></table></figure>
+
+<p>​	这样，前端发过去后，后端会解析出两个请求，也就会返回两个响应。</p>
+<p>​	但前端只有一个等待响应，所以我们走私的响应就会卡在这里</p>
+<p>​	<img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102211528368.png" srcset="/img/loading.gif" lazyload alt="image-20251102211528368"></p>
+<p>​	同一个TCP上，等下一个人发请求时，就会收到走私的请求，而他的请求也会卡在队列中，</p>
+<p>​	这样每个人都会收到上一个人的请求，也就是响应队列污染：见图</p>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102211727384.png" srcset="/img/loading.gif" lazyload alt="image-20251102211727384"></p>
+<p>​	在<strong>攻击</strong>时，为了更容易区分窃取的响应和对您自身请求的响应，请尝试在您发送的两个请求中使用不存在的路径。这样，例如，您自身的请求应该始终收到 404 响应。这样很容易区分出他人的响应。</p>
+<p>​	这个攻击<strong>影响</strong>很大，不仅会泄露受害者敏感信息，还会导致整条TCP连接流浪错位而无法使用</p>
+<h3 id="2-HTTP-2-请求拆分（队列投毒）"><a href="#2-HTTP-2-请求拆分（队列投毒）" class="headerlink" title="2. HTTP&#x2F;2 请求拆分（队列投毒）"></a>2. HTTP&#x2F;2 请求拆分（队列投毒）</h3><p>（实验4）</p>
+<p>在上面的响应队列投毒中，我们通过魔改包将一个请求拆分为两个请求，这个拆分过程是在<code>body</code>里；</p>
+<p>而有一种更<strong>灵活</strong>的方式，就是当启用 HTTP&#x2F;2 降级时，在请求Header中实现这种拆分</p>
+<p>其实就是利用<code>CRLF</code>注入，在Header中走私。 如果我们动不了什么手脚，改不了CL，而后端是CL解析时这个方法就顺便完成了绕过（此时因为不在body注入，所以CL&#x3D;0）</p>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102213238913.png" srcset="/img/loading.gif" lazyload alt="image-20251102213238913"></p>
+<p><strong>！！考虑前端重写</strong></p>
+<p>小细节，例如：H2在降级翻译的时候<code>authority</code>是翻译成<code>Host</code>的，并且一些前端会将新的<code>Host</code>头部信息添加到当前头部列表的末尾。</p>
+<p>所以我们得给翻译部分补上一个HOST，并空出走私部分的HOST。（那其实为了保险，上下都写一遍就行了 ）</p>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102214330911.png" srcset="/img/loading.gif" lazyload alt="image-20251102214330911"></p>
+<p>提一下 这个方法是通用的 ，我们既可以构造相应队列投毒，也可以走私拼接，引导受害者访问我们的请求包</p>
+<h3 id="3-HTTP请求隧道（非走私）"><a href="#3-HTTP请求隧道（非走私）" class="headerlink" title="3. HTTP请求隧道（非走私）"></a>3. HTTP请求隧道（非走私）</h3><p>至此，我们介绍的请求走私攻击都有一个前提：前端服务器与后端服务器之间的相同连接用于处理多个请求。下面就讲讲即使不重用连接的攻击手段。<br>当服务器只允许来自同一IP或同一客户端的请求重用连接，其他人根本不会重用连接。这时就没有明显的办法去影响其他用户的流量。尽管攻击面被缩小了，但仍然能做出一些危险的行为。以下介绍泄露请求头和web缓存投毒。但是再次之前，先讲讲如何确认请求非同步隧道的存在。</p>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251102235354366.png" srcset="/img/loading.gif" lazyload alt="image-20251102235354366"></p>
+<p>总的来看HTTP请求走私无非就是三个作用，一个能巧妙绕过前端的一些障碍，一个是强迫受害者被我们的魔改包带着走（请求包被我们控制），一个是响应队列投毒获取敏感信息</p>
+<p>下面就讲讲即使不重用连接的攻击手段。<strong>请求隧道攻击</strong>就是攻击者把任意非 HTTP 的流量（或其它协议&#x2F;命令与数据）封装在看起来像合法的 HTTP 请求或响应里，通过允许 HTTP 的通道（比如 Web 代理、HTTP 端口、企业防火墙）在受限网络中传输这些数据，从而绕过策略限制、建立 C2 通道或实现数据外泄。</p>
+<ul>
+<li><p><strong>请求隧道泄露内部Header</strong>（看新加的请求头）</p>
+<p>在H1的揭露重写Header中，我们用请求走私，把同一TCP上的受害者的请求包通过能反射的参数带出来了。但当服务器严格限制TCP链接机制的时候，H2降级的翻译环节给了机会（不是传统的魔改成两个包，而是精心构造一个包带出数据）</p>
+<p>构造一个无用Header，使得H2翻译成H1的过程中，前端会将我们注入的内容视为请求头的一部分，因此会在末尾<code>comment=</code>字符串之后添加新的请求头。到后端则会将该<code>\r\n\r\n</code>视为请求头的结尾。该<code>comment=</code>字符串及其内部请求头会被视为请求体的一部分。最终会生成一个<code>comment</code>参数，其值即为内部请求头。</p>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251103004853840.png" srcset="/img/loading.gif" lazyload alt="image-20251103004853840"></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/comment</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>vulnerable-website.com<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>200<br><br><span class="language-ini"><span class="hljs-attr">comment</span>=X-Internal-Header: secretContent-Length: <span class="hljs-number">3</span></span><br><span class="language-ini"><span class="hljs-attr">x</span>=<span class="hljs-number">1</span></span><br><span class="language-ini"></span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>用<code>Head</code>进行非盲请求隧道传输</strong>（看响应的BODY）</p>
+<p>（实验5）</p>
+<p>前端在接后端响应时有两种常见策略：</p>
+<ul>
+<li><strong>读取并转发全部后端发来的字节</strong> → 你可能会在主响应体里看到“嵌套的”被隧道请求的响应（可见的隧道）；</li>
+<li><strong>只读 Content-Length 指定的字节后停止读取</strong> → 剩余字节保留在 front↔back 的连接上（队列里），你看不到（盲隧道）。</li>
+</ul>
+<p>可以用<code>HEAD</code>请求使这些漏洞不再是盲请求。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs http">:method HEAD<br>:path   /example<br>:authority  vulnerable-website.com<br>foo <br>    bar\r\n<br>    \r\n<br>    GET /tunnelled HTTP/1.1\r\n<br>    Host: vulnerable-website.com\r\n<br>    X: x<br></code></pre></td></tr></table></figure>
+
+<p>HEAD请求方式就是<strong>仅返回响应头，无响应体</strong>的GET，而请求头中肯定有一个<code>content-length</code>头，如果中间件信任了这个CL去读取隧道里的字节，就会部分可见第二个请求包</p>
+<p>要成功利用，需要把两边（HEAD 的 CL 与 tunnelled response 的长度）“对齐”到一个能让你看到有用数据但不导致明显阻塞的状态 —— 这就是“平衡”。CL长了会等不到相应导致阻塞，CL短了会导致信息看不全。这里是一些办法：</p>
+<ul>
+<li>将<code>HEAD</code>请求指向不同的端点，根据需要返回更长或更短的资源。</li>
+<li>如果某个页面能反射输入，调整输入即可</li>
+<li>若HEAD请求的CL过长，那我们隧道请求中使用反射输入来注入任意字符，是队列中的响应更长</li>
+</ul>
+</li>
+<li><p><strong>请求隧道进行 Web 缓存投毒</strong></p>
+<p>(实验6)</p>
+<p>其实可以想到，因为没有和受害者同一个隧道的协助，我们想攻击只能借助其他手段，例如Caceh投毒。</p>
+<p>非盲隧道技术将一个响应的头部信息与另一个响应的主体信息混合搭配。如果响应主体中包含未编码的用户输入，您或许可以利用这种特性，在浏览器通常不会执行代码的情况下，进行反射型 XSS 攻击。（通常找目录下解析js文件的目录）</p>
+<p>通常去找响应的<code>content-type</code>是<code>text/html</code>，在找一个响应body能直接反射xss而不编码的（HEAD法混合）</p>
+<p><img src="/2025/11/02/HTTP2%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/image-20251104135642593.png" srcset="/img/loading.gif" lazyload alt="image-20251104135642593"></p>
+</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web%E5%AE%89%E5%85%A8%E4%B8%93%E9%A2%98/" class="category-chain-item">web安全专题</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HTTP2请求走私</div>
+      <div>https://i4g5d.github.io/2025/11/02/HTTP2请求走私/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>i4G5d</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年11月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/10/31/HTTP1%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/" title="HTTP1请求走私">
+                        <span class="hidden-mobile">HTTP1请求走私</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
