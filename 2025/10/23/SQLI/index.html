@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/23/SQLI/image-20251024195214666.png">
 <meta property="article:published_time" content="2025-10-23T09:06:43.000Z">
-<meta property="article:modified_time" content="2025-10-24T12:48:54.899Z">
+<meta property="article:modified_time" content="2025-11-06T08:32:05.320Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png">
@@ -415,7 +415,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>  <br></code></pre></td></tr></table></figure>
 </li>
 <li><p>查库名</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">-1</span><span class="hljs-string">&#x27; union select 1,2,database() --+  </span><br><span class="hljs-string">id=-1&#x27;</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,group_concat(schema_name) <span class="hljs-keyword">from</span> information_schema.schemata <span class="hljs-comment">--+</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">-1</span><span class="hljs-string">&#x27; union select 1,2,database() --+  </span><br><span class="hljs-string">id=-1&#x27;</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,group_concat(schema_name），<span class="hljs-number">3</span> <span class="hljs-keyword">from</span> information_schema.schemata <span class="hljs-comment">--+</span><br></code></pre></td></tr></table></figure>
 
 <details>     <summary>**关于将id值设置为0或者负数的解释**</summary>          
     由于我们的语句是插入到原有语句后面，这样就会出现两个SQL语句同时执行，由于SQL查询会默认返回一行数据，所以我们插入的第二行语句的结果就不会被返回，只会返回原有的SQL语句的查询内容。 要让数据库查询我们插入的语句，需要让原有SQL语句产生查询错误，注意：查询错误不是语法错误，查询错误只会返回空，不会让语句报错。 所以我们可以使id=0或id=-1，零或负数不会被用作id值，它插入进去一定导致原有SQL语句查询结果为空，我们插入的SQL语句的结果就会被返回。 </details>
@@ -531,7 +531,9 @@
 <p>​	<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/268428">sql注入绕WAF的N种姿势</a></p>
 <p>​	<a target="_blank" rel="noopener" href="https://blog.csdn.net/l1028386804/article/details/85869703">渗透之——SQL注入绕过技术总结</a></p>
 <p>​	<a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/261524.html">珂技系列之一篇就够了——mysql注入</a></p>
-<h2 id="自动化：sqlmap"><a href="#自动化：sqlmap" class="headerlink" title="自动化：sqlmap"></a>自动化：sqlmap</h2><p>​	<a target="_blank" rel="noopener" href="https://blog.csdn.net/shanguicsdn111/article/details/142088764">SQLmap使用教程</a><img src="/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="自动化：sqlmap"><a href="#自动化：sqlmap" class="headerlink" title="自动化：sqlmap"></a>自动化：sqlmap</h2><p>​	<a target="_blank" rel="noopener" href="https://blog.csdn.net/shanguicsdn111/article/details/142088764">SQLmap使用教程</a></p>
+<p>​	<a target="_blank" rel="noopener" href="https://sqlmap.org/">官方网站</a></p>
+<p><img src="/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png" srcset="/img/loading.gif" lazyload></p>
 <p>这里着重提一下，用sqlmap绕过WAF</p>
 <p>SQLmap内置了很多绕过脚本，在 &#x2F;usr&#x2F;share&#x2F;sqlmap&#x2F;tamper&#x2F; 目录下：</p>
 <p><img src="/2025/10/23/SQLI/image-20251024195214666.png" srcset="/img/loading.gif" lazyload></p>
