@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>CVE_BLOG</title>
+    <link href="/2025/11/13/CVE-BLOG/"/>
+    <url>/2025/11/13/CVE-BLOG/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>i4g5d填上小白网安履历的第一步，获取一个个人CVE编号（开源且很捡漏项目，水洞，仅作为一次记录，大佬勿喷😭）</p></blockquote><h1 id="1-CVE介绍"><a href="#1-CVE介绍" class="headerlink" title="1. CVE介绍"></a>1. CVE介绍</h1><ul><li>CVE的全称是“Common Vulnerabilities and Exposures”翻译成中文就是“公共漏洞和披露”可以把它理解成一个被安全从业者认可的漏洞字典，大家可以通过编号在这里查找不同应用或系统的漏洞信息。当然很多安全企业或国家机构也都会引用CVE作为其漏洞库，比如美国国家漏洞数据库（NVD）。</li><li>CNA的全称是“CVE Numbering Authority”中文可以理解为“CVE编号授权机构”顾名思义就是这些CNA有权限分配和管理CVE编号，截止目前为止，共有85个CNA，覆盖14个国家。CNA包括供应商（比如苹果、谷歌等公司）和项目发起机构，漏洞研究人员、国家和行业CERT以及漏洞奖励计划组织。这些CNA可以构建CVE列表，并分配列表中的CVE编号和录入相关信息。</li></ul><h1 id="2-CVE申请"><a href="#2-CVE申请" class="headerlink" title="2.CVE申请"></a>2.CVE申请</h1><h2 id="2-1-VulDB"><a href="#2-1-VulDB" class="headerlink" title="2.1 VulDB"></a>2.1 <a href="https://vuldb.com/?id.add">VulDB</a></h2><p>VulDB的申请方式非常简单，很方便，也是我的第一个CVE的获取渠道</p><p><img src="/2025/11/13/CVE-BLOG/image-20251113231353634.png"></p><ul><li>Vendor：厂商名称。(填写资产所属的厂商，小开源项目就填写作者名字&#x2F;有些是填项目链接)</li><li>product：产品名称。（这里也是可以直接填名字）</li><li>class：漏洞类型</li></ul><p><img src="/2025/11/13/CVE-BLOG/image-20251113231725872.png"></p><p>下面就是对漏洞进行简单的说明，现在Description进行简单的描述，下面写一个具体POC&#x2F;Exploit的链接，可以是一个公开文档，也可以是github公开项目，也可以是个人博客。</p><p>发送后VulDB会发送邮件表示成功收到</p><p><img src="/2025/11/13/CVE-BLOG/image-20251113232015769.png"></p><p>接下来就是漫长的等待，两到三周成功分配</p><p><img src="/2025/11/13/CVE-BLOG/image-20251113232105891.png"></p><p>随后再主页能搜索到编号</p><h2 id="2-2-cveform"><a href="#2-2-cveform" class="headerlink" title="2.2 cveform"></a>2.2 <a href="https://cveform.mitre.org/">cveform</a></h2><p>这个平台原本说非CNA的洞在这交快，但我在两个平台都申请了同一个CVE（理论上不可以，我也很后悔），还是VulDB更加简单更快</p><p>选择申请CVE ID</p><p><img src="/2025/11/13/CVE-BLOG/image-20251113232821826.png"></p><p>后面填的信息更复杂了，我也不明白填的这么详细审核为什么还这么慢</p><p><img src="/2025/11/13/CVE-BLOG/image-20251113232913789.png"></p><ul><li><strong>Vendor of the product(s)</strong> ：我填了项目连接，但也许直接填作者名字也可以</li><li><strong>Attack type</strong>：分为<code>content-dependent</code>,<code>local</code>,<code>remote</code>,<code>physical</code></li><li><strong>Impact</strong>：漏洞的影响，这种拿不准就把报告甩给ai问</li></ul><p>再下面的漏洞介绍填的都大差不差，借用一下别人的教程</p><p><img src="/2025/11/13/CVE-BLOG/15233541202833.png"></p><p>后面官方会给你发个邮件</p><p><img src="/2025/11/13/CVE-BLOG/image-20251113233441684.png"></p><p>依旧漫长等待（waiting）网上都说1.2天就下来了，不知道为什么等了2周还没来</p><h1 id="3-Next"><a href="#3-Next" class="headerlink" title="3.Next"></a>3.Next</h1><p>拿到了水洞CVE，希望后面能挖到大厂CVE。</p><p>后面就是学习资产搜集，尝试挖一下SRC</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>-渗透/挖洞/攻击</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Proxy&amp;Connect&amp;shell</title>
     <link href="/2025/11/06/shell/"/>
     <url>/2025/11/06/shell/</url>
