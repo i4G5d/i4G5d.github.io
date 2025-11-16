@@ -19,30 +19,21 @@
   <meta name="author" content="i4G5d">
   <meta name="keywords" content="">
   
-    <meta name="description" content="i4g5d填上小白网安履历的第一步，获取一个个人CVE编号（开源且很捡漏项目，水洞，仅作为一次记录，大佬勿喷😭）  1. CVE介绍 CVE的全称是“Common Vulnerabilities and Exposures”翻译成中文就是“公共漏洞和披露”可以把它理解成一个被安全从业者认可的漏洞字典，大家可以通过编号在这里查找不同应用或系统的漏洞信息。当然很多安全企业或国家机构也都会引用CVE">
+    <meta name="description" content="SRC 挖掘流程(通用 + 公益 SRC + 教育 SRC) 阶段 0：确认合法范围（非常重要）  公益 SRC（如公益组织、社区项目）、教育 SRC（高校、科研单位）通常设有公开 SRC &#x2F; VDP 范围。 只有在允许范围内的域名 &#x2F; 系统才可以进行主动测试（端口扫描、指纹探测、漏洞验证）。 没写范围的，默认【只能被动信息收集】。   1：厂商信息与一级资产收集（OSINT）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CVE_BLOG">
-<meta property="og:url" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/index.html">
+<meta property="og:title" content="SRC">
+<meta property="og:url" content="https://i4g5d.github.io/2025/11/15/SRC/index.html">
 <meta property="og:site_name" content="i4G5d-Blog">
-<meta property="og:description" content="i4g5d填上小白网安履历的第一步，获取一个个人CVE编号（开源且很捡漏项目，水洞，仅作为一次记录，大佬勿喷😭）  1. CVE介绍 CVE的全称是“Common Vulnerabilities and Exposures”翻译成中文就是“公共漏洞和披露”可以把它理解成一个被安全从业者认可的漏洞字典，大家可以通过编号在这里查找不同应用或系统的漏洞信息。当然很多安全企业或国家机构也都会引用CVE">
+<meta property="og:description" content="SRC 挖掘流程(通用 + 公益 SRC + 教育 SRC) 阶段 0：确认合法范围（非常重要）  公益 SRC（如公益组织、社区项目）、教育 SRC（高校、科研单位）通常设有公开 SRC &#x2F; VDP 范围。 只有在允许范围内的域名 &#x2F; 系统才可以进行主动测试（端口扫描、指纹探测、漏洞验证）。 没写范围的，默认【只能被动信息收集】。   1：厂商信息与一级资产收集（OSINT）">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/image-20251113231353634.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/image-20251113231725872.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/image-20251113232015769.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/image-20251113232105891.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/image-20251113232821826.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/image-20251113232913789.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/15233541202833.png">
-<meta property="og:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/image-20251113233441684.png">
-<meta property="article:published_time" content="2025-11-13T15:03:33.000Z">
-<meta property="article:modified_time" content="2025-11-13T15:41:12.780Z">
+<meta property="article:published_time" content="2025-11-15T07:43:56.000Z">
+<meta property="article:modified_time" content="2025-11-15T14:31:17.727Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://i4g5d.github.io/2025/11/13/CVE-BLOG/image-20251113231353634.png">
   
   
   
-  <title>CVE_BLOG - i4G5d-Blog</title>
+  <title>SRC - i4G5d-Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -208,7 +199,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="CVE_BLOG"></span>
+            <span id="subtitle" data-typed-text="SRC"></span>
           
         </div>
 
@@ -219,8 +210,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-11-13 23:03" pubdate>
-          2025年11月13日 晚上
+        <time datetime="2025-11-15 15:43" pubdate>
+          2025年11月15日 下午
         </time>
       </span>
     
@@ -231,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1k 字
+          1.8k 字
         
       </span>
     
@@ -242,7 +233,7 @@
         
         
         
-          9 分钟
+          16 分钟
         
       </span>
     
@@ -279,49 +270,124 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">CVE_BLOG</h1>
+            <h1 id="seo-header">SRC</h1>
             
             
               <div class="markdown-body">
                 
-                <blockquote>
-<p>i4g5d填上小白网安履历的第一步，获取一个个人CVE编号（开源且很捡漏项目，水洞，仅作为一次记录，大佬勿喷😭）</p>
+                <h1 id="SRC-挖掘流程-通用-公益-SRC-教育-SRC"><a href="#SRC-挖掘流程-通用-公益-SRC-教育-SRC" class="headerlink" title="SRC 挖掘流程(通用 + 公益 SRC + 教育 SRC)"></a>SRC 挖掘流程<code>(通用 + 公益 SRC + 教育 SRC)</code></h1><blockquote>
+<p><strong>阶段 0：确认合法范围（非常重要）</strong></p>
+<ul>
+<li>公益 SRC（如公益组织、社区项目）、教育 SRC（高校、科研单位）通常设有公开 <strong>SRC &#x2F; VDP 范围</strong>。</li>
+<li><strong>只有在允许范围内的域名 &#x2F; 系统才可以进行主动测试（端口扫描、指纹探测、漏洞验证）</strong>。</li>
+<li>没写范围的，默认【只能被动信息收集】。</li>
+</ul>
 </blockquote>
-<h1 id="1-CVE介绍"><a href="#1-CVE介绍" class="headerlink" title="1. CVE介绍"></a>1. CVE介绍</h1><ul>
-<li>CVE的全称是“Common Vulnerabilities and Exposures”翻译成中文就是“公共漏洞和披露”可以把它理解成一个被安全从业者认可的漏洞字典，大家可以通过编号在这里查找不同应用或系统的漏洞信息。当然很多安全企业或国家机构也都会引用CVE作为其漏洞库，比如美国国家漏洞数据库（NVD）。</li>
-<li>CNA的全称是“CVE Numbering Authority”中文可以理解为“CVE编号授权机构”顾名思义就是这些CNA有权限分配和管理CVE编号，截止目前为止，共有85个CNA，覆盖14个国家。CNA包括供应商（比如苹果、谷歌等公司）和项目发起机构，漏洞研究人员、国家和行业CERT以及漏洞奖励计划组织。这些CNA可以构建CVE列表，并分配列表中的CVE编号和录入相关信息。</li>
-</ul>
-<h1 id="2-CVE申请"><a href="#2-CVE申请" class="headerlink" title="2.CVE申请"></a>2.CVE申请</h1><h2 id="2-1-VulDB"><a href="#2-1-VulDB" class="headerlink" title="2.1 VulDB"></a>2.1 <a target="_blank" rel="noopener" href="https://vuldb.com/?id.add">VulDB</a></h2><p>VulDB的申请方式非常简单，很方便，也是我的第一个CVE的获取渠道</p>
-<p><img src="/2025/11/13/CVE-BLOG/image-20251113231353634.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="1：厂商信息与一级资产收集（OSINT）"><a href="#1：厂商信息与一级资产收集（OSINT）" class="headerlink" title="1：厂商信息与一级资产收集（OSINT）"></a>1：厂商信息与一级资产收集（OSINT）</h2><h3 id="1-1-通过工商信息类平台获取厂商基本资产"><a href="#1-1-通过工商信息类平台获取厂商基本资产" class="headerlink" title="1.1 通过工商信息类平台获取厂商基本资产"></a>1.1 通过工商信息类平台获取厂商基本资产</h3><p> OSINT 的第一步：</p>
 <ul>
-<li>Vendor：厂商名称。(填写资产所属的厂商，小开源项目就填写作者名字&#x2F;有些是填项目链接)</li>
-<li>product：产品名称。（这里也是可以直接填名字）</li>
-<li>class：漏洞类型</li>
+<li>天眼查 &#x2F; 企查查 &#x2F; 爱企查 &#x2F; 小蓝本<br>用途：<br>→ 获取公司主体名称<br>→ 获取公司注册的主要官网<strong>域名</strong><br>→ 获取实际控制人、关联企业（用于判断是否需要把子公司域名纳入资产）</li>
 </ul>
-<p><img src="/2025/11/13/CVE-BLOG/image-20251113231725872.png" srcset="/img/loading.gif" lazyload></p>
-<p>下面就是对漏洞进行简单的说明，现在Description进行简单的描述，下面写一个具体POC&#x2F;Exploit的链接，可以是一个公开文档，也可以是github公开项目，也可以是个人博客。</p>
-<p>发送后VulDB会发送邮件表示成功收到</p>
-<p><img src="/2025/11/13/CVE-BLOG/image-20251113232015769.png" srcset="/img/loading.gif" lazyload></p>
-<p>接下来就是漫长的等待，两到三周成功分配</p>
-<p><img src="/2025/11/13/CVE-BLOG/image-20251113232105891.png" srcset="/img/loading.gif" lazyload></p>
-<p>随后再主页能搜索到编号</p>
-<h2 id="2-2-cveform"><a href="#2-2-cveform" class="headerlink" title="2.2 cveform"></a>2.2 <a target="_blank" rel="noopener" href="https://cveform.mitre.org/">cveform</a></h2><p>这个平台原本说非CNA的洞在这交快，但我在两个平台都申请了同一个CVE（理论上不可以，我也很后悔），还是VulDB更加简单更快</p>
-<p>选择申请CVE ID</p>
-<p><img src="/2025/11/13/CVE-BLOG/image-20251113232821826.png" srcset="/img/loading.gif" lazyload></p>
-<p>后面填的信息更复杂了，我也不明白填的这么详细审核为什么还这么慢</p>
-<p><img src="/2025/11/13/CVE-BLOG/image-20251113232913789.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="1-2-从域名反查相关资产"><a href="#1-2-从域名反查相关资产" class="headerlink" title="1.2  从域名反查相关资产"></a>1.2  从域名反查相关资产</h3><ul>
+<li>whois &#x2F; 站长工具（查看主域名、DNS、注册邮箱等）</li>
+<li>根据 <strong>注册邮箱</strong>、<strong>注册者名称</strong> 反查其他域名（一些厂商会使用同一个邮箱注册多个域名）</li>
+</ul>
+<p><strong>得到结果：初步的「一级域名列表」</strong></p>
+<h2 id="2：二级-三级域名收集"><a href="#2：二级-三级域名收集" class="headerlink" title="2：二级 &amp; 三级域名收集"></a>2：二级 &amp; 三级域名收集</h2><h3 id="2-1-被动子域名收集（首选，安全，不引发告警）"><a href="#2-1-被动子域名收集（首选，安全，不引发告警）" class="headerlink" title="2.1 被动子域名收集（首选，安全，不引发告警）"></a>2.1 被动子域名收集（首选，安全，不引发告警）</h3><ul>
+<li>OneForAll：全面（国内资源丰富）</li>
+<li>subfinder✨快</li>
+<li>amass passive✨补充国外源</li>
+<li>连证书透明度（crt.sh）也能捞到大量子域</li>
+<li>FOFA &#x2F; Shodan &#x2F; ZoomEye（后面解释）</li>
+</ul>
+<p>这一步是「不主动攻击、不发请求，只是查公开信息」。</p>
+<h3 id="2-2-主动子域名爆破（视-SRC-范围而定）"><a href="#2-2-主动子域名爆破（视-SRC-范围而定）" class="headerlink" title="2.2  主动子域名爆破（视 SRC 范围而定）"></a>2.2  主动子域名爆破（视 SRC 范围而定）</h3><ul>
+<li>子域名收割机</li>
+<li>Layer 子域名爆破</li>
+<li>Goby 内置爆破</li>
+<li>Amass 的 active mode</li>
+</ul>
+<p>主动爆破属于 <strong>主动扫描</strong>，如果 SRC 范围没有允许扫描，会存在违规风险。<br> （公益 SRC &#x2F; 高校 SRC 一般允许轻扫描，但你一定要看政策）</p>
+<h2 id="3-资产测绘与-IP-收集"><a href="#3-资产测绘与-IP-收集" class="headerlink" title="3. 资产测绘与 IP 收集"></a>3. 资产测绘与 IP 收集</h2><p>你会看到很多工具：“goby、fscan、xray、masscan、nmap”等</p>
+<p>但你必须搞清楚它们的功能位置和顺序。</p>
+<h3 id="3-1-子域名转-IP"><a href="#3-1-子域名转-IP" class="headerlink" title="3.1 子域名转 IP"></a>3.1 子域名转 IP</h3><ul>
+<li>DNS 解析</li>
+<li>工具自带（OneForAll 自动解析）</li>
+</ul>
+<p>得到：<strong>域名 -&gt; IP 列表</strong></p>
+<h3 id="3-2-发现网段"><a href="#3-2-发现网段" class="headerlink" title="3.2 发现网段"></a>3.2 发现网段</h3><p>你说的站长工具、whois 查网段没问题，但要注意：</p>
 <ul>
-<li><strong>Vendor of the product(s)</strong> ：我填了项目连接，但也许直接填作者名字也可以</li>
-<li><strong>Attack type</strong>：分为<code>content-dependent</code>,<code>local</code>,<code>remote</code>,<code>physical</code></li>
-<li><strong>Impact</strong>：漏洞的影响，这种拿不准就把报告甩给ai问</li>
+<li>不是所有同网段的 IP 都属于目标厂商</li>
+<li>不能因为在同网段就主动扫描整个 C 段<br>（这个是很多初学者会违规的地方）</li>
 </ul>
-<p>再下面的漏洞介绍填的都大差不差，借用一下别人的教程</p>
-<p><img src="/2025/11/13/CVE-BLOG/15233541202833.png" srcset="/img/loading.gif" lazyload></p>
-<p>后面官方会给你发个邮件</p>
-<p><img src="/2025/11/13/CVE-BLOG/image-20251113233441684.png" srcset="/img/loading.gif" lazyload></p>
-<p>依旧漫长等待（waiting）网上都说1.2天就下来了，不知道为什么等了2周还没来</p>
-<h1 id="3-Next"><a href="#3-Next" class="headerlink" title="3.Next"></a>3.Next</h1><p>拿到了水洞CVE，希望后面能挖到大厂CVE。</p>
-<p>后面就是学习资产搜集，尝试挖一下SRC</p>
+<h3 id="3-3-Shodan-FOFA-微步在线"><a href="#3-3-Shodan-FOFA-微步在线" class="headerlink" title="3.3   Shodan &#x2F; FOFA &#x2F; 微步在线"></a>3.3   Shodan &#x2F; FOFA &#x2F; 微步在线</h3><p>它记录了全球互联网上所有开放端口的服务信息、指纹、证书、域名、内容特征，并让你能按任何特征搜索。</p>
+<p>这些网站是已经帮忙扫描过全球IP，我们是从他们的数据库中搜索已经暴露在网上的真实存货资产</p>
+<details>
+    <summary>它们提供的信息包括：</summary>
+
+
+<ul>
+<li><p>暴露的端口</p>
+</li>
+<li><p>服务&#x2F;Web 指纹</p>
+</li>
+<li><p>Banner 信息</p>
+</li>
+<li><p>证书信息</p>
+</li>
+<li><p>厕所后台</p>
+</li>
+<li><p>API</p>
+</li>
+<li><p>暴露的后台登录界面</p>
+</li>
+<li><p>开发系统</p>
+</li>
+<li><p>物联网设备</p>
+</li>
+<li><p>老旧业务系统</p>
+<p><strong>举例：你查某高校主域名，然后 FOFA 搜公司名&#x2F;证书&#x2F;子域名，即可自动发现：</strong></p>
+<ul>
+<li>老旧 OA 系统</li>
+<li>宿舍管理系统</li>
+<li>图书馆系统</li>
+<li>内部开发系统曾经误暴露的测试域名</li>
+<li>历史暴露端口</li>
+<li>旧 IP 上已不再使用的后台界面</li>
+<li>误暴露的文件服务器、KMS、VPN、Zabbix、Jenkins、Nacos 等</li>
+</ul>
+<p>这些都是 SRC 挖掘时最容易出洞的资产来源。</p>
+</li></ul></details>
+
+<p>⚠ <strong>这比你自己扫安全得多、全面得多，因为它们属于“被动查询”，不是你自己在发扫描包。</strong></p>
+<blockquote>
+<p>到这里总结一下要搜集的东西 1.众多子域名（挖掘web逻辑漏洞）2. 域名转IP（服务端，框架漏洞，未授权访问）3.ip再反查或查绑定域名，不仅能做补充，还有捡漏的可能</p>
+<p>域名告诉你哪里可能有 Web，IP 告诉你哪里还藏着没人注意的服务。<br>而“IP 反查域名”告诉你：厂商真正的攻击面，比你想象的大得多。</p>
+</blockquote>
+<h2 id="4-端口扫描-指纹识别（属于主动探测）"><a href="#4-端口扫描-指纹识别（属于主动探测）" class="headerlink" title="4. 端口扫描 &amp; 指纹识别（属于主动探测）"></a>4. 端口扫描 &amp; 指纹识别（属于主动探测）</h2><p>大致的工具顺序应该这样用：</p>
+<h3 id="4-1-masscan（快速扫描大范围）"><a href="#4-1-masscan（快速扫描大范围）" class="headerlink" title="4.1 masscan（快速扫描大范围）"></a>4.1 masscan（快速扫描大范围）</h3><ul>
+<li>快速找开放端口</li>
+<li>高速但危险，不建议直接扫公网上大量 IP，容易打爆厂商服务</li>
+</ul>
+<h3 id="4-2-nmap（细致扫描）"><a href="#4-2-nmap（细致扫描）" class="headerlink" title="4.2 nmap（细致扫描）"></a>4.2 nmap（细致扫描）</h3><ul>
+<li>对 masscan 发现的端口做指纹识别</li>
+<li>服务版本、操作系统识别等</li>
+</ul>
+<h3 id="4-3-goby-fscan-xray-pocsuite（综合指纹-弱密码-部分漏洞探测）"><a href="#4-3-goby-fscan-xray-pocsuite（综合指纹-弱密码-部分漏洞探测）" class="headerlink" title="4.3 goby&#x2F;fscan&#x2F;xray&#x2F;pocsuite（综合指纹+弱密码+部分漏洞探测）"></a>4.3 goby&#x2F;fscan&#x2F;xray&#x2F;pocsuite（综合指纹+弱密码+部分漏洞探测）</h3><p>这些是高阶资产测绘工具，功能包括：</p>
+<ul>
+<li>自动识别 Web 服务</li>
+<li>自动识别后台路径</li>
+<li>自动识别框架（Spring、ThinkPHP、Struts 等）</li>
+<li>自动识别版本&#x2F;组件</li>
+<li>判断是否存在历史已知漏洞</li>
+</ul>
+<p>这一步是从资产转向漏洞的桥梁。</p>
+<h2 id="5：漏洞验证（手工为主）"><a href="#5：漏洞验证（手工为主）" class="headerlink" title="5：漏洞验证（手工为主）"></a>5：漏洞验证（手工为主）</h2><p>有了目标资产后：</p>
+<ol>
+<li>选看起来容易的系统（后台、老框架、测试环境）</li>
+<li>尝试弱密码、逻辑漏洞、越权、任意文件读取、SQL 注入、XSS etc</li>
+<li>使用 xray、Burp 等工具辅助分析</li>
+<li>结合你学过的常见漏洞开始挖洞</li>
+</ol>
 
                 
               </div>
@@ -360,8 +426,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>CVE_BLOG</div>
-      <div>https://i4g5d.github.io/2025/11/13/CVE-BLOG/</div>
+      <div>SRC</div>
+      <div>https://i4g5d.github.io/2025/11/15/SRC/</div>
     </div>
     <div class="license-meta">
       
@@ -373,7 +439,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2025年11月13日</div>
+          <div>2025年11月15日</div>
         </div>
       
       
@@ -405,9 +471,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/11/15/SRC/" title="SRC">
+                      <a href="/2025/11/15/Search-grammar/" title="Search_grammar">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SRC</span>
+                        <span class="hidden-mobile">Search_grammar</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -415,8 +481,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/11/06/shell/" title="Proxy&amp;Connect&amp;shell">
-                        <span class="hidden-mobile">Proxy&amp;Connect&amp;shell</span>
+                      <a href="/2025/11/13/CVE-BLOG/" title="CVE_BLOG">
+                        <span class="hidden-mobile">CVE_BLOG</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
