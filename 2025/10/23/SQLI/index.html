@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/10/23/SQLI/image-20251024195214666.png">
 <meta property="article:published_time" content="2025-10-23T09:06:43.000Z">
-<meta property="article:modified_time" content="2025-11-16T14:20:21.939Z">
+<meta property="article:modified_time" content="2025-11-18T14:59:19.671Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/10/23/SQLI/80d2a4ffaa0cb7d7d1db82770ccdf1cf.png">
@@ -459,7 +459,7 @@
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">id=<span class="hljs-number">1</span> and <span class="hljs-built_in">if</span>(       <span class="hljs-selector-tag">select</span> <span class="hljs-built_in">count</span>(*) 查个数         ,<span class="hljs-built_in">sleep</span>(<span class="hljs-number">2</span>),<span class="hljs-number">1</span>)<br>id=<span class="hljs-number">1</span> and <span class="hljs-built_in">if</span>(       <span class="hljs-selector-tag">select</span> <span class="hljs-built_in">length</span>() limit 查长度     ,<span class="hljs-built_in">sleep</span>(<span class="hljs-number">5</span>),<span class="hljs-number">1</span> )<br>id=<span class="hljs-number">1</span> and <span class="hljs-built_in">if</span>(       <span class="hljs-built_in">substr</span>(  (<span class="hljs-selector-tag">select</span> limit语句)  <span class="hljs-number">1</span>,<span class="hljs-number">1</span>)  查字符     ， <span class="hljs-built_in">sleep</span>(<span class="hljs-number">5</span>),<span class="hljs-number">1</span> )<br></code></pre></td></tr></table></figure>
 
 <p>除了sleep还有一些常用可造成延迟的函数</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mysql">benchmark(1000000, SHA1(&#x27;test&#x27;))  #重复 100 万次 SHA1 哈希计算，会产生明显延迟。                         循环<br>SELECT COUNT(*) FROM large_table GROUP BY every_column  #利用扫描很大数据造成CPU产生计算时差             扫描<br>LOAD_FILE()    #若能出网，访问无效文件，产生网络超时                                                     超时<br></code></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mysql">benchmark(1000000, SHA1(&#x27;test&#x27;))  #重复 100 万次 SHA1 哈希计算，会产生明显延迟。                         循环<br>SELECT COUNT(*) FROM large_table GROUP BY every_column  #利用扫描很大数据造成CPU产生计算时差             扫描<br>LOAD_FILE()    #访问本地无效文件，产生网络超时                                                     超时<br></code></pre></td></tr></table></figure>
 
 
 
