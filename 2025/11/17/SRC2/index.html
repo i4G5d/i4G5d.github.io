@@ -19,12 +19,12 @@
   <meta name="author" content="i4G5d">
   <meta name="keywords" content="">
   
-    <meta name="description" content="为了面试，随便选一个厂商，好好过一遍SRC挖掘过程这次随便选了个学校：台州职业技术学院 1.域名搜集爱企查&#x2F;企查查&#x2F;天眼查&#x2F;小蓝本先搜索台州职业技术学院搜集域名（网站备案）tzvtc.edu.cntzvtc.com习惯放到一个文件里 2.子域名收集12345678910111213141516subfinder -d tzvtc.edu.cn -o edu_sub.t">
+    <meta name="description" content="随便选一个厂商，好好过一遍SRC挖掘过程这次随便选了个学校：台州职业技术学院 1.域名搜集爱企查&#x2F;企查查&#x2F;天眼查&#x2F;小蓝本先搜索台州职业技术学院搜集域名（网站备案）tzvtc.edu.cntzvtc.com习惯放到一个文件里 2.子域名收集12345678910111213141516subfinder -d tzvtc.edu.cn -o edu_sub.txtsub">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SRC2">
 <meta property="og:url" content="https://i4g5d.github.io/2025/11/17/SRC2/index.html">
 <meta property="og:site_name" content="i4G5d-Blog">
-<meta property="og:description" content="为了面试，随便选一个厂商，好好过一遍SRC挖掘过程这次随便选了个学校：台州职业技术学院 1.域名搜集爱企查&#x2F;企查查&#x2F;天眼查&#x2F;小蓝本先搜索台州职业技术学院搜集域名（网站备案）tzvtc.edu.cntzvtc.com习惯放到一个文件里 2.子域名收集12345678910111213141516subfinder -d tzvtc.edu.cn -o edu_sub.t">
+<meta property="og:description" content="随便选一个厂商，好好过一遍SRC挖掘过程这次随便选了个学校：台州职业技术学院 1.域名搜集爱企查&#x2F;企查查&#x2F;天眼查&#x2F;小蓝本先搜索台州职业技术学院搜集域名（网站备案）tzvtc.edu.cntzvtc.com习惯放到一个文件里 2.子域名收集12345678910111213141516subfinder -d tzvtc.edu.cn -o edu_sub.txtsub">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/17/SRC2/image-20251123212246184.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/17/SRC2/image-20251123212310794.png">
@@ -47,7 +47,7 @@
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/17/SRC2/image-20251123212655433.png">
 <meta property="og:image" content="https://i4g5d.github.io/2025/11/17/SRC2/image-20251123212705712.png">
 <meta property="article:published_time" content="2025-11-17T13:19:05.000Z">
-<meta property="article:modified_time" content="2025-11-23T13:32:06.022Z">
+<meta property="article:modified_time" content="2025-11-24T09:41:24.987Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://i4g5d.github.io/2025/11/17/SRC2/image-20251123212246184.png">
@@ -296,7 +296,7 @@
             
               <div class="markdown-body">
                 
-                <p>为了面试，随便选一个厂商，好好过一遍SRC挖掘过程<br>这次随便选了个学校：台州职业技术学院</p>
+                <p>随便选一个厂商，好好过一遍SRC挖掘过程<br>这次随便选了个学校：台州职业技术学院</p>
 <h2 id="1-域名搜集"><a href="#1-域名搜集" class="headerlink" title="1.域名搜集"></a>1.域名搜集</h2><p>爱企查&#x2F;企查查&#x2F;天眼查&#x2F;小蓝本先搜索<code>台州职业技术学院</code>搜集域名（网站备案）<br>tzvtc.edu.cn<br>tzvtc.com<br>习惯放到一个文件里</p>
 <h2 id="2-子域名收集"><a href="#2-子域名收集" class="headerlink" title="2.子域名收集"></a>2.子域名收集</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">subfinder -d tzvtc.edu.cn -o edu_sub.txt<br>subfinder -dL domains.txt -all  -o subfinder_results.txt<br><br><br>.\amass.exe enum -passive -d tzvtc.edu.cn -o edu_amass.txt<br>.\amass.exe enum -active -brute (-src -ip) -d tzvtc.edu.cn -o active.txt<br>.\amass.exe enum -active -brute -w <span class="hljs-string">&quot;\subdomains-top1million-110000.txt&quot;</span> -min-for-recursive 2 -<span class="hljs-built_in">df</span> <span class="hljs-string">&quot;ZYD.txt&quot;</span> -o amass_all.txt  <br><br>conda activate venv<br>python oneforall.py --target tzvtc.edu.cn run <br>python oneforall.py --targets ./domains.txt run(--mode passive run)<br>python oneforall.py --targets-file <span class="hljs-string">&quot;您的域名文件.txt&quot;</span> --plugin all --<span class="hljs-built_in">fmt</span> csv run```<br>将文件集合，结合，去重<br>​```shell<br><span class="hljs-built_in">type</span> *.txt &gt; all.txt<br>Get-Content all.txt | Sort-Object | Get-Unique &gt; uniq.txt<br></code></pre></td></tr></table></figure>
 
